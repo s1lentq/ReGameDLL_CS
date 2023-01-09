@@ -62,9 +62,9 @@ BOOL CSmokeGrenade::Deploy()
 	m_flReleaseThrow = -1;
 	m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
 
-	m_pPlayer->m_bShieldDrawn = false;
+	m_hPlayer->m_bShieldDrawn = false;
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 		return DefaultDeploy("models/shield/v_shield_smokegrenade.mdl", "models/shield/p_shield_smokegrenade.mdl", SMOKEGRENADE_DRAW, "shieldgren", UseDecrement() != FALSE);
 	else
 		return DefaultDeploy("models/v_smokegrenade.mdl", "models/p_smokegrenade.mdl", SMOKEGRENADE_DRAW, "grenade", UseDecrement() != FALSE);
@@ -72,15 +72,15 @@ BOOL CSmokeGrenade::Deploy()
 
 void CSmokeGrenade::Holster(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+	m_hPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
-	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	if (!m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		// no more smokegrenades!
 		// clear the smokegrenade of bits for HUD
 #ifndef REGAMEDLL_FIXES
 		// Moved to DestroyItem()
-		m_pPlayer->pev->weapons &= ~(1 << WEAPON_SMOKEGRENADE);
+		m_hPlayer->pev->weapons &= ~(1 << WEAPON_SMOKEGRENADE);
 #endif
 
 		DestroyItem();
@@ -95,7 +95,7 @@ void CSmokeGrenade::PrimaryAttack()
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		return;
 
-	if (!m_flStartThrow && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
+	if (!m_flStartThrow && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0)
 	{
 		m_flReleaseThrow = 0;
 		m_flStartThrow = gpGlobals->time;
@@ -107,7 +107,7 @@ void CSmokeGrenade::PrimaryAttack()
 
 bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
-	if (!m_pPlayer->HasShield() || m_flStartThrow > 0)
+	if (!m_hPlayer->HasShield() || m_flStartThrow > 0)
 	{
 		return false;
 	}
@@ -117,24 +117,24 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldgren");
 
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
-		m_pPlayer->m_bShieldDrawn = false;
+		m_hPlayer->m_bShieldDrawn = false;
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shielded");
 
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED_SHIELD;
-		m_pPlayer->m_bShieldDrawn = true;
+		m_hPlayer->m_bShieldDrawn = true;
 	}
 
-	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
-	m_pPlayer->ResetMaxSpeed();
+	m_hPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
+	m_hPlayer->ResetMaxSpeed();
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4f;
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
@@ -150,23 +150,23 @@ void CSmokeGrenade::SecondaryAttack()
 
 void CSmokeGrenade::SetPlayerShieldAnim()
 {
-	if (!m_pPlayer->HasShield())
+	if (!m_hPlayer->HasShield())
 		return;
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shield");
 	else
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldgren");
 }
 
 void CSmokeGrenade::ResetPlayerShieldAnim()
 {
-	if (!m_pPlayer->HasShield())
+	if (!m_hPlayer->HasShield())
 		return;
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldgren");
 	}
 }
 
@@ -180,9 +180,9 @@ void CSmokeGrenade::WeaponIdle()
 
 	if (m_flStartThrow)
 	{
-		m_pPlayer->Radio("%!MRAD_FIREINHOLE", "#Fire_in_the_hole");
+		m_hPlayer->Radio("%!MRAD_FIREINHOLE", "#Fire_in_the_hole");
 
-		Vector angThrow = m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle;
+		Vector angThrow = m_hPlayer->pev->v_angle + m_hPlayer->pev->punchangle;
 
 		if (angThrow.x < 0)
 			angThrow.x = -10 + angThrow.x * ((90 - 10) / 90.0);
@@ -196,22 +196,22 @@ void CSmokeGrenade::WeaponIdle()
 
 		UTIL_MakeVectors(angThrow);
 
-		Vector vecSrc = m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_forward * 16.0f;
-		Vector vecThrow = gpGlobals->v_forward * flVel + m_pPlayer->pev->velocity;
+		Vector vecSrc = m_hPlayer->pev->origin + m_hPlayer->pev->view_ofs + gpGlobals->v_forward * 16.0f;
+		Vector vecThrow = gpGlobals->v_forward * flVel + m_hPlayer->pev->velocity;
 
-		m_pPlayer->ThrowGrenade(this, vecSrc, vecThrow, 1.5, m_usCreateSmoke);
+		m_hPlayer->ThrowGrenade(this, vecSrc, vecThrow, 1.5, m_usCreateSmoke);
 
 		SendWeaponAnim(SMOKEGRENADE_THROW, UseDecrement() != FALSE);
 		SetPlayerShieldAnim();
 
 		// player "shoot" animation
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 
 		m_flStartThrow = 0;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75f;
 
-		if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+		if (--m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		{
 			// just threw last grenade
 			// set attack times in the future, and weapon idle in the future so we can see the whole throw
@@ -227,7 +227,7 @@ void CSmokeGrenade::WeaponIdle()
 		// we've finished the throw, restart.
 		m_flStartThrow = 0;
 
-		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		{
 			SendWeaponAnim(SMOKEGRENADE_DRAW, UseDecrement() != FALSE);
 		}
@@ -240,12 +240,12 @@ void CSmokeGrenade::WeaponIdle()
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + RANDOM_FLOAT(10, 15);
 		m_flReleaseThrow = -1;
 	}
-	else if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	else if (m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		int iAnim;
 		float flRand = RANDOM_FLOAT(0, 1);
 
-		if (m_pPlayer->HasShield())
+		if (m_hPlayer->HasShield())
 		{
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 
@@ -278,5 +278,5 @@ LINK_HOOK_CLASS_CHAIN3(BOOL, CBasePlayerWeapon, CSmokeGrenade, CanDeploy)
 
 BOOL EXT_FUNC CSmokeGrenade::__API_HOOK(CanDeploy)()
 {
-	return m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
+	return m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] != 0;
 }

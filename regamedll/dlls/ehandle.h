@@ -42,6 +42,7 @@ public:
 	// NOTE: this is a unsafe method
 	template <typename R>
 	R *Get() const;
+	T *GetPtr() const;
 
 	edict_t *Get() const;
 	edict_t *Set(edict_t *pEdict);
@@ -102,6 +103,12 @@ template <typename T>
 EntityHandle<T>::EntityHandle(const edict_t *pEdict)
 {
 	Set(const_cast<edict_t *>(pEdict));
+}
+
+template <typename T>
+inline T *EntityHandle<T>::GetPtr() const
+{
+	return GET_PRIVATE<T>(Get());
 }
 
 template <typename T>

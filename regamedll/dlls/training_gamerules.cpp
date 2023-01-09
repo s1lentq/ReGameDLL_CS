@@ -75,7 +75,7 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 	pPlayer->m_bCanShoot = true;
 	pPlayer->m_fLastMovement = gpGlobals->time;
 
-	if (pPlayer->m_pActiveItem)
+	if (pPlayer->m_hActiveItem)
 		pPlayer->m_iHideHUD &= ~HIDEHUD_WEAPONS;
 	else
 		pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
@@ -86,9 +86,8 @@ void CHalfLifeTraining::PlayerThink(CBasePlayer *pPlayer)
 		{
 			pPlayer->m_bHasC4 = false;
 
-			CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem;
-
-			if (FClassnameIs(pWeapon->pev, "weapon_c4"))
+			CBasePlayerWeapon *pWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
+			if (pWeapon && FClassnameIs(pWeapon->pev, "weapon_c4"))
 			{
 				pPlayer->pev->weapons &= ~(1 << pWeapon->m_iId);
 				pPlayer->RemovePlayerItem(pWeapon);

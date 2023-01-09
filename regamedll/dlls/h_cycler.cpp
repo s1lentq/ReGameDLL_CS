@@ -250,8 +250,8 @@ void CWeaponCycler::Spawn()
 
 BOOL CWeaponCycler::Deploy()
 {
-	m_pPlayer->pev->viewmodel = m_iszModel;
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0f;
+	m_hPlayer->pev->viewmodel = m_iszModel;
+	m_hPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 	SendWeaponAnim(0);
 	m_iClip = 0;
@@ -261,7 +261,7 @@ BOOL CWeaponCycler::Deploy()
 
 void CWeaponCycler::Holster(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+	m_hPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
 
 void CWeaponCycler::PrimaryAttack()

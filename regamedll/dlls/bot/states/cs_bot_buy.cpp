@@ -30,7 +30,7 @@
 
 bool HasDefaultPistol(CCSBot *me)
 {
-	CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[PISTOL_SLOT]);
+	CBasePlayerWeapon *pSecondary = me->m_rghPlayerItems[PISTOL_SLOT].Get<CBasePlayerWeapon>();
 
 	if (!pSecondary)
 		return false;
@@ -101,7 +101,7 @@ void BuyState::OnEnter(CCSBot *me)
 
 	if (TheCSBots()->AllowPistols())
 	{
-		CBasePlayerWeapon *pSecondary = static_cast<CBasePlayerWeapon *>(me->m_rgpPlayerItems[PISTOL_SLOT]);
+		CBasePlayerWeapon *pSecondary = me->m_rghPlayerItems[PISTOL_SLOT].Get<CBasePlayerWeapon>();
 
 		// check if we have a pistol
 		if (pSecondary)

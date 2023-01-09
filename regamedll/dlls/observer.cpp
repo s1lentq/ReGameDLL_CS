@@ -330,7 +330,7 @@ void CBasePlayer::Observer_CheckProperties()
 		if (!target)
 			return;
 
-		int weapon = target->m_pActiveItem ? target->m_pActiveItem->m_iId : 0;
+		int weapon = target->m_hActiveItem ? target->m_hActiveItem->m_iId : 0;
 		int targetBombState = STATUSICON_HIDE;
 
 		// use fov of tracked client

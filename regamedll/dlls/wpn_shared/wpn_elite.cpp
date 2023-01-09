@@ -73,15 +73,15 @@ BOOL CELITE::Deploy()
 
 void CELITE::PrimaryAttack()
 {
-	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
+	if (!(m_hPlayer->pev->flags & FL_ONGROUND))
 	{
 		ELITEFire(1.3 * (1 - m_flAccuracy), 0.2, FALSE);
 	}
-	else if (m_pPlayer->pev->velocity.Length2D() > 0)
+	else if (m_hPlayer->pev->velocity.Length2D() > 0)
 	{
 		ELITEFire(0.175 * (1 - m_flAccuracy), 0.2, FALSE);
 	}
-	else if (m_pPlayer->pev->flags & FL_DUCKING)
+	else if (m_hPlayer->pev->flags & FL_DUCKING)
 	{
 		ELITEFire(0.08 * (1 - m_flAccuracy), 0.2, FALSE);
 	}
@@ -138,7 +138,7 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 		if (TheBots)
 		{
-			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_hPlayer);
 		}
 
 		return;
@@ -147,14 +147,14 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
 	m_iClip--;
-	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
-	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
+	m_hPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
+	m_hPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle + m_hPlayer->pev->punchangle);
 
-	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_hPlayer->pev->effects |= EF_MUZZLEFLASH;
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef CLIENT_WEAPONS
@@ -171,46 +171,46 @@ void CELITE::ELITEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 
 	if (m_iWeaponState & WPNSTATE_ELITE_LEFT)
 	{
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 		m_iWeaponState &= ~WPNSTATE_ELITE_LEFT;
 
 		vecSrc -= gpGlobals->v_right * 5;
-		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
-			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+		vecDir = m_hPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
+			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_hPlayer->pev, true, m_hPlayer->random_seed);
 
-		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_LEFT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
+		PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usFireELITE_LEFT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
 			int(vecDir.y * 100), m_iClip, FALSE, FALSE);
 	}
 	else
 	{
-		m_pPlayer->SetAnimation(PLAYER_ATTACK2);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK2);
 		m_iWeaponState |= WPNSTATE_ELITE_LEFT;
 
 		vecSrc += gpGlobals->v_right * 5;
-		vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
-			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+		vecDir = m_hPlayer->FireBullets3(vecSrc, vecAiming, flSpread,
+			8192, BULLET_PLAYER_9MM, 1, flBaseDamage, ELITE_RANGE_MODIFER, m_hPlayer->pev, true, m_hPlayer->random_seed);
 
-		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireELITE_RIGHT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
+		PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usFireELITE_RIGHT, 0, (float *)&g_vecZero, (float *)&g_vecZero, flTimeDiff, vecDir.x,
 			int(vecDir.y * 100), m_iClip, FALSE, FALSE);
 	}
 
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (!m_iClip && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
+		m_hPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
-	m_pPlayer->pev->punchangle.x -= 2.0f;
+	m_hPlayer->pev->punchangle.x -= 2.0f;
 }
 
 void CELITE::Reload()
 {
-	if (m_pPlayer->ammo_9mm <= 0)
+	if (m_hPlayer->ammo_9mm <= 0)
 		return;
 
 	if (DefaultReload(iMaxClip(), ELITE_RELOAD, ELITE_RELOAD_TIME))
 	{
-		m_pPlayer->SetAnimation(PLAYER_RELOAD);
+		m_hPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.88f;
 	}
 }
@@ -218,7 +218,7 @@ void CELITE::Reload()
 void CELITE::WeaponIdle()
 {
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
+	m_hPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{

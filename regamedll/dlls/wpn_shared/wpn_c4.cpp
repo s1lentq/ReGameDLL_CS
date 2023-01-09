@@ -64,10 +64,10 @@ BOOL CC4::Deploy()
 	m_bStartedArming = false;
 	m_fArmedTime = 0;
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 	{
 		m_bHasShield = true;
-		m_pPlayer->pev->gamestate = HITGROUP_SHIELD_DISABLED;
+		m_hPlayer->pev->gamestate = HITGROUP_SHIELD_DISABLED;
 	}
 
 	return DefaultDeploy("models/v_c4.mdl", "models/p_c4.mdl", C4_DRAW, "c4", UseDecrement() != FALSE);
@@ -75,22 +75,22 @@ BOOL CC4::Deploy()
 
 void CC4::Holster(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+	m_hPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 
 #ifdef REGAMEDLL_FIXES
 	if(m_bStartedArming)
 	{
-		m_pPlayer->SetProgressBarTime(0);
+		m_hPlayer->SetProgressBarTime(0);
 	}
 #endif
 
 	m_bStartedArming = false;	// stop arming sequence
 
-	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	if (!m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 #ifndef REGAMEDLL_FIXES
 		// Moved to DestroyItem()
-		m_pPlayer->pev->weapons &= ~(1 << WEAPON_C4);
+		m_hPlayer->pev->weapons &= ~(1 << WEAPON_C4);
 #endif
 
 		DestroyItem();
@@ -98,25 +98,25 @@ void CC4::Holster(int skiplocal)
 
 	if (m_bHasShield)
 	{
-		m_pPlayer->pev->gamestate = HITGROUP_SHIELD_ENABLED;
+		m_hPlayer->pev->gamestate = HITGROUP_SHIELD_ENABLED;
 		m_bHasShield = false;
 	}
 }
 
 void CC4::PrimaryAttack()
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return;
 
-	int inBombZone = (m_pPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
-	int onGround = (m_pPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
+	int inBombZone = (m_hPlayer->m_signals.GetState() & SIGNAL_BOMB) == SIGNAL_BOMB;
+	int onGround = (m_hPlayer->pev->flags & FL_ONGROUND) == FL_ONGROUND;
 
 #ifdef REGAMEDLL_FIXES
 	if (!onGround)
 	{
 		TraceResult tr;
-		UTIL_TraceLine(m_pPlayer->pev->origin, m_pPlayer->pev->origin + Vector(0, 0, -8192), ignore_monsters, m_pPlayer->edict(), &tr);
-		onGround = (tr.flFraction != 1.0 && m_pPlayer->pev->velocity.z == 0.0f);
+		UTIL_TraceLine(m_hPlayer->pev->origin, m_hPlayer->pev->origin + Vector(0, 0, -8192), ignore_monsters, m_hPlayer->edict(), &tr);
+		onGround = (tr.flFraction != 1.0 && m_hPlayer->pev->velocity.z == 0.0f);
 	}
 #endif
 
@@ -126,14 +126,14 @@ void CC4::PrimaryAttack()
 	{
 		if (!inBombZone)
 		{
-			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_At_Bomb_Spot");
+			ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_At_Bomb_Spot");
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 			return;
 		}
 
 		if (!onGround)
 		{
-			ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
+			ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 			return;
 		}
@@ -147,13 +147,13 @@ void CC4::PrimaryAttack()
 
 		// freeze the player in place while planting
 #ifdef REGAMEDLL_FIXES
-		m_pPlayer->ResetMaxSpeed();
+		m_hPlayer->ResetMaxSpeed();
 #else
-		SET_CLIENT_MAXSPEED(m_pPlayer->edict(), 1.0);
+		SET_CLIENT_MAXSPEED(m_hPlayer->edict(), 1.0);
 #endif
 
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
-		m_pPlayer->SetProgressBarTime(C4_ARMING_ON_TIME);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK1);
+		m_hPlayer->SetProgressBarTime(C4_ARMING_ON_TIME);
 	}
 	else
 	{
@@ -168,7 +168,7 @@ void CC4::PrimaryAttack()
 				m_fArmedTime = 0;
 
 				Broadcast("BOMBPL");
-				m_pPlayer->m_bHasC4 = false;
+				m_hPlayer->m_bHasC4 = false;
 
 				if (pev->speed != 0 && CSGameRules())
 				{
@@ -176,16 +176,16 @@ void CC4::PrimaryAttack()
 				}
 
 #ifdef REGAMEDLL_FIXES
-				Vector vBombAngles = Vector(0, m_pPlayer->pev->angles[1] - 90.0, 0);
+				Vector vBombAngles = Vector(0, m_hPlayer->pev->angles[1] - 90.0, 0);
 #else
 				Vector vBombAngles = Vector(0, 0, 0);
 #endif
-				CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_pPlayer->pev, m_pPlayer->pev->origin, vBombAngles);
+				CGrenade *pBomb = CGrenade::ShootSatchelCharge(m_hPlayer->pev, m_hPlayer->pev->origin, vBombAngles);
 
 				MESSAGE_BEGIN(MSG_SPEC, SVC_DIRECTOR);
 					WRITE_BYTE(9);
 					WRITE_BYTE(DRC_CMD_EVENT);
-					WRITE_SHORT(m_pPlayer->entindex());
+					WRITE_SHORT(m_hPlayer->entindex());
 					WRITE_SHORT(0);
 					WRITE_LONG(DRC_FLAG_FACEPLAYER | 11);
 				MESSAGE_END();
@@ -200,18 +200,18 @@ void CC4::PrimaryAttack()
 				UTIL_ClientPrintAll(HUD_PRINTCENTER, "#Bomb_Planted");
 				if (TheBots)
 				{
-					TheBots->OnEvent(EVENT_BOMB_PLANTED, m_pPlayer, pBomb);
+					TheBots->OnEvent(EVENT_BOMB_PLANTED, m_hPlayer, pBomb);
 				}
 
-				if (TheCareerTasks && CSGameRules()->IsCareer() && !m_pPlayer->IsBot())
+				if (TheCareerTasks && CSGameRules()->IsCareer() && !m_hPlayer->IsBot())
 				{
-					TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_pPlayer);
+					TheCareerTasks->HandleEvent(EVENT_BOMB_PLANTED, m_hPlayer);
 				}
 
 				UTIL_LogPrintf("\"%s<%i><%s><TERRORIST>\" triggered \"Planted_The_Bomb\"\n",
-					STRING(m_pPlayer->pev->netname),
-					GETPLAYERUSERID(m_pPlayer->edict()),
-					GETPLAYERAUTHID(m_pPlayer->edict()));
+					STRING(m_hPlayer->pev->netname),
+					GETPLAYERUSERID(m_hPlayer->edict()),
+					GETPLAYERAUTHID(m_hPlayer->edict()));
 
 				g_pGameRules->m_bBombDropped = FALSE;
 
@@ -219,15 +219,15 @@ void CC4::PrimaryAttack()
 				EMIT_SOUND(edict(), CHAN_WEAPON, "weapons/c4_plant.wav", VOL_NORM, ATTN_NORM);
 
 				// hide the backpack in Terrorist's models.
-				m_pPlayer->pev->body = 0;
+				m_hPlayer->pev->body = 0;
 
 				// release the player from being frozen
-				m_pPlayer->ResetMaxSpeed();
+				m_hPlayer->ResetMaxSpeed();
 
 				// No more c4!
-				m_pPlayer->SetBombIcon(FALSE);
+				m_hPlayer->SetBombIcon(FALSE);
 
-				if (--m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+				if (--m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 				{
 					RetireWeapon();
 					return;
@@ -242,24 +242,24 @@ void CC4::PrimaryAttack()
 					SendWeaponAnim(C4_DROP, UseDecrement() != FALSE);
 
 					// player "place" animation
-					m_pPlayer->SetAnimation(PLAYER_HOLDBOMB);
+					m_hPlayer->SetAnimation(PLAYER_HOLDBOMB);
 				}
 			}
 		}
 		else
 		{
 			if (inBombZone)
-				ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
+				ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
 			else
-				ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#C4_Arming_Cancelled");
+				ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#C4_Arming_Cancelled");
 
 			m_bStartedArming = false;
 			m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 
 			// release the player from being frozen, we've somehow left the bomb zone
-			m_pPlayer->ResetMaxSpeed();
-			m_pPlayer->SetProgressBarTime(0);
-			m_pPlayer->SetAnimation(PLAYER_HOLDBOMB);
+			m_hPlayer->ResetMaxSpeed();
+			m_hPlayer->SetProgressBarTime(0);
+			m_hPlayer->SetAnimation(PLAYER_HOLDBOMB);
 
 			// this means the placement animation is canceled
 			if (m_bBombPlacedAnimation)
@@ -283,10 +283,10 @@ void CC4::WeaponIdle()
 		m_bStartedArming = false;
 
 		// release the player from being frozen
-		m_pPlayer->ResetMaxSpeed();
+		m_hPlayer->ResetMaxSpeed();
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-		m_pPlayer->SetProgressBarTime(0);
+		m_hPlayer->SetProgressBarTime(0);
 
 		// this means the placement animation is canceled
 		if (m_bBombPlacedAnimation)
@@ -297,7 +297,7 @@ void CC4::WeaponIdle()
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+		if (m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		{
 			RetireWeapon();
 			return;
@@ -338,7 +338,7 @@ void CC4::KeyValue(KeyValueData *pkvd)
 void CC4::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 #ifndef REGAMEDLL_FIXES
-	if (m_pPlayer)
+	if (m_hPlayer)
 		return;
 
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);

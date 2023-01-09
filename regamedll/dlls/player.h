@@ -647,10 +647,10 @@ public:
 	template<typename T = CBasePlayerItem, typename Functor>
 	T *ForEachItem(int slot, const Functor &func) const
 	{
-		auto item = m_rgpPlayerItems[slot];
+		CBasePlayerItem *item = m_rghPlayerItems[slot];
 		while (item)
 		{
-			auto next = item->m_pNext;
+			CBasePlayerItem *next = item->m_hNext;
 			if (func(static_cast<T *>(item)))
 				return static_cast<T *>(item);
 
@@ -663,11 +663,11 @@ public:
 	template<typename T = CBasePlayerItem, typename Functor>
 	T *ForEachItem(const Functor &func) const
 	{
-		for (auto item : m_rgpPlayerItems)
+		for (CBasePlayerItem *item : m_rghPlayerItems)
 		{
 			while (item)
 			{
-				auto next = item->m_pNext;
+				CBasePlayerItem *next = item->m_hNext;
 				if (func(static_cast<T *>(item)))
 					return static_cast<T *>(item);
 
@@ -685,7 +685,7 @@ public:
 			return nullptr;
 		}
 
-		for (auto item : m_rgpPlayerItems)
+		for (CBasePlayerItem *item : m_rghPlayerItems)
 		{
 			while (item)
 			{
@@ -693,7 +693,7 @@ public:
 					return static_cast<T *>(item);
 				}
 
-				item = item->m_pNext;
+				item = item->m_hNext;
 			}
 		}
 
@@ -835,10 +835,18 @@ public:
 	int m_iClientFOV;
 	int m_iNumSpawns;
 	CBaseEntity *m_pObserver;
+
+	////
+	// DEPRECATED: Use safe pointers instead it
+	////
 	CBasePlayerItem *m_rgpPlayerItems[MAX_ITEM_TYPES];
 	CBasePlayerItem *m_pActiveItem;
 	CBasePlayerItem *m_pClientActiveItem;
 	CBasePlayerItem *m_pLastItem;
+	////
+	// DEPRECATED: Use safe pointers instead it
+	////
+
 	int m_rgAmmo[MAX_AMMO_SLOTS];
 	int m_rgAmmoLast[MAX_AMMO_SLOTS];
 	Vector m_vecAutoAim;
@@ -902,6 +910,10 @@ public:
 	int m_iLastClientHealth;
 	float m_tmNextAccountHealthUpdate;
 #endif
+
+	EntityHandle<CBasePlayerItem> m_rghPlayerItems[MAX_ITEM_TYPES];
+	EntityHandle<CBasePlayerItem> m_hActiveItem;
+	EntityHandle<CBasePlayerItem> m_hLastItem;
 };
 
 CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
@@ -927,7 +939,7 @@ public:
 
 inline bool CBasePlayer::IsReloading() const
 {
-	CBasePlayerWeapon *pCurrentWeapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+	CBasePlayerWeapon *pCurrentWeapon = m_hActiveItem.Get<CBasePlayerWeapon>();
 	if (pCurrentWeapon && pCurrentWeapon->m_fInReload)
 	{
 		return true;

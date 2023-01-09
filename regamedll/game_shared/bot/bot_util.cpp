@@ -669,10 +669,10 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *pEntity, CBaseEntity *
 	// TODO: Use actual volume, account for silencers, etc.
 	case EVENT_WEAPON_FIRED:
 	{
-		if (!pPlayer->m_pActiveItem)
+		if (!pPlayer->m_hActiveItem)
 			return false;
 
-		switch (pPlayer->m_pActiveItem->m_iId)
+		switch (pPlayer->m_hActiveItem->m_iId)
 		{
 		// silent "firing"
 		case WEAPON_HEGRENADE:
@@ -689,8 +689,8 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *pEntity, CBaseEntity *
 		// M4A1 - check for silencer
 		case WEAPON_M4A1:
 		{
-			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
-			if (pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
+			CBasePlayerWeapon *pWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
+			if (pWeapon && pWeapon->m_iWeaponState & WPNSTATE_M4A1_SILENCED)
 				*range = ShortRange;
 			else
 				*range = NormalRange;
@@ -699,8 +699,8 @@ bool IsGameEventAudible(GameEventType event, CBaseEntity *pEntity, CBaseEntity *
 		// USP - check for silencer
 		case WEAPON_USP:
 		{
-			CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
-			if (pWeapon->m_iWeaponState & WPNSTATE_USP_SILENCED)
+			CBasePlayerWeapon *pWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
+			if (pWeapon && pWeapon->m_iWeaponState & WPNSTATE_USP_SILENCED)
 				*range = ShortRange;
 			else
 				*range = NormalRange;

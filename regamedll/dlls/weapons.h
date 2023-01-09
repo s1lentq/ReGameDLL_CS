@@ -324,9 +324,19 @@ public:
 	static ItemInfo m_ItemInfoArray[MAX_WEAPONS];
 	static AmmoInfo m_AmmoInfoArray[MAX_AMMO_SLOTS];
 
+	////
+	// DEPRECATED: Use safe pointers instead it
+	////
 	CBasePlayer *m_pPlayer;
 	CBasePlayerItem *m_pNext;
+	////
+	// DEPRECATED: Use safe pointers instead it
+	////
+
 	int m_iId;							// WEAPON_???
+
+	EntityHandle<CBasePlayer> m_hPlayer;
+	EntityHandle<CBasePlayerItem> m_hNext;
 };
 
 #ifdef REGAMEDLL_API

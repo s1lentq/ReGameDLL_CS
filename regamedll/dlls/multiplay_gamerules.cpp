@@ -3242,7 +3242,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return FALSE;
 	}
 
-	if (!pPlayer->m_pActiveItem)
+	if (!pPlayer->m_hActiveItem)
 	{
 		// player doesn't have an active item!
 		return TRUE;
@@ -3256,7 +3256,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return FALSE;
 #endif
 
-	if (!pPlayer->m_pActiveItem->CanHolster())
+	if (!pPlayer->m_hActiveItem->CanHolster())
 	{
 		// can't put away the active item.
 		return FALSE;
@@ -3268,12 +3268,12 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		if (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
 			return FALSE;
 
-		if (pPlayer->m_pActiveItem->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
+		if (pPlayer->m_hActiveItem->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
 			return TRUE;
 	}
 #endif
 
-	if (pWeapon->iWeight() > pPlayer->m_pActiveItem->iWeight())
+	if (pWeapon->iWeight() > pPlayer->m_hActiveItem->iWeight())
 		return TRUE;
 
 	return FALSE;
@@ -3300,7 +3300,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 
 	for (i = 0; i < MAX_ITEM_TYPES; i++)
 	{
-		pCheck = pPlayer->m_rgpPlayerItems[i];
+		pCheck = pPlayer->m_rghPlayerItems[i];
 
 		while (pCheck)
 		{
@@ -3323,7 +3323,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 				}
 			}
 
-			pCheck = pCheck->m_pNext;
+			pCheck = pCheck->m_hNext.GetPtr();
 		}
 	}
 
@@ -3709,10 +3709,10 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 		pPlayer->m_bCanShoot = true;
 	}
 
-	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
+	if (pPlayer->m_hActiveItem && pPlayer->m_hActiveItem->IsWeapon())
 	{
-		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
-		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN
+		CBasePlayerWeapon *pWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
+		if (pWeapon && pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN
 #ifdef REGAMEDLL_ADD
 			|| ((pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && pPlayer->pev->waterlevel == 3)
 #endif
@@ -4078,9 +4078,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 				CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
 				if (pAttacker && pAttacker->IsPlayer())
 				{
-					if (pAttacker->m_pActiveItem)
+					if (pAttacker->m_hActiveItem)
 					{
-						killer_weapon_name = pAttacker->m_pActiveItem->pszName();
+						killer_weapon_name = pAttacker->m_hActiveItem->pszName();
 					}
 				}
 			}

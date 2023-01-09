@@ -235,9 +235,9 @@ BOOL CFuncTank::StartControl(CBasePlayer *pController)
 
 	m_pController = pController;
 
-	if (m_pController->m_pActiveItem)
+	if (m_pController->m_hActiveItem)
 	{
-		m_pController->m_pActiveItem->Holster();
+		m_pController->m_hActiveItem->Holster();
 		m_pController->pev->weaponmodel = 0;
 
 #ifdef BUILD_LATEST_FIXES
@@ -267,9 +267,9 @@ void CFuncTank::StopControl()
 	if (!m_pController)
 		return;
 
-	if (m_pController->m_pActiveItem)
+	if (m_pController->m_hActiveItem)
 	{
-		m_pController->m_pActiveItem->Deploy();
+		m_pController->m_hActiveItem->Deploy();
 
 		if (m_pController->IsPlayer())
 		{
@@ -280,7 +280,7 @@ void CFuncTank::StopControl()
 	ALERT(at_console, "stopped using TANK\n");
 
 #ifdef REGAMEDLL_FIXES
-	if (m_pController->m_pActiveItem)
+	if (m_pController->m_hActiveItem)
 #endif
 	{
 		m_pController->m_iHideHUD &= ~HIDEHUD_WEAPONS;

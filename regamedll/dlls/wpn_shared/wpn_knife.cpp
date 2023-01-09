@@ -71,15 +71,15 @@ int CKnife::GetItemInfo(ItemInfo *p)
 
 BOOL CKnife::Deploy()
 {
-	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
+	EMIT_SOUND(m_hPlayer->edict(), CHAN_ITEM, "weapons/knife_deploy1.wav", 0.3, 2.4);
 
 	m_iSwing = 0;
 	m_fMaxSpeed = KNIFE_MAX_SPEED;
 
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
-	m_pPlayer->m_bShieldDrawn = false;
+	m_hPlayer->m_bShieldDrawn = false;
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 	{
 		return DefaultDeploy("models/shield/v_shield_knife.mdl", "models/shield/p_shield_knife.mdl", KNIFE_SHIELD_DRAW, "shieldknife", UseDecrement() != FALSE);
 	}
@@ -89,7 +89,7 @@ BOOL CKnife::Deploy()
 
 void CKnife::Holster(int skiplocal)
 {
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
+	m_hPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5f;
 }
 
 NOXREF void CKnife::WeaponAnimation(int iAnimation)
@@ -102,7 +102,7 @@ NOXREF void CKnife::WeaponAnimation(int iAnimation)
 	flag = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usKnife,
+	PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usKnife,
 		0.0, (float *)&g_vecZero, (float *)&g_vecZero,
 		0.0,
 		0.0,
@@ -163,33 +163,33 @@ void CKnife::PrimaryAttack()
 
 void CKnife::SetPlayerShieldAnim()
 {
-	if (!m_pPlayer->HasShield())
+	if (!m_hPlayer->HasShield())
 		return;
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shield");
 	}
 	else
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldknife");
 	}
 }
 
 void CKnife::ResetPlayerShieldAnim()
 {
-	if (!m_pPlayer->HasShield())
+	if (!m_hPlayer->HasShield())
 		return;
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldknife");
 	}
 }
 
 bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 {
-	if (!m_pPlayer->HasShield())
+	if (!m_hPlayer->HasShield())
 	{
 		return false;
 	}
@@ -200,24 +200,24 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shieldknife");
 
 		m_fMaxSpeed = KNIFE_MAX_SPEED;
-		m_pPlayer->m_bShieldDrawn = false;
+		m_hPlayer->m_bShieldDrawn = false;
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+		Q_strcpy(m_hPlayer->m_szAnimExtention, "shielded");
 
 		m_fMaxSpeed = KNIFE_MAX_SPEED_SHIELD;
-		m_pPlayer->m_bShieldDrawn = true;
+		m_hPlayer->m_bShieldDrawn = true;
 	}
 
-	m_pPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
-	m_pPlayer->ResetMaxSpeed();
+	m_hPlayer->UpdateShieldCrosshair((m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != WPNSTATE_SHIELD_DRAWN);
+	m_hPlayer->ResetMaxSpeed();
 
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4f;
@@ -237,7 +237,7 @@ void CKnife::SecondaryAttack()
 
 void CKnife::Smack()
 {
-	DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR, false, m_pPlayer->pev, false);
+	DecalGunshot(&m_trHit, BULLET_PLAYER_CROWBAR, false, m_hPlayer->pev, false);
 }
 
 void CKnife::SwingAgain()
@@ -248,12 +248,12 @@ void CKnife::SwingAgain()
 void CKnife::WeaponIdle()
 {
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
+	m_hPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 		return;
 
-	if (m_pPlayer->m_bShieldDrawn)
+	if (m_hPlayer->m_bShieldDrawn)
 		return;
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
@@ -268,16 +268,16 @@ BOOL CKnife::Swing(BOOL fFirst)
 	TraceResult tr;
 	Vector vecSrc, vecEnd;
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle);
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecEnd = vecSrc + gpGlobals->v_forward * m_flSwingDistance;
 
-	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
+	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_hPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
-		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_hPlayer->edict(), &tr);
 
 		if (tr.flFraction < 1.0f)
 		{
@@ -287,7 +287,7 @@ BOOL CKnife::Swing(BOOL fFirst)
 
 			if (!pHit || pHit->IsBSPModel())
 			{
-				FindHullIntersection(vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_pPlayer->edict());
+				FindHullIntersection(vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_hPlayer->edict());
 			}
 
 			// This is the point on the actual surface (the hull could have hit space)
@@ -299,7 +299,7 @@ BOOL CKnife::Swing(BOOL fFirst)
 	{
 		if (fFirst)
 		{
-			if (!m_pPlayer->HasShield())
+			if (!m_hPlayer->HasShield())
 			{
 				switch ((m_iSwing++) % 2)
 				{
@@ -323,12 +323,12 @@ BOOL CKnife::Swing(BOOL fFirst)
 
 			// play wiff or swish sound
 			if (RANDOM_LONG(0, 1))
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
+				EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
 			else
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
+				EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
 
 			// player "shoot" animation
-			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+			m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 		}
 	}
 	else
@@ -336,7 +336,7 @@ BOOL CKnife::Swing(BOOL fFirst)
 		// hit
 		fDidHit = TRUE;
 
-		if (!m_pPlayer->HasShield())
+		if (!m_hPlayer->HasShield())
 		{
 			switch ((m_iSwing++) % 2)
 			{
@@ -365,15 +365,15 @@ BOOL CKnife::Swing(BOOL fFirst)
 		SetPlayerShieldAnim();
 
 		// player "shoot" animation
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
 
 		if (m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase())
-			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage_Fast, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+			pEntity->TraceAttack(m_hPlayer->pev, m_flSwingBaseDamage_Fast, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 		else
-			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+			pEntity->TraceAttack(m_hPlayer->pev, m_flSwingBaseDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
 
-		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
+		ApplyMultiDamage(m_hPlayer->pev, m_hPlayer->pev);
 
 #ifndef REGAMEDLL_FIXES
 		if (pEntity)	// -V595
@@ -388,13 +388,13 @@ BOOL CKnife::Swing(BOOL fFirst)
 				// play thwack or smack sound
 				switch (RANDOM_LONG(0, 3))
 				{
-				case 0: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit1.wav", VOL_NORM, ATTN_NORM); break;
-				case 1: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit2.wav", VOL_NORM, ATTN_NORM); break;
-				case 2: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit3.wav", VOL_NORM, ATTN_NORM); break;
-				case 3: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit4.wav", VOL_NORM, ATTN_NORM); break;
+				case 0: EMIT_SOUND(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit1.wav", VOL_NORM, ATTN_NORM); break;
+				case 1: EMIT_SOUND(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit2.wav", VOL_NORM, ATTN_NORM); break;
+				case 2: EMIT_SOUND(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit3.wav", VOL_NORM, ATTN_NORM); break;
+				case 3: EMIT_SOUND(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit4.wav", VOL_NORM, ATTN_NORM); break;
 				}
 
-				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
+				m_hPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 
 				if (!pEntity->IsAlive())
 					return TRUE;
@@ -426,14 +426,14 @@ BOOL CKnife::Swing(BOOL fFirst)
 			SetThink(&CKnife::Smack);
 
 			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;
-			m_pPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
+			m_hPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
 
 			ResetPlayerShieldAnim();
 		}
 		else
 		{
 			// also play knife strike
-			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hitwall1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 3) + 98);
+			EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_ITEM, "weapons/knife_hitwall1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 3) + 98);
 		}
 	}
 
@@ -446,16 +446,16 @@ BOOL CKnife::Stab(BOOL fFirst)
 	TraceResult tr;
 	Vector vecSrc, vecEnd;
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle);
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecEnd = vecSrc + gpGlobals->v_forward * m_flStabDistance;
 
-	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
+	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_hPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
-		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_hPlayer->edict(), &tr);
 
 		if (tr.flFraction < 1.0f)
 		{
@@ -465,7 +465,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 			if (!pHit || pHit->IsBSPModel())
 			{
-				FindHullIntersection(vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_pPlayer->edict());
+				FindHullIntersection(vecSrc, tr, VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX, m_hPlayer->edict());
 			}
 
 			// This is the point on the actual surface (the hull could have hit space)
@@ -487,12 +487,12 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 			// play wiff or swish sound
 			if (RANDOM_LONG(0, 1))
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
+				EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
 			else
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
+				EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
 
 			// player "shoot" animation
-			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+			m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 		}
 	}
 	else
@@ -515,7 +515,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 
 		// player "shoot" animation
-		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+		m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 
 		float flDamage = m_flStabBaseDamage;
 
@@ -539,11 +539,11 @@ BOOL CKnife::Stab(BOOL fFirst)
 			}
 		}
 
-		UTIL_MakeVectors(m_pPlayer->pev->v_angle);
+		UTIL_MakeVectors(m_hPlayer->pev->v_angle);
 		ClearMultiDamage();
 
-		pEntity->TraceAttack(m_pPlayer->pev, flDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
-		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
+		pEntity->TraceAttack(m_hPlayer->pev, flDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+		ApplyMultiDamage(m_hPlayer->pev, m_hPlayer->pev);
 
 #ifndef REGAMEDLL_FIXES
 		if (pEntity)	// -V595
@@ -555,8 +555,8 @@ BOOL CKnife::Stab(BOOL fFirst)
 			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
 #endif
 			{
-				EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
-				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
+				EMIT_SOUND(m_hPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
+				m_hPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 
 				if (!pEntity->IsAlive())
 					return TRUE;
@@ -585,7 +585,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		{
 			// delay the decal a bit
 			m_trHit = tr;
-			m_pPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
+			m_hPlayer->m_iWeaponVolume = int(flVol * KNIFE_WALLHIT_VOLUME);
 
 			SetThink(&CKnife::Smack);
 			pev->nextthink = UTIL_WeaponTimeBase() + 0.2f;
@@ -595,7 +595,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		else
 		{
 			// also play knife strike
-			EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_ITEM, "weapons/knife_hitwall1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 3) + 98);
+			EMIT_SOUND_DYN(m_hPlayer->edict(), CHAN_ITEM, "weapons/knife_hitwall1.wav", VOL_NORM, ATTN_NORM, 0, RANDOM_LONG(0, 3) + 98);
 		}
 	}
 

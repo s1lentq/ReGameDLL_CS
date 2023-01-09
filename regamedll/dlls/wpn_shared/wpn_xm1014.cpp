@@ -79,7 +79,7 @@ void CXM1014::PrimaryAttack()
 
 			if (TheBots)
 			{
-				TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+				TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_hPlayer);
 			}
 		}
 
@@ -94,7 +94,7 @@ void CXM1014::PrimaryAttack()
 
 		if (TheBots)
 		{
-			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_hPlayer);
 		}
 
 		m_flNextPrimaryAttack = GetNextAttackDelay(1);
@@ -103,17 +103,17 @@ void CXM1014::PrimaryAttack()
 		return;
 	}
 
-	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
-	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
+	m_hPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
+	m_hPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 	m_iClip--;
 
-	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_hPlayer->pev->effects |= EF_MUZZLEFLASH;
 	// player "shoot" animation
-	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+	m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle + m_hPlayer->pev->punchangle);
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
@@ -125,9 +125,9 @@ void CXM1014::PrimaryAttack()
 	Vector vecCone(XM1014_CONE_VECTOR);
 
 #ifdef REGAMEDLL_FIXES
-	m_pPlayer->FireBuckshots(6, vecSrc, vecAiming, vecCone, 3048.0f, 0, flBaseDamage, m_pPlayer->pev);
+	m_hPlayer->FireBuckshots(6, vecSrc, vecAiming, vecCone, 3048.0f, 0, flBaseDamage, m_hPlayer->pev);
 #else
-	m_pPlayer->FireBullets(6, vecSrc, vecAiming, vecCone, 3048, BULLET_PLAYER_BUCKSHOT, 0, 0, NULL);
+	m_hPlayer->FireBullets(6, vecSrc, vecAiming, vecCone, 3048, BULLET_PLAYER_BUCKSHOT, 0, 0, NULL);
 #endif
 
 #ifdef CLIENT_WEAPONS
@@ -138,17 +138,17 @@ void CXM1014::PrimaryAttack()
 
 #ifdef REGAMEDLL_ADD
 	// HACKHACK: client-side weapon prediction fix
-	if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+	if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_hPlayer->pev->waterlevel == 3)
 		flag = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireXM1014, 0, (float *)&g_vecZero, (float *)&g_vecZero, m_vVecAiming.x, m_vVecAiming.y, 7,
+	PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usFireXM1014, 0, (float *)&g_vecZero, (float *)&g_vecZero, m_vVecAiming.x, m_vVecAiming.y, 7,
 		int(m_vVecAiming.x * 100), m_iClip == 0, FALSE);
 
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (!m_iClip && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
+		m_hPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 #ifndef REGAMEDLL_FIXES
@@ -166,10 +166,10 @@ void CXM1014::PrimaryAttack()
 
 	m_fInSpecialReload = 0;
 
-	if (m_pPlayer->pev->flags & FL_ONGROUND)
-		m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_pPlayer->random_seed + 1, 3, 5);
+	if (m_hPlayer->pev->flags & FL_ONGROUND)
+		m_hPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_hPlayer->random_seed + 1, 3, 5);
 	else
-		m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_pPlayer->random_seed + 1, 7, 10);
+		m_hPlayer->pev->punchangle.x -= UTIL_SharedRandomLong(m_hPlayer->random_seed + 1, 7, 10);
 }
 
 void CXM1014::Reload()
@@ -183,7 +183,7 @@ void CXM1014::Reload()
 void CXM1014::WeaponIdle()
 {
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
+	m_hPlayer->GetAutoaimVector(AUTOAIM_5DEGREES);
 
 #ifndef REGAMEDLL_FIXES
 	if (m_flPumpTime && m_flPumpTime < UTIL_WeaponTimeBase())
@@ -194,13 +194,13 @@ void CXM1014::WeaponIdle()
 
 	if (m_flTimeWeaponIdle < UTIL_WeaponTimeBase())
 	{
-		if (m_iClip == 0 && m_fInSpecialReload == 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (m_iClip == 0 && m_fInSpecialReload == 0 && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		{
 			Reload();
 		}
 		else if (m_fInSpecialReload != 0)
 		{
-			if (m_iClip != iMaxClip() && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+			if (m_iClip != iMaxClip() && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 			{
 				Reload();
 			}

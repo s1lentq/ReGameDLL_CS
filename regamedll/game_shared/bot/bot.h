@@ -326,7 +326,7 @@ inline void CBot::Walk()
 
 inline CBasePlayerWeapon *CBot::GetActiveWeapon() const
 {
-	return static_cast<CBasePlayerWeapon *>(m_pActiveItem);
+	return m_hActiveItem.Get<CBasePlayerWeapon>();
 }
 
 inline bool CBot::IsActiveWeaponCanShootUnderwater() const

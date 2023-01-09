@@ -218,7 +218,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 		if (pItem->IsWeapon())
 		{
-			if (pItem == pPlayer->m_pActiveItem) {
+			if (pItem == pPlayer->m_hActiveItem) {
 				((CBasePlayerWeapon *)pItem)->RetireWeapon();
 			}
 
@@ -236,7 +236,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 			pItem->Kill();
 
-			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+			if (!pPlayer->m_rghPlayerItems[PRIMARY_WEAPON_SLOT]) {
 				pPlayer->m_bHasPrimary = false;
 			}
 
@@ -323,7 +323,7 @@ EXT_FUNC bool CCSPlayer::RemoveShield()
 	bool bIsProtectedShield = pPlayer->IsProtectedByShield();
 	pPlayer->RemoveShield();
 
-	CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
+	CBasePlayerWeapon *pWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
 	if (pWeapon && pWeapon->IsWeapon())
 	{
 		if (!pWeapon->CanHolster())

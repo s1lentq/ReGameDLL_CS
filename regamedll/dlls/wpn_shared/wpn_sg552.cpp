@@ -67,25 +67,25 @@ BOOL CSG552::Deploy()
 
 void CSG552::SecondaryAttack()
 {
-	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
+	if (m_hPlayer->m_iFOV == DEFAULT_FOV)
+		m_hPlayer->pev->fov = m_hPlayer->m_iFOV = 55;
 	else
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 90;
+		m_hPlayer->pev->fov = m_hPlayer->m_iFOV = 90;
 
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
 void CSG552::PrimaryAttack()
 {
-	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
+	if (!(m_hPlayer->pev->flags & FL_ONGROUND))
 	{
 		SG552Fire(0.035 + (0.45 * m_flAccuracy), 0.0825, FALSE);
 	}
-	else if (m_pPlayer->pev->velocity.Length2D() > 140)
+	else if (m_hPlayer->pev->velocity.Length2D() > 140)
 	{
 		SG552Fire(0.035 + (0.075 * m_flAccuracy), 0.0825, FALSE);
 	}
-	else if (m_pPlayer->pev->fov == DEFAULT_FOV)
+	else if (m_hPlayer->pev->fov == DEFAULT_FOV)
 	{
 		SG552Fire(0.02 * m_flAccuracy, 0.0825, FALSE);
 	}
@@ -118,22 +118,22 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 		if (TheBots)
 		{
-			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_hPlayer);
 		}
 
 		return;
 	}
 
 	m_iClip--;
-	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
-	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+	m_hPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
-	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
+	m_hPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	m_hPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle + m_hPlayer->pev->punchangle);
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
@@ -141,8 +141,8 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 #else
 	float flBaseDamage = SG552_DAMAGE;
 #endif
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
-		flBaseDamage, SG552_RANGE_MODIFER, m_pPlayer->pev, false, m_pPlayer->random_seed);
+	vecDir = m_hPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 2, BULLET_PLAYER_556MM,
+		flBaseDamage, SG552_RANGE_MODIFER, m_hPlayer->pev, false, m_hPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -150,27 +150,27 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 	flag = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireSG552, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
+	PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usFireSG552, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		int(m_hPlayer->pev->punchangle.x * 100), int(m_hPlayer->pev->punchangle.y * 100), 5, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (!m_iClip && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
+		m_hPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
-	if (m_pPlayer->pev->velocity.Length2D() > 0)
+	if (m_hPlayer->pev->velocity.Length2D() > 0)
 	{
 		KickBack(1.0, 0.45, 0.28, 0.04, 4.25, 2.5, 7);
 	}
-	else if (!(m_pPlayer->pev->flags & FL_ONGROUND))
+	else if (!(m_hPlayer->pev->flags & FL_ONGROUND))
 	{
 		KickBack(1.25, 0.45, 0.22, 0.18, 6.0, 4.0, 5);
 	}
-	else if (m_pPlayer->pev->flags & FL_DUCKING)
+	else if (m_hPlayer->pev->flags & FL_DUCKING)
 	{
 		KickBack(0.6, 0.35, 0.2, 0.0125, 3.7, 2.0, 10);
 	}
@@ -182,17 +182,17 @@ void CSG552::SG552Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 void CSG552::Reload()
 {
-	if (m_pPlayer->ammo_556nato <= 0)
+	if (m_hPlayer->ammo_556nato <= 0)
 		return;
 
 	if (DefaultReload(iMaxClip(), SG552_RELOAD, SG552_RELOAD_TIME))
 	{
-		if (m_pPlayer->m_iFOV != DEFAULT_FOV)
+		if (m_hPlayer->m_iFOV != DEFAULT_FOV)
 		{
 			SecondaryAttack();
 		}
 
-		m_pPlayer->SetAnimation(PLAYER_RELOAD);
+		m_hPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.2f;
 		m_iShotsFired = 0;
 		m_bDelayFire = false;
@@ -202,7 +202,7 @@ void CSG552::Reload()
 void CSG552::WeaponIdle()
 {
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
+	m_hPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 	{
@@ -215,7 +215,7 @@ void CSG552::WeaponIdle()
 
 float CSG552::GetMaxSpeed()
 {
-	if (m_pPlayer->m_iFOV == DEFAULT_FOV)
+	if (m_hPlayer->m_iFOV == DEFAULT_FOV)
 		return SG552_MAX_SPEED;
 
 	return SG552_MAX_SPEED_ZOOM;

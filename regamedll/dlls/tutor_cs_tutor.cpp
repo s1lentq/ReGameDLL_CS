@@ -1286,7 +1286,7 @@ void CCSTutor::HandleWeaponFiredOnEmpty(CBaseEntity *pEntity, CBaseEntity *pOthe
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pEntity);
 	if (pPlayer && pPlayer->IsPlayer() && pPlayer == pLocalPlayer)
 	{
-		CBasePlayerWeapon *pCurrentWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem);
+		CBasePlayerWeapon *pCurrentWeapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
 		if (pCurrentWeapon && pPlayer->m_rgAmmo[pCurrentWeapon->m_iPrimaryAmmoType] <= 0)
 		{
 			TutorMessage *message = GetTutorMessageDefinition(YOU_ARE_OUT_OF_AMMO);
@@ -2581,7 +2581,7 @@ void CCSTutor::CheckForNeedToReload(bool isPassiveCheck)
 	if (!pLocalPlayer || !pLocalPlayer->IsPlayer())
 		return;
 
-	CBasePlayerWeapon *pCurrentWeapon = static_cast<CBasePlayerWeapon *>(pLocalPlayer->m_pActiveItem);
+	CBasePlayerWeapon *pCurrentWeapon = pLocalPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
 	if (!pCurrentWeapon || !pCurrentWeapon->IsWeapon())
 		return;
 
@@ -2747,8 +2747,8 @@ void CCSTutor::CheckBuyZoneMessages()
 	if (!pLocalPlayer || m_currentlyShownMessageID == BUY_TIME_BEGIN)
 		return;
 
-	CBasePlayerWeapon *pPrimaryWeapon = static_cast<CBasePlayerWeapon *>(pLocalPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]);
-	CBasePlayerWeapon *pSecondaryWeapon = static_cast<CBasePlayerWeapon *>(pLocalPlayer->m_rgpPlayerItems[PISTOL_SLOT]);
+	CBasePlayerWeapon *pPrimaryWeapon = pLocalPlayer->m_rghPlayerItems[PRIMARY_WEAPON_SLOT].Get<CBasePlayerWeapon>();
+	CBasePlayerWeapon *pSecondaryWeapon = pLocalPlayer->m_rghPlayerItems[PISTOL_SLOT].Get<CBasePlayerWeapon>();
 
 	if (pPrimaryWeapon)
 	{

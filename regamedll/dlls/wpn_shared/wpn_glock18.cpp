@@ -75,9 +75,9 @@ BOOL CGLOCK18::Deploy()
 	m_flAccuracy = 0.9f;
 	m_fMaxSpeed = GLOCK18_MAX_SPEED;
 
-	m_pPlayer->m_bShieldDrawn = false;
+	m_hPlayer->m_bShieldDrawn = false;
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 	{
 		m_iWeaponState &= ~WPNSTATE_GLOCK18_BURST_MODE;
 		return DefaultDeploy("models/shield/v_shield_glock18.mdl", "models/shield/p_shield_glock18.mdl", GLOCK18_SHIELD_DRAW, "shieldgun", UseDecrement() != FALSE);
@@ -99,12 +99,12 @@ void CGLOCK18::SecondaryAttack()
 
 	if (m_iWeaponState & WPNSTATE_GLOCK18_BURST_MODE)
 	{
-		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_SemiAuto");
+		ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#Switch_To_SemiAuto");
 		m_iWeaponState &= ~WPNSTATE_GLOCK18_BURST_MODE;
 	}
 	else
 	{
-		ClientPrint(m_pPlayer->pev, HUD_PRINTCENTER, "#Switch_To_BurstFire");
+		ClientPrint(m_hPlayer->pev, HUD_PRINTCENTER, "#Switch_To_BurstFire");
 		m_iWeaponState |= WPNSTATE_GLOCK18_BURST_MODE;
 	}
 
@@ -115,15 +115,15 @@ void CGLOCK18::PrimaryAttack()
 {
 	if (m_iWeaponState & WPNSTATE_GLOCK18_BURST_MODE)
 	{
-		if (!(m_pPlayer->pev->flags & FL_ONGROUND))
+		if (!(m_hPlayer->pev->flags & FL_ONGROUND))
 		{
 			GLOCK18Fire(1.2 * (1 - m_flAccuracy), 0.5, TRUE);
 		}
-		else if (m_pPlayer->pev->velocity.Length2D() > 0)
+		else if (m_hPlayer->pev->velocity.Length2D() > 0)
 		{
 			GLOCK18Fire(0.185 * (1 - m_flAccuracy), 0.5, TRUE);
 		}
-		else if (m_pPlayer->pev->flags & FL_DUCKING)
+		else if (m_hPlayer->pev->flags & FL_DUCKING)
 		{
 			GLOCK18Fire(0.095 * (1 - m_flAccuracy), 0.5, TRUE);
 		}
@@ -134,15 +134,15 @@ void CGLOCK18::PrimaryAttack()
 	}
 	else
 	{
-		if (!(m_pPlayer->pev->flags & FL_ONGROUND))
+		if (!(m_hPlayer->pev->flags & FL_ONGROUND))
 		{
 			GLOCK18Fire(1.0 * (1 - m_flAccuracy), 0.2, FALSE);
 		}
-		else if (m_pPlayer->pev->velocity.Length2D() > 0)
+		else if (m_hPlayer->pev->velocity.Length2D() > 0)
 		{
 			GLOCK18Fire(0.165 * (1 - m_flAccuracy), 0.2, FALSE);
 		}
-		else if (m_pPlayer->pev->flags & FL_DUCKING)
+		else if (m_hPlayer->pev->flags & FL_DUCKING)
 		{
 			GLOCK18Fire(0.075 * (1 - m_flAccuracy), 0.2, FALSE);
 		}
@@ -199,25 +199,25 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 
 		if (TheBots)
 		{
-			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer);
+			TheBots->OnEvent(EVENT_WEAPON_FIRED_ON_EMPTY, m_hPlayer);
 		}
 
 		return;
 	}
 
 	m_iClip--;
-	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_hPlayer->pev->effects |= EF_MUZZLEFLASH;
 
 	// player "shoot" animation
-	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
+	m_hPlayer->SetAnimation(PLAYER_ATTACK1);
 
-	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
+	UTIL_MakeVectors(m_hPlayer->pev->v_angle + m_hPlayer->pev->punchangle);
 
 	// non-silenced
-	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
-	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
+	m_hPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	m_hPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
-	vecSrc = m_pPlayer->GetGunPosition();
+	vecSrc = m_hPlayer->GetGunPosition();
 	vecAiming = gpGlobals->v_forward;
 
 #ifdef REGAMEDLL_API
@@ -225,7 +225,7 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 #else
 	float flBaseDamage = GLOCK18_DAMAGE;
 #endif
-	vecDir = m_pPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_9MM, flBaseDamage, GLOCK18_RANGE_MODIFER, m_pPlayer->pev, true, m_pPlayer->random_seed);
+	vecDir = m_hPlayer->FireBullets3(vecSrc, vecAiming, flSpread, 8192, 1, BULLET_PLAYER_9MM, flBaseDamage, GLOCK18_RANGE_MODIFER, m_hPlayer->pev, true, m_hPlayer->random_seed);
 
 #ifdef CLIENT_WEAPONS
 	flag = FEV_NOTHOST;
@@ -233,15 +233,15 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 	flag = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
-		int(m_pPlayer->pev->punchangle.x * 100), int(m_pPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
+	PLAYBACK_EVENT_FULL(flag, m_hPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
+		int(m_hPlayer->pev->punchangle.x * 100), int(m_hPlayer->pev->punchangle.y * 100), m_iClip == 0, FALSE);
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if (!m_iClip && m_hPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
-		m_pPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
+		m_hPlayer->SetSuitUpdate("!HEV_AMO0", SUIT_SENTENCE, SUIT_REPEAT_OK);
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.5f;
@@ -259,10 +259,10 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 void CGLOCK18::Reload()
 {
 	int iResult;
-	if (m_pPlayer->ammo_9mm <= 0)
+	if (m_hPlayer->ammo_9mm <= 0)
 		return;
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 		iResult = GLOCK18_SHIELD_RELOAD;
 	else if (RANDOM_LONG(0, 1))
 		iResult = GLOCK18_RELOAD;
@@ -271,7 +271,7 @@ void CGLOCK18::Reload()
 
 	if (DefaultReload(iMaxClip(), iResult, GLOCK18_RELOAD_TIME))
 	{
-		m_pPlayer->SetAnimation(PLAYER_RELOAD);
+		m_hPlayer->SetAnimation(PLAYER_RELOAD);
 		m_flAccuracy = 0.9;
 	}
 }
@@ -282,14 +282,14 @@ void CGLOCK18::WeaponIdle()
 	float flRand;
 
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
+	m_hPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
 	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 	{
 		return;
 	}
 
-	if (m_pPlayer->HasShield())
+	if (m_hPlayer->HasShield())
 	{
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
 

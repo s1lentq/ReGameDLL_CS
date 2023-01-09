@@ -1061,10 +1061,10 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 	if (pPlayer->HasShield() && iWeapon == WEAPON_SHIELDGUN)
 		return false;
 
-	if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT] && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
+	if (pPlayer->m_rghPlayerItems[PISTOL_SLOT] && pPlayer->m_rghPlayerItems[PISTOL_SLOT]->m_iId == WEAPON_ELITE && iWeapon == WEAPON_SHIELDGUN)
 		return false;
 
-	if (pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT] && pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]->m_iId == iWeapon)
+	if (pPlayer->m_rghPlayerItems[PRIMARY_WEAPON_SLOT] && pPlayer->m_rghPlayerItems[PRIMARY_WEAPON_SLOT]->m_iId == iWeapon)
 	{
 		if (g_bClientPrintEnable)
 		{
@@ -1074,7 +1074,7 @@ bool CanBuyThis(CBasePlayer *pPlayer, int iWeapon)
 		return false;
 	}
 
-	if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT] && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == iWeapon)
+	if (pPlayer->m_rghPlayerItems[PISTOL_SLOT] && pPlayer->m_rghPlayerItems[PISTOL_SLOT]->m_iId == iWeapon)
 	{
 		if (g_bClientPrintEnable)
 		{
@@ -2317,19 +2317,19 @@ bool BuyAmmo(CBasePlayer *pPlayer, int nSlot, bool bBlinkMoney)
 	// nSlot == 1 : Primary weapons
 	// nSlot == 2 : Secondary weapons
 
-	CBasePlayerItem *pItem = pPlayer->m_rgpPlayerItems[nSlot];
+	CBasePlayerItem *pItem = pPlayer->m_rghPlayerItems[nSlot].GetPtr();
 
 	if (pPlayer->HasShield())
 	{
-		if (pPlayer->m_rgpPlayerItems[PISTOL_SLOT])
-			pItem = pPlayer->m_rgpPlayerItems[PISTOL_SLOT];
+		if (pPlayer->m_rghPlayerItems[PISTOL_SLOT])
+			pItem = pPlayer->m_rghPlayerItems[PISTOL_SLOT];
 	}
 
 	if (pItem)
 	{
 		while (BuyGunAmmo(pPlayer, pItem, bBlinkMoney))
 		{
-			pItem = pItem->m_pNext;
+			pItem = pItem->m_hNext.GetPtr();
 
 			if (!pItem)
 			{
@@ -3409,7 +3409,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				// player is dropping an item.
 				if (pPlayer->HasShield())
 				{
-					if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->m_iId == WEAPON_C4)
+					if (pPlayer->m_hActiveItem && pPlayer->m_hActiveItem->m_iId == WEAPON_C4)
 					{
 						pPlayer->DropPlayerItem("weapon_c4");
 					}
@@ -4797,11 +4797,11 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 	// go through all of the weapons and make a list of the ones to pack
 	for (int i = 0; i < MAX_ITEM_TYPES; i++)
 	{
-		auto pPlayerItem = pPlayer->m_rgpPlayerItems[i];
+		CBasePlayerItem *pPlayerItem = pPlayer->m_rghPlayerItems[i].GetPtr();
 		while (pPlayerItem)
 		{
 			// there's a weapon here. Should I pack it?
-			auto weapon = (CBasePlayerWeapon *)pPlayerItem->GetWeaponPtr();
+			CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(pPlayerItem->GetWeaponPtr());
 			if (weapon && weapon->UseDecrement())
 			{
 				// Get The ID
@@ -4835,7 +4835,7 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 				}
 			}
 
-			pPlayerItem = pPlayerItem->m_pNext;
+			pPlayerItem = pPlayerItem->m_hNext.GetPtr();
 		}
 	}
 #else
@@ -4944,12 +4944,12 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			cd->iuser3 = iUser3;
 		}
 
-		if (pPlayer->m_pActiveItem)
+		if (pPlayer->m_hActiveItem)
 		{
 			ItemInfo II;
 			Q_memset(&II, 0, sizeof(II));
 
-			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
+			CBasePlayerWeapon *weapon = pPlayer->m_hActiveItem.Get<CBasePlayerWeapon>();
 			if (weapon && weapon->UseDecrement() &&
 #ifdef REGAMEDLL_API
 				weapon->CSPlayerItem()->GetItemInfo(&II)
