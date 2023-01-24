@@ -831,9 +831,11 @@ extern CGameRules DLLEXPORT *g_pGameRules;
 
 #ifdef REGAMEDLL_API
 CGameRules *InstallGameRules_OrigFunc();
+void FreeGameRules_OrigFunc(CGameRules **pGameRules);
 #endif
 
 CGameRules *InstallGameRules();
+void FreeGameRules(CGameRules **pGameRules);
 
 // Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()
