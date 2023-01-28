@@ -520,6 +520,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_JoiningThink;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_JoiningThink;
 
+// CBasePlayer::HandlePlayerFlinch hook
+typedef IHookChainClass<void, class CBasePlayer, class CBasePlayer*, int, float&> IReGameHook_CBasePlayer_HandlePlayerFlinch;
+typedef IHookChainRegistryClass<void, class CBasePlayer, class CBasePlayer*, int, float&> IReGameHookRegistry_CBasePlayer_HandlePlayerFlinch;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -653,6 +657,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
+
+	virtual IReGameHookRegistry_CBasePlayer_HandlePlayerFlinch* CBasePlayer_HandlePlayerFlinch() = 0;
 };
 
 struct ReGameFuncs_t {

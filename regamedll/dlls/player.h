@@ -444,6 +444,7 @@ public:
 	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
 	void DeathSound_OrigFunc();
 	void JoiningThink_OrigFunc();
+	void HandlePlayerFlinch_OrigFunc(CBasePlayer* pAttack, int iGunType, FloatRef flDamage);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -643,6 +644,8 @@ public:
 	void UseEmpty();
 	void DropIdlePlayer(const char *reason);
 	bool Kill();
+
+	void HandlePlayerFlinch(CBasePlayer* pAttack, int iGunType, float flDamage);
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>
