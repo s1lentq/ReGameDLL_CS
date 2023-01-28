@@ -816,6 +816,35 @@ void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, HandlePlayerFlinch, (CBasePlayer* pAttack, int iGunType, float flDamage), pAttack, iGunType, flDamage)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(HandlePlayerFlinch)(CBasePlayer* pAttack, int iGunType, FloatRef flDamage)
+{
+	if (!ShouldDoLargeFlinch(m_LastHitGroup, iGunType))
+	{
+		m_flVelocityModifier = 0.5f;
+
+		if (m_LastHitGroup == HITGROUP_HEAD)
+			m_bHighDamage = (flDamage > 60);
+		else
+			m_bHighDamage = (flDamage > 20);
+
+		SetAnimation(PLAYER_FLINCH);
+	}
+	else
+	{
+		if (pev->velocity.Length() < 300)
+		{
+			Vector attack_velocity = (pev->origin - pAttack->pev->origin).Normalize() * 170;
+			pev->velocity = pev->velocity + attack_velocity;
+
+			m_flVelocityModifier = 0.65f;
+		}
+
+		SetAnimation(PLAYER_LARGE_FLINCH);
+	}
+}
+
 LINK_HOOK_CLASS_CHAIN(BOOL, CBasePlayer, TakeDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType), pevInflictor, pevAttacker, flDamage, bitsDamageType)
 
 // Take some damage.
@@ -1128,29 +1157,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			}
 		}
 
-		if (!ShouldDoLargeFlinch(m_LastHitGroup, iGunType))
-		{
-			m_flVelocityModifier = 0.5f;
-
-			if (m_LastHitGroup == HITGROUP_HEAD)
-				m_bHighDamage = (flDamage > 60);
-			else
-				m_bHighDamage = (flDamage > 20);
-
-			SetAnimation(PLAYER_FLINCH);
-		}
-		else
-		{
-			if (pev->velocity.Length() < 300)
-			{
-				Vector attack_velocity = (pev->origin - pAttack->pev->origin).Normalize() * 170;
-				pev->velocity = pev->velocity + attack_velocity;
-
-				m_flVelocityModifier = 0.65f;
-			}
-
-			SetAnimation(PLAYER_LARGE_FLINCH);
-		}
+		HandlePlayerFlinch(pAttack, iGunType, flDamage);
 	}
 
 	// keep track of amount of damage last sustained

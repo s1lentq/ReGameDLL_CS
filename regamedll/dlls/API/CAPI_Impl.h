@@ -641,6 +641,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_JoiningThink;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_JoiningThink;
 
+// CBasePlayer::HandlePlayerFlinch hook
+typedef IHookChainClassImpl<void, CBasePlayer, class CBasePlayer*, int, float&> CReGameHook_CBasePlayer_HandlePlayerFlinch;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer, class CBasePlayer*, int, float&> CReGameHookRegistry_CBasePlayer_HandlePlayerFlinch;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -774,6 +778,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
 
+	CReGameHookRegistry_CBasePlayer_HandlePlayerFlinch m_CBasePlayer_HandlePlayerFlinch;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -904,6 +910,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
+
+	virtual IReGameHookRegistry_CBasePlayer_HandlePlayerFlinch* CBasePlayer_HandlePlayerFlinch();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

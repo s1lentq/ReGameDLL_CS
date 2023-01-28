@@ -204,6 +204,8 @@ GAMEHOOK_REGISTRY(CBasePlayer_Pain);
 GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
 GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
 
+GAMEHOOK_REGISTRY(CBasePlayer_HandlePlayerFlinch);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
