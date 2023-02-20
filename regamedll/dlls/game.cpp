@@ -1,4 +1,5 @@
 #include "precompiled.h"
+#include "version/appversion.h"
 
 cvar_t *g_pskill          = nullptr;
 cvar_t *g_psv_gravity     = nullptr;
@@ -214,6 +215,7 @@ void GameDLL_SwapTeams_f()
 	{
 		CVAR_SET_FLOAT("sv_restartround", value);
 	}
+
 }
 
 #endif // REGAMEDLL_ADD

@@ -742,6 +742,7 @@ public:
 	bool m_bLevelInitialized;
 	bool m_bRoundTerminating;
 	bool m_bCompleteReset;					// Set to TRUE to have the scores reset next time round restarts
+	bool m_bSwapped;
 	float m_flRequiredEscapeRatio;
 	int m_iNumEscapers;
 	int m_iHaveEscaped;

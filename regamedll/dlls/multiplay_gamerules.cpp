@@ -394,6 +394,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_tmNextPeriodicThink = 0;
 	m_bGameStarted = false;
 	m_bCompleteReset = false;
+	m_bSwapped = false;
 	m_flRequiredEscapeRatio = 0.5;
 	m_iNumEscapers = 0;
 
@@ -1530,6 +1531,9 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 	// Swap Team victories
 	SWAP(m_iNumTerroristWins, m_iNumCTWins);
 
+	// Prevent reset of player/team scores
+	m_bSwapped = true;
+
 	// Update the clients team score
 	UpdateTeamScores();
 }
@@ -1796,27 +1800,31 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 		}
 
 		// Reset score info
-		m_iNumTerroristWins = 0;
-		m_iNumCTWins = 0;
-		m_iNumConsecutiveTerroristLoses = 0;
-		m_iNumConsecutiveCTLoses = 0;
+		if (!m_bSwapped) {
+			m_iNumTerroristWins = 0;
+			m_iNumCTWins = 0;
+			m_iNumConsecutiveTerroristLoses = 0;
+			m_iNumConsecutiveCTLoses = 0;
+		}
 
 		// Reset team scores
 		UpdateTeamScores();
 
 		// Reset the player stats
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-			if (pPlayer && !FNullEnt(pPlayer->pev))
+		if (!m_bSwapped) {
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
 			{
-				pPlayer->Reset();
+				CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+				if (pPlayer && !FNullEnt(pPlayer->pev))
+				{
+					pPlayer->Reset();
+				}
 			}
-		}
 
-		if (TheBots)
-		{
-			TheBots->OnEvent(EVENT_NEW_MATCH);
+			if (TheBots)
+			{
+				TheBots->OnEvent(EVENT_NEW_MATCH);
+			}
 		}
 	}
 
@@ -1960,11 +1968,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 		m_iAccountTerrorist = m_iAccountCT = 0;
 
 		// We are starting fresh. So it's like no one has ever won or lost.
-		m_iNumTerroristWins = 0;
-		m_iNumCTWins = 0;
-		m_iNumConsecutiveTerroristLoses = 0;
-		m_iNumConsecutiveCTLoses = 0;
-		m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
+		if (!m_bSwapped) {
+			m_iNumTerroristWins = 0;
+			m_iNumCTWins = 0;
+			m_iNumConsecutiveTerroristLoses = 0;
+			m_iNumConsecutiveCTLoses = 0;
+			m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
+		}
 	}
 
 #ifdef REGAMEDLL_FIXES
@@ -2077,6 +2087,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+	m_bSwapped = false;
+	UpdateTeamScores();
 
 #ifdef REGAMEDLL_ADD
 	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
