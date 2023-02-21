@@ -212,6 +212,7 @@ void GameDLL_SwapTeams_f()
 
 	if (value > 0.0f)
 	{
+		g_bSwappedTeams = true;
 		CVAR_SET_FLOAT("sv_restartround", value);
 	}
 }

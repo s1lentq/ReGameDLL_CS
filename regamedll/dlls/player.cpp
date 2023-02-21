@@ -5881,8 +5881,10 @@ int CBasePlayer::Restore(CRestore &restore)
 
 void CBasePlayer::Reset()
 {
-	pev->frags = 0;
-	m_iDeaths = 0;
+	if (!g_bSwappedTeams) {
+		pev->frags = 0;
+		m_iDeaths = 0;
+	}
 
 #ifndef REGAMEDLL_ADD
 	m_iAccount = 0;

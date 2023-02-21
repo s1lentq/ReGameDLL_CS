@@ -1778,8 +1778,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 			m_flTimeLimit = gpGlobals->time + (timelimit.value * 60);
 
 		// Reset total # of rounds played
-		m_iTotalRoundsPlayed = 0;
-		m_iMaxRounds = int(CVAR_GET_FLOAT("mp_maxrounds"));
+		if (!g_bSwappedTeams)
+		{
+			m_iTotalRoundsPlayed = 0;
+			m_iMaxRounds = int(CVAR_GET_FLOAT("mp_maxrounds"));
+		}
 
 		if (m_iMaxRounds < 0)
 		{
@@ -1796,10 +1799,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 		}
 
 		// Reset score info
-		m_iNumTerroristWins = 0;
-		m_iNumCTWins = 0;
-		m_iNumConsecutiveTerroristLoses = 0;
-		m_iNumConsecutiveCTLoses = 0;
+		if (!g_bSwappedTeams)
+		{
+			m_iNumTerroristWins = 0;
+			m_iNumCTWins = 0;
+			m_iNumConsecutiveTerroristLoses = 0;
+			m_iNumConsecutiveCTLoses = 0;
+		}
 
 		// Reset team scores
 		UpdateTeamScores();
@@ -1960,10 +1966,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 		m_iAccountTerrorist = m_iAccountCT = 0;
 
 		// We are starting fresh. So it's like no one has ever won or lost.
-		m_iNumTerroristWins = 0;
-		m_iNumCTWins = 0;
-		m_iNumConsecutiveTerroristLoses = 0;
-		m_iNumConsecutiveCTLoses = 0;
+		if (!g_bSwappedTeams)
+		{
+			m_iNumTerroristWins = 0;
+			m_iNumCTWins = 0;
+			m_iNumConsecutiveTerroristLoses = 0;
+			m_iNumConsecutiveCTLoses = 0;
+		}
 		m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
 	}
 
@@ -2077,6 +2086,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+	g_bSwappedTeams = false;
 
 #ifdef REGAMEDLL_ADD
 	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
