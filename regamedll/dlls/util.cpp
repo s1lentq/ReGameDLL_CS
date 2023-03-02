@@ -850,13 +850,21 @@ void UTIL_ShowMessageAll(const char *pString, bool isHint)
 
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, edict_t *pentIgnore, TraceResult *ptr)
 {
+#ifdef REGAMEDLL_FIXES
+	TRACE_LINE(vecStart, vecEnd, igmon, pentIgnore, ptr);
+#else
 	TRACE_LINE(vecStart, vecEnd, (igmon == ignore_monsters), pentIgnore, ptr);
+#endif
 }
 
 // OVERLOAD
 void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr)
 {
+#ifdef REGAMEDLL_FIXES
+	TRACE_LINE(vecStart, vecEnd, igmon | (ignoreGlass ? 0x100 : 0), pentIgnore, ptr);
+#else
 	TRACE_LINE(vecStart, vecEnd, (igmon == ignore_monsters) | (ignoreGlass ? 0x100 : 0), pentIgnore, ptr);
+#endif
 }
 
 void UTIL_TraceHull(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr)
