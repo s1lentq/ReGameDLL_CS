@@ -95,11 +95,8 @@
 
 // Goes into globalvars_t.trace_flags
 #define FTRACE_SIMPLEBOX            BIT(0)  // Traceline with a simple box
-// Custom flags that we can retrive in pfnShouldCollide
-#define FTRACE_PUSH_ENTITY			BIT(1)
-#define FTRACE_PHYSICS_STEP			BIT(2)
-#define FTRACE_TOSS					BIT(3)
 
+// Custom flags that we can retrive in pfnShouldCollide
 // Starting from BIT(16) to reserve space for more flags for Engine
 #define FTRACE_BULLET				BIT(16)
 #define FTRACE_FLASH				BIT(17)
