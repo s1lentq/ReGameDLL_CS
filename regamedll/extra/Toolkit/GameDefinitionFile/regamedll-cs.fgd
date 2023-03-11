@@ -2272,10 +2272,6 @@
 	]
 ]
 
-@SolidClass base(Trigger) = trigger_bomb_reset  : "Trigger bomb reset" 
-[
-]
-
 // Function entities
 @SolidClass = func_bomb_target : "Bomb target zone"
 [
