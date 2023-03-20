@@ -516,6 +516,21 @@ EXT_FUNC bool CCSPlayer::HintMessageEx(const char *pMessage, float duration, boo
 	return BasePlayer()->HintMessageEx(pMessage, duration, bDisplayIfPlayerDead, bOverride);
 }
 
+EXT_FUNC void CCSPlayer::Reset()
+{
+	BasePlayer()->Reset();
+}
+
+EXT_FUNC void CCSPlayer::OnSpawnEquip(bool addDefault, bool equipGame)
+{
+	BasePlayer()->OnSpawnEquip(addDefault, equipGame);
+}
+
+EXT_FUNC void CCSPlayer::SetScoreboardAttributes(CBasePlayer *destination)
+{
+	BasePlayer()->SetScoreboardAttributes(destination);
+}
+
 EXT_FUNC bool CCSPlayer::CheckActivityInGame()
 {
 	const CBasePlayer* pPlayer = BasePlayer();
@@ -528,7 +543,7 @@ EXT_FUNC bool CCSPlayer::CheckActivityInGame()
 	return (fabs(deltaYaw) >= 0.1f && fabs(deltaPitch) >= 0.1f);
 }
 
-void CCSPlayer::Reset()
+void CCSPlayer::ResetVars()
 {
 	m_szModel[0] = '\0';
 

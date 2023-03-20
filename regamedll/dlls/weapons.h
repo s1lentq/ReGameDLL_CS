@@ -483,9 +483,6 @@ public:
 	void SetModel_OrigFunc(const char *pszModelName);
 #endif
 
-	void SetLastValidHeldC4Position(const Vector &vecPositon) { m_vecLastValidPlayerHeldC4Position = vecPositon; }
-	void ResetToLastValidPlayerHeldC4Position();
-
 public:
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -494,9 +491,6 @@ public:
 	int m_rgAmmo[MAX_AMMO_SLOTS];
 	int m_cAmmoTypes;
 	bool m_bIsBomb;
-
-private:
-	Vector m_vecLastValidPlayerHeldC4Position;
 };
 
 
@@ -849,7 +843,6 @@ private:
 
 const float C4_MAX_SPEED      = 250.0f;
 const float C4_ARMING_ON_TIME = 3.0f;
-constexpr float WEAPON_C4_UPDATE_LAST_VALID_PLAYER_HELD_POSITION_INTERVAL = 0.2f;
 
 enum c4_e
 {
@@ -869,8 +862,6 @@ public:
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
 	virtual void Holster(int skiplocal);
-	virtual void AttachToPlayer(CBasePlayer* pPlayer);
-	virtual void Think();
 	virtual float GetMaxSpeed();
 	virtual int iItemSlot() { return C4_SLOT; }
 	virtual void PrimaryAttack();
@@ -884,8 +875,6 @@ public:
 	#endif
 	}
 
-	Vector GetLastValidHeldPosition() const { return m_vecLastValidPlayerHeldPosition; }
-
 public:
 	bool m_bStartedArming;
 	bool m_bBombPlacedAnimation;
@@ -893,7 +882,6 @@ public:
 
 private:
 	bool m_bHasShield;
-	Vector m_vecLastValidPlayerHeldPosition;
 };
 
 

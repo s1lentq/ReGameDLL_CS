@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 21
+#define REGAMEDLL_API_VERSION_MINOR 22
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -520,6 +520,10 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_JoiningThink;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_JoiningThink;
 
+// FreeGameRules hook
+typedef IHookChain<void, class CGameRules **> IReGameHook_FreeGameRules;
+typedef IHookChainRegistry<void, class CGameRules **> IReGameHookRegistry_FreeGameRules;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -653,6 +657,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
+
+	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules() = 0;
 };
 
 struct ReGameFuncs_t {
@@ -670,6 +676,9 @@ struct ReGameFuncs_t {
 	class CGrenade *(*PlantBomb)(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity);
 	class CGib *(*SpawnHeadGib)(entvars_t* pevVictim);
 	void (*SpawnRandomGibs)(entvars_t* pevVictim, int cGibs, int human);
+	void (*UTIL_RestartOther)(const char *szClassname);
+	void (*UTIL_ResetEntities)();
+	void (*UTIL_RemoveOther)(const char *szClassname, int nCount);
 };
 
 class IReGameApi {
