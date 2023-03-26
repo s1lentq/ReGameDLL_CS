@@ -107,6 +107,8 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
 | mp_hostages_rescued_ratio          | 1.0     | 0.0 | 1.0          | Ratio of hostages rescued to win the round. |
 | mp_legacy_vehicle_block            | 1       | 0   | 1            | Legacy func_vehicle behavior when blocked by another entity.<br/>`0` New behavior <br/>`1` Legacy behavior |
+| mp_smoke_thickness	             | 1       | 1   | 5            | Smoke thinkess effect when SG grenade explode <br/>`1` 1 smoke grenade "Default" <br/>`2` 2 smoke grenades <br/>`3` 3 smoke grenades <br/>`4` 4 smoke grenades <br/>`5` 5 smoke grenades <br/>`NOTE`: Not recomended for clients with old hardware |
+
 </details>
 
 ## How to install zBot for CS 1.6?

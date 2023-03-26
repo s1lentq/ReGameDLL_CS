@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\regamedll\\dlls"
+  ],
+  "SelectedNode": "\\regamedll",
+  "PreviewInSolutionExplorer": false,
+  "OutputFoldersPerTargetSystem": {
+    "Máquina local": [
+      "out\\build\\x64-Debug",
+      "out\\install\\x64-Debug"
+    ]
+  }
+}

@@ -600,7 +600,29 @@ void CGrenade::__API_HOOK(SG_Detonate)()
 	}
 
 	m_bDetonated = true;
-	PLAYBACK_EVENT_FULL(0, nullptr, m_usEvent, 0, pev->origin, (float *)&g_vecZero, 0, 0, 0, 1, m_bLightSmoke, FALSE);
+
+#ifdef REGAMEDLL_ADD
+
+	//Idea taken from https://pastebin.com/aZXXZbiP
+
+	if ((int)smoke_thickness.value > 1 && (int)smoke_thickness.value <= 5)
+	{
+		for (int i = 0; i < (int)smoke_thickness.value; i++)
+		{
+			PLAYBACK_EVENT_FULL(0, nullptr, m_usEvent, 0, pev->origin, (float*)&g_vecZero, 0, 0, 0, 1, m_bLightSmoke, FALSE);
+		}
+	}
+	else
+	{
+		PLAYBACK_EVENT_FULL(0, nullptr, m_usEvent, 0, pev->origin, (float*)&g_vecZero, 0, 0, 0, 1, m_bLightSmoke, FALSE);
+	}
+
+#else
+
+	PLAYBACK_EVENT_FULL(0, nullptr, m_usEvent, 0, pev->origin, (float*)&g_vecZero, 0, 0, 0, 1, m_bLightSmoke, FALSE);
+
+#endif
+
 	m_vSmokeDetonate = pev->origin;
 
 	pev->velocity.x = RANDOM_FLOAT(-175, 175);
