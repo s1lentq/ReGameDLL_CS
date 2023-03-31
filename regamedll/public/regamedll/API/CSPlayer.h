@@ -100,8 +100,11 @@ public:
 	virtual void SetSpawnProtection(float flProtectionTime);
 	virtual void RemoveSpawnProtection();
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
+	virtual void Reset();
+	virtual void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
+	virtual void SetScoreboardAttributes(CBasePlayer *destination = nullptr);
 
-	void Reset();
+	void ResetVars();
 
 	void OnSpawn();
 	void OnKilled();

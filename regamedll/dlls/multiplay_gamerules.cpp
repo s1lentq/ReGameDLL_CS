@@ -3916,7 +3916,9 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled,
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-
+#ifdef REGAMEDLL_FIXES 
+	pVictim->pev->flags &= ~FL_FROZEN;
+#endif
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 	pVictim->m_iDeaths++;
 	pVictim->m_bNotKilled = false;
@@ -3946,7 +3948,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	}
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
-
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{

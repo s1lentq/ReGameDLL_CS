@@ -727,7 +727,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	}
 
 #ifdef REGAMEDLL_API
-	pPlayer->CSPlayer()->Reset();
+	pPlayer->CSPlayer()->ResetVars();
 #endif
 
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");

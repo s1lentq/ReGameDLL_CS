@@ -71,7 +71,11 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	PlantBomb_api,
 
 	SpawnHeadGib_api,
-	SpawnRandomGibs_api
+	SpawnRandomGibs_api,
+
+	UTIL_RestartOther_api,
+	UTIL_ResetEntities_api,
+	UTIL_RemoveOther_api,
 };
 
 GAMEHOOK_REGISTRY(CBasePlayer_Spawn);
@@ -204,6 +208,8 @@ GAMEHOOK_REGISTRY(CBasePlayer_Pain);
 GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
 GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
 
+GAMEHOOK_REGISTRY(FreeGameRules);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
@@ -294,6 +300,19 @@ EXT_FUNC void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttack
 EXT_FUNC void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
+}
+
+EXT_FUNC void UTIL_RestartOther_api(const char *szClassname) {
+	UTIL_RestartOther(szClassname);
+}
+
+EXT_FUNC void UTIL_ResetEntities_api() {
+	UTIL_ResetEntities();
+}
+
+EXT_FUNC void UTIL_RemoveOther_api(const char *szClassname, int nCount)
+{
+	UTIL_RemoveOther(szClassname, nCount);
 }
 
 EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VRE_GAMEDLL_API_VERSION);
