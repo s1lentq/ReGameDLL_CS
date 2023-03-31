@@ -100,6 +100,7 @@
 // Starting from BIT(16) to reserve space for more flags for Engine
 #define FTRACE_BULLET				BIT(16)
 #define FTRACE_FLASH				BIT(17)
+#define FTRACE_KNIFE				BIT(18)
 
 // walkmove modes
 #define WALKMOVE_NORMAL             0 // normal walkmove

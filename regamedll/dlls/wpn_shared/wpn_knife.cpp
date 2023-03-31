@@ -121,6 +121,9 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 	distance = 1e6f;
 
 	vecHullEnd = vecSrc + ((vecHullEnd - vecSrc) * 2);
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecHullEnd, dont_ignore_monsters, pEntity, &tmpTrace);
 
 	if (tmpTrace.flFraction < 1.0f)
@@ -139,6 +142,9 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 				vecEnd.y = vecHullEnd.y + minmaxs[j][1];
 				vecEnd.z = vecHullEnd.z + minmaxs[k][2];
 
+#ifdef REGAMEDLL_ADD
+				gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 				UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, pEntity, &tmpTrace);
 
 				if (tmpTrace.flFraction < 1.0f)
@@ -273,11 +279,21 @@ BOOL CKnife::Swing(BOOL fFirst)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecEnd = vecSrc + gpGlobals->v_forward * m_flSwingDistance;
 
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+#ifdef REGAMEDLL_ADD
+		// We manually reset it because Engine doesn't unlike TraceLine
+		gpGlobals->trace_flags = 0;
+#endif
 
 		if (tr.flFraction < 1.0f)
 		{
@@ -451,11 +467,21 @@ BOOL CKnife::Stab(BOOL fFirst)
 	vecSrc = m_pPlayer->GetGunPosition();
 	vecEnd = vecSrc + gpGlobals->v_forward * m_flStabDistance;
 
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+#ifdef REGAMEDLL_ADD
+		// We manually reset it because Engine doesn't unlike TraceLine
+		gpGlobals->trace_flags = 0;
+#endif
 
 		if (tr.flFraction < 1.0f)
 		{
