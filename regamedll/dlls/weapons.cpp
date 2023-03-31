@@ -2032,7 +2032,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 				// there's some ammo of this type.
+#ifndef REGAMEDLL_ADD
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
+#else
+				pPlayer->GiveAmmo(m_rgAmmo[n], STRING(m_rgiszAmmo[n]), m_rgAmmo[n]);
+#endif
 
 				// now empty the ammo from the weaponbox since we just gave it to the player
 				m_rgiszAmmo[n] = iStringNull;
