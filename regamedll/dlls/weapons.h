@@ -870,7 +870,6 @@ public:
 	virtual BOOL Deploy();
 	virtual void Holster(int skiplocal);
 	virtual void AttachToPlayer(CBasePlayer* pPlayer);
-	virtual void Think();
 	virtual float GetMaxSpeed();
 	virtual int iItemSlot() { return C4_SLOT; }
 	virtual void PrimaryAttack();
@@ -884,6 +883,7 @@ public:
 	#endif
 	}
 
+	void EXPORT TrackPlayerHeldPosition();
 	Vector GetLastValidHeldPosition() const { return m_vecLastValidPlayerHeldPosition; }
 
 public:
