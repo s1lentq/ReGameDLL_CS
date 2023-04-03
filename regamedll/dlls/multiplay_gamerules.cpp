@@ -2035,6 +2035,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
+			
+#ifdef REGAMEDLL_ADD
+			FireTargets("game_entity_restart", pPlayer, nullptr, USE_TOGGLE, 0.0);
+#endif
 		}
 
 		// Gooseman : The following code fixes the HUD icon bug
@@ -2073,6 +2077,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 BOOL CHalfLifeMultiplay::IsThereABomber()
@@ -3908,7 +3916,9 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled,
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-
+#ifdef REGAMEDLL_FIXES 
+	pVictim->pev->flags &= ~FL_FROZEN;
+#endif
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 	pVictim->m_iDeaths++;
 	pVictim->m_bNotKilled = false;
@@ -3938,7 +3948,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	}
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
-
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{

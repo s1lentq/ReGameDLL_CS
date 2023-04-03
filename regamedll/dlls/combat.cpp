@@ -26,6 +26,9 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 
 void RadiusFlash_TraceLine_hook(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAttacker, Vector &vecSrc, Vector &vecSpot, TraceResult *tr)
 {
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_FLASH;
+#endif
 	UTIL_TraceLine(vecSrc, vecSpot, dont_ignore_monsters, ENT(pevInflictor), tr);
 }
 

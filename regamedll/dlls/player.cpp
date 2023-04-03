@@ -1292,8 +1292,11 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
 		if (exhaustibleAmmo || packAmmo)
 		{
+#ifndef REGAMEDLL_ADD
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-
+#else
+			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
+#endif
 			if (exhaustibleAmmo)
 			{
 				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
@@ -3862,9 +3865,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(RoundRespawn)()
 
 #ifdef REGAMEDLL_FIXES
 	if (m_bPunishedForTK && pev->health > 0)
-	{
-		ClientKill(ENT(pev));
-	}
+		Kill();
 #endif
 
 }
@@ -4735,7 +4736,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 		{
 			switch (i)
 			{
-			case ITBD_PARALLYZE:
+			case ITBD_PARALYZE:
 				// UNDONE - flag movement as half-speed
 				bDuration = PARALYZE_DURATION;
 				break;
@@ -10248,6 +10249,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
 	{
+		CSPlayer()->m_bSpawnProtectionEffects = true;
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
@@ -10269,12 +10271,11 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
-	if (respawn_immunity_effects.value > 0)
+	if (CSPlayer()->m_bSpawnProtectionEffects)
 	{
-		if (pev->rendermode == kRenderTransAdd &&
-			pev->renderamt == 100.0f)
+		if (pev->rendermode == kRenderTransAdd && pev->renderamt == 100.0f)
 		{
-			pev->renderamt  = 255.0f;
+			pev->renderamt = 255.0f;
 			pev->rendermode = kRenderNormal;
 		}
 
@@ -10282,6 +10283,8 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("suithelmet_full");
 		MESSAGE_END();
+
+		CSPlayer()->m_bSpawnProtectionEffects = false;
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
@@ -10311,4 +10314,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 #else
 	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
 #endif // #ifdef REGAMEDLL_FIXES
+}
+
+bool CBasePlayer::Kill()
+{
+	if (GetObserverMode() != OBS_NONE)
+		return false;
+	
+	if (m_iJoiningState != JOINED)
+		return false;
+	
+	m_LastHitGroup = HITGROUP_GENERIC;
+
+	// have the player kill himself
+	pev->health = 0.0f;
+	Killed(pev, GIB_NEVER);
+
+	if (CSGameRules()->m_pVIP == this)
+		CSGameRules()->m_iConsecutiveVIP = 10;
+	
+	return true;
 }

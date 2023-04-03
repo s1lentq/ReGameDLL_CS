@@ -1039,6 +1039,9 @@ void CBaseEntity::__API_HOOK(FireBullets)(ULONG cShots, VectorRef vecSrc, Vector
 		vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
 		vecEnd = vecSrc + vecDir * flDistance;
 
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_BULLET;
+#endif
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 		tracer = 0;
 
@@ -1182,6 +1185,9 @@ void CBaseEntity::__API_HOOK(FireBuckshots)(ULONG cShots, VectorRef vecSrc, Vect
 		vecDir = vecDirShooting + x * vecSpread.x * vecRight + y * vecSpread.y * vecUp;
 		vecEnd = vecSrc + vecDir * flDistance;
 
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_BULLET;
+#endif
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 		tracer = 0;
 
@@ -1337,6 +1343,10 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 	while (iPenetration != 0)
 	{
 		ClearMultiDamage();
+
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_BULLET;
+#endif
 		UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr);
 
 		if (TheBots && tr.flFraction != 1.0f)

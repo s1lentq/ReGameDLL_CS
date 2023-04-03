@@ -73,7 +73,7 @@ jobs:
 
   testdemos:
     name: 'Test demos'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: s1lentq/testdemos:latest
     needs: [windows]
 
@@ -140,7 +140,7 @@ jobs:
 
   linux:
     name: 'Linux'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: s1lentq/linux86buildtools:latest
 
     steps:
@@ -173,7 +173,11 @@ jobs:
           fi
         shell: bash
 
-      - name: Build using Intel C++ Compiler 19.0
+      - name: Build using Intel C++ Compiler 19.0 (only for release)
+        if: |
+          github.event_name == 'release' &&
+          github.event.action == 'published' &&
+          startsWith(github.ref, 'refs/tags/')
         run: |
           rm -rf build-icc && CC=icc CXX=icpc cmake -B build-icc && cmake --build build-icc -j8
 
@@ -189,7 +193,7 @@ jobs:
       - name: Move files
         run: |
           mkdir -p publish/bin/linux32/cstrike/dlls
-          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so
+          mv build-icc/regamedll/cs.so publish/bin/linux32/cstrike/dlls/cs.so 2>/dev/null || true
           mv build-gcc/regamedll/cs.so publish/cs-gcc.so
           mv regamedll/version/appversion.h publish/appversion.h
           mv dist/ publish/
@@ -221,7 +225,7 @@ jobs:
 
   publish:
     name: 'Publish'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [windows, testdemos, linux]
 
     steps:
