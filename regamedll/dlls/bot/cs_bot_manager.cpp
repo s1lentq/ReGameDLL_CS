@@ -78,7 +78,7 @@ CCSBotManager::CCSBotManager()
 	char *dataPointer = (char *)LOAD_FILE_FOR_ME((char *)filename, &dataLength);
 	if (!dataPointer)
 	{
-		TheBotProfiles->Init("BotProfile.db");
+		TheBotProfiles->Init(cv_bot_profile_db.string);
 	}
 	else
 	{
