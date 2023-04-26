@@ -226,6 +226,14 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 			if (bRemoveAmmo) {
 				pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
+			} else {
+				// These weapons have a unique type of ammo that is used only by them
+				// If a weapon is removed, its ammo is also reduced, unless the ammo can be used by another weapon
+				if (IsGrenadeWeapon(pItem->m_iId) || pItem->m_iId == WEAPON_C4)
+				{
+					if (pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] > 0)
+						pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()]--;
+				}
 			}
 		}
 
