@@ -466,7 +466,7 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 		// 	so killing non player entities have no issue with this exclusion
 		// it also provides a way to call Killed without calling
 		// 	TakeDamage for updating this dumb var, and be able to 
-		// 	alter dmg_inflictor entvar instead (which has no use)
+		// 	alter dmg_inflictor entvar instead (which has almost no use)
 		g_pevLastInflictor = pevInflictor;
 #endif
 		if (bitsDamageType & DMG_ALWAYSGIB)
