@@ -437,6 +437,15 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 		{
 			pev->dmg_inflictor = ENT(pevInflictor);
 		}
+#ifdef REGAMEDLL_FIXES
+		else 
+		{
+			// TakeDamage can be called without inflictor 
+			// and your last inflictor will still remain
+			// cleaning just for safety
+			pev->dmg_inflictor = nullptr; 
+		}
+#endif
 
 		pev->dmg_take += flTake;
 	}
@@ -451,8 +460,15 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 
 	if (pev->health <= 0.0f)
 	{
+#ifndef REGAMEDLL_FIXES
+		// NOTE: use victim's dmg_inflictor entvar instead
+		// g_pevLastInflictor is only used on CBasePlayer::Killed
+		// 	so killing non player entities have no issue with this exclusion
+		// it also provides a way to call Killed without calling
+		// 	TakeDamage for updating this dumb var, and be able to 
+		// 	alter dmg_inflictor entvar instead (which has no use)
 		g_pevLastInflictor = pevInflictor;
-
+#endif
 		if (bitsDamageType & DMG_ALWAYSGIB)
 			Killed(pevAttacker, GIB_ALWAYS);
 
@@ -460,8 +476,9 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 			Killed(pevAttacker, GIB_NEVER);
 		else
 			Killed(pevAttacker, GIB_NORMAL);
-
+#ifndef REGAMEDLL_FIXES
 		g_pevLastInflictor = nullptr;
+#endif
 		return FALSE;
 	}
 	if ((pev->flags & FL_MONSTER) && !FNullEnt(pevAttacker))
