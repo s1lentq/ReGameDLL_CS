@@ -5465,6 +5465,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	pev->dmg_save = 0;
 
 #ifdef REGAMEDLL_FIXES
+	pev->dmg_inflictor = nullptr;
 	pev->watertype = CONTENTS_EMPTY;
 	pev->waterlevel = 0;
 	pev->basevelocity = g_vecZero;	// pushed by trigger_push
@@ -10341,6 +10342,9 @@ bool CBasePlayer::Kill()
 
 	// have the player kill himself
 	pev->health = 0.0f;
+#ifdef REGAMEDLL_FIXES
+	pev->dmg_inflictor = nullptr;
+#endif
 	Killed(pev, GIB_NEVER);
 
 	if (CSGameRules()->m_pVIP == this)
