@@ -492,7 +492,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 			// play wiff or swish sound
 			EMIT_SOUND_DYN(m_pPlayer->edict(), 
 				CHAN_WEAPON, 
-				RANDOM_LONG(0, 1)) ? 
+				RANDOM_LONG(0, 1) ? 
 					"weapons/knife_slash1.wav" : 
 					"weapons/knife_slash2.wav", 
 				VOL_NORM, 
