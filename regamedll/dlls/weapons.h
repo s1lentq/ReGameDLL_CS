@@ -1160,6 +1160,7 @@ const float KNIFE_SWING_DAMAGE      = 15.0f;
 const float KNIFE_SWING_DAMAGE_FAST = 20.0f;
 const float KNIFE_STAB_DISTANCE     = 32.0f;
 const float KNIFE_SWING_DISTANCE    = 48.0f;
+const float KNIFE_BACKSTAB_MULT     = 3.0f;
 
 enum knife_e
 {
@@ -1231,6 +1232,8 @@ private:
 
 	float m_flStabDistance;
 	float m_flSwingDistance;
+
+	float m_flBackStabMult;
 };
 
 

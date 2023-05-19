@@ -50,6 +50,8 @@ void CKnife::Precache()
 
 	m_flStabDistance = KNIFE_STAB_DISTANCE;
 	m_flSwingDistance = KNIFE_SWING_DISTANCE;
+
+	m_flBackStabMult = KNIFE_BACKSTAB_MULT;
 }
 
 int CKnife::GetItemInfo(ItemInfo *p)
@@ -532,10 +534,10 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 			flDot = DotProduct(vec2LOS, gpGlobals->v_forward.Make2D());
 
-			//Triple the damage if we are stabbing them in the back.
+			// Multiply the damage if we are stabbing them in the back.
 			if (flDot > 0.80f)
 			{
-				flDamage *= 3.0f;
+				flDamage *= m_flBackStabMult;
 			}
 		}
 
