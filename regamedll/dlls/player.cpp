@@ -2060,7 +2060,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
 						wasBlind = true;
 
-					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pPlayer, this); // last 2 param swapped to match function definition
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
 				}
 			}
 #endif
