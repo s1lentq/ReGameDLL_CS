@@ -613,6 +613,13 @@ void CONSOLE_ECHO_LOGGED(const char *pszMsg, ...)
 
 void BotPrecache()
 {
+#ifdef REGAMEDLL_FIXES
+	// all resources above are used between navarea, improved bots and tutor
+	// you can run cs1.6 with bots so it's not only limited to czero
+	if(!AreRunningCZero() && !AreBotsAllowed()) 
+		return;
+#endif 
+
 	s_iBeamSprite = PRECACHE_MODEL("sprites/smoke.spr");
 
 	PRECACHE_SOUND("buttons/bell1.wav");
@@ -621,7 +628,12 @@ void BotPrecache()
 	PRECACHE_SOUND("buttons/button11.wav");
 	PRECACHE_SOUND("buttons/latchunlocked2.wav");
 	PRECACHE_SOUND("buttons/lightswitch2.wav");
-	PRECACHE_SOUND("ambience/quail1.wav");
+
+#ifdef REGAMEDLL_FIXES
+	PRECACHE_GENERIC("sound/ambience/quail1.wav");
+#else
+	PRECACHE_SOUND("ambience/quail1.wav"); // not used internally
+#endif
 
 	PRECACHE_SOUND("events/tutor_msg.wav");
 	PRECACHE_SOUND("events/enemy_died.wav");
