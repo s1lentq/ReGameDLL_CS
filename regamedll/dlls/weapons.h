@@ -1232,7 +1232,6 @@ private:
 	unsigned short m_usKnife;
 
 #ifdef REGAMEDLL_API
-	// Extra RegameDLL features
 	float m_flStabBaseDamage;
 	float m_flSwingBaseDamage;
 	float m_flSwingBaseDamage_Fast;
