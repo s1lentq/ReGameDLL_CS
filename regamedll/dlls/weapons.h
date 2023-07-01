@@ -1151,15 +1151,16 @@ public:
 };
 
 
-const float KNIFE_BODYHIT_VOLUME    = 128.0f;
-const float KNIFE_WALLHIT_VOLUME    = 512.0f;
-const float KNIFE_MAX_SPEED         = 250.0f;
-const float KNIFE_MAX_SPEED_SHIELD  = 180.0f;
-const float KNIFE_STAB_DAMAGE       = 65.0f;
-const float KNIFE_SWING_DAMAGE      = 15.0f;
-const float KNIFE_SWING_DAMAGE_FAST = 20.0f;
-const float KNIFE_STAB_DISTANCE     = 32.0f;
-const float KNIFE_SWING_DISTANCE    = 48.0f;
+const float KNIFE_BODYHIT_VOLUME      = 128.0f;
+const float KNIFE_WALLHIT_VOLUME      = 512.0f;
+const float KNIFE_MAX_SPEED           = 250.0f;
+const float KNIFE_MAX_SPEED_SHIELD    = 180.0f;
+const float KNIFE_STAB_DAMAGE         = 65.0f;
+const float KNIFE_SWING_DAMAGE        = 15.0f;
+const float KNIFE_SWING_DAMAGE_FAST   = 20.0f;
+const float KNIFE_STAB_DISTANCE       = 32.0f;
+const float KNIFE_SWING_DISTANCE      = 48.0f;
+const float KNIFE_BACKSTAB_MULTIPLIER = 3.0f;
 
 enum knife_e
 {
@@ -1220,19 +1221,41 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 
+	float KnifeStabDamage() const;
+	float KnifeSwingDamage(bool fast) const;
+	float KnifeStabDistance() const;
+	float KnifeSwingDistance() const;
+	float KnifeBackStabMultiplier() const;
+
 private:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
 
-	// Extra RegameDLL features
+#ifdef REGAMEDLL_API
 	float m_flStabBaseDamage;
 	float m_flSwingBaseDamage;
 	float m_flSwingBaseDamage_Fast;
 
 	float m_flStabDistance;
 	float m_flSwingDistance;
+
+	float m_flBackStabMultiplier;
+#endif
 };
 
+#ifdef REGAMEDLL_API
+inline float CKnife::KnifeStabDamage() const			{ return m_flStabBaseDamage; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? m_flSwingBaseDamage_Fast : m_flSwingBaseDamage; }
+inline float CKnife::KnifeStabDistance() const			{ return m_flStabDistance; }
+inline float CKnife::KnifeSwingDistance() const			{ return m_flSwingDistance; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return m_flBackStabMultiplier; }
+#else 
+inline float CKnife::KnifeStabDamage() const			{ return KNIFE_STAB_DAMAGE; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? KNIFE_SWING_DAMAGE_FAST : KNIFE_SWING_DAMAGE; }
+inline float CKnife::KnifeStabDistance() const			{ return KNIFE_STAB_DISTANCE; }
+inline float CKnife::KnifeSwingDistance() const			{ return KNIFE_SWING_DISTANCE; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return KNIFE_BACKSTAB_MULTIPLIER; }
+#endif // REGAMEDLL_API
 
 const float M249_MAX_SPEED     = 220.0f;
 const float M249_DAMAGE        = 32.0f;
