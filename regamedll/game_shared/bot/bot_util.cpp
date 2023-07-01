@@ -616,9 +616,9 @@ void BotPrecache()
 #ifdef REGAMEDLL_FIXES
 	// all resources above are used between navarea, improved bots and tutor
 	// you can run cs1.6 with bots so it's not only limited to czero
-	if(!AreRunningCZero() && !AreBotsAllowed()) 
+	if (!AreRunningCZero() && !AreBotsAllowed())
 		return;
-#endif 
+#endif
 
 	s_iBeamSprite = PRECACHE_MODEL("sprites/smoke.spr");
 
