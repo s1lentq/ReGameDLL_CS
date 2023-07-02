@@ -1297,7 +1297,14 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 #else
 			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
 #endif
+#ifndef REGAMEDLL_FIXES
+			// by removing ammo ONLY on exhaustible weapons (slot 4 and 5)
+			// you are allowing to duplicate ammo whenever:
+			// (1) you have 2 weapons sharing the same ammo type (e.g. mp5navy and glock)
+			// (2) you are dropping a weapon alive and pickup another (with same ammo type) without ammo
+			// and, logically, you throw your ammo with your gun with packing enabled
 			if (exhaustibleAmmo)
+#endif
 			{
 				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
 			}
@@ -1386,78 +1393,106 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 void CBasePlayer::PackDeadPlayerItems()
 {
 	// get the game rules
-	bool bPackGun = (g_pGameRules->DeadPlayerWeapons(this) != GR_PLR_DROP_GUN_NO);
+	int iPackGun = g_pGameRules->DeadPlayerWeapons(this);
 	bool bPackAmmo = (g_pGameRules->DeadPlayerAmmo(this) != GR_PLR_DROP_AMMO_NO);
 
-	if (bPackGun)
+	if (iPackGun != GR_PLR_DROP_GUN_NO)
 	{
-		bool bShieldDropped = false;
+		bool bSkipPrimSec = false;
 		if (HasShield())
 		{
 			DropShield();
-			bShieldDropped = true;
+			bSkipPrimSec = true;
 		}
 
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = nullptr;
 
-		for (int n = 0; n < MAX_ITEM_TYPES; n++)
+#ifdef REGAMEDLL_ADD 
+		if(iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
 		{
-			// there's a weapon here. Should I pack it?
-			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
-
-			while (pPlayerItem)
+			// check if we've just already dropped our active one 
+			if(!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
-				ItemInfo info;
-				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
-				{
-#ifdef REGAMEDLL_API
-					if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info))
-#else
-					if (pPlayerItem->GetItemInfo(&info))
+				pBestItem = m_pActiveItem;
+
+				// if active item is undroppable, then nothing is dropped
+			}
+
+			// are we allowing nade drop?
+			if((int)nadedrops.value >= 1) 
+			{
+				// goto item loop but skip guns
+				iPackGun = GR_PLR_DROP_GUN_ALL;
+				bSkipPrimSec = true;
+			}
+		}
+
+		if(iPackGun == GR_PLR_DROP_GUN_ALL)
 #endif
+		{
+			for (int n = 0; n < MAX_ITEM_TYPES; n++)
+			{
+				// there's a weapon here. Should I pack it?
+				CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+
+				while (pPlayerItem)
+				{
+					ItemInfo info;
+					if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bSkipPrimSec)
 					{
-						if (info.iWeight > nBestWeight)
+#ifdef REGAMEDLL_API
+						if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info)
+#else
+						if (pPlayerItem->GetItemInfo(&info)
+#endif
+#ifdef REGAMEDLL_FIXES
+							&& pPlayerItem->CanDrop()
+#endif
+							)
 						{
-							nBestWeight = info.iWeight;
-							pBestItem = pPlayerItem;
+							if (info.iWeight > nBestWeight)
+							{
+								nBestWeight = info.iWeight;
+								pBestItem = pPlayerItem;
+							}
 						}
 					}
-				}
-				// drop a grenade after death
-				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
-				{
-					if (AreRunningCZero())
+					// drop a grenade after death
+					else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 					{
+						if (AreRunningCZero())
+						{
 
 #ifdef REGAMEDLL_FIXES
-						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+							if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
 #endif
-						{
-							PackPlayerItem(this, pPlayerItem, true);
+							{
+								PackPlayerItem(this, pPlayerItem, true);
+							}
 						}
-					}
 #ifdef REGAMEDLL_ADD
-					else
-					{
-						switch ((int)nadedrops.value)
+						else
 						{
-						case 1:
-							PackPlayerNade(this, pPlayerItem, true);
-							break;
-						case 2:
-						{
-							CBasePlayerItem *pNext = pPlayerItem->m_pNext;
-							PackPlayerNade(this, pPlayerItem, true);
-							pPlayerItem = pNext;
-							continue;
+							switch ((int)nadedrops.value)
+							{
+							case 1:
+								PackPlayerNade(this, pPlayerItem, true);
+								break;
+							case 2:
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+								PackPlayerNade(this, pPlayerItem, true);
+								pPlayerItem = pNext;
+								continue;
+							}
+							}
 						}
-						}
-					}
 #endif
-				}
+					}
 
-				pPlayerItem = pPlayerItem->m_pNext;
+					pPlayerItem = pPlayerItem->m_pNext;
+				}
 			}
 		}
 
@@ -8019,7 +8054,11 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 			vecAngles,
 			vecVelocity,
 			CGameRules::GetItemKillDelay(),
-			false);
+#ifdef REGAMEDLL_ADD
+			(int)ammodrop.value >= 2 ? true : 
+#endif
+			false
+			);
 
 		if (!pWeaponBox)
 		{

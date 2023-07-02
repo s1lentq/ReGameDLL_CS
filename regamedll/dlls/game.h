@@ -138,6 +138,8 @@ extern cvar_t maxmoney;
 extern cvar_t round_infinite;
 extern cvar_t hegrenade_penetration;
 extern cvar_t nadedrops;
+extern cvar_t weapondrop;
+extern cvar_t ammodrop;
 extern cvar_t roundrespawn_time;
 extern cvar_t auto_reload_weapons;
 extern cvar_t refill_bpammo_weapons;

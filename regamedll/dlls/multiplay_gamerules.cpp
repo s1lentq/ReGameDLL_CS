@@ -4332,11 +4332,27 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWea
 
 int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	switch((int)weapondrop.value)
+	{
+		case 2: 
+			break;
+		case 1:
+			return GR_PLR_DROP_GUN_ALL; // "ALL" -> the heaviest one
+		default: 
+			return GR_PLR_DROP_GUN_NO;
+	}
+#endif
 	return GR_PLR_DROP_GUN_ACTIVE;
 }
 
 int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if(ammodrop.value == 0.0f)
+		return GR_PLR_DROP_AMMO_NO;
+#endif
+
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 
