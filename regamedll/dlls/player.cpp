@@ -1411,7 +1411,7 @@ void CBasePlayer::PackDeadPlayerItems()
 #ifdef REGAMEDLL_ADD 
 		if(iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
 		{
-			// check if we've just already dropped our active one 
+			// check if we've just already dropped our active gun 
 			if(!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
 				pBestItem = m_pActiveItem;
@@ -1447,7 +1447,7 @@ void CBasePlayer::PackDeadPlayerItems()
 						if (pPlayerItem->GetItemInfo(&info)
 #endif
 #ifdef REGAMEDLL_FIXES
-							&& pPlayerItem->CanDrop()
+							&& pPlayerItem->CanDrop() // needs to be droppable
 #endif
 							)
 						{
