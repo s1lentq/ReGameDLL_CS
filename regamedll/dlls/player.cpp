@@ -8053,7 +8053,7 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 #ifdef REGAMEDLL_ADD
 		if (ammodrop.value >= 2.0f)
 			bPackAmmo = true;
-#else
+#endif
 
 		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
 			modelname,
