@@ -1409,10 +1409,10 @@ void CBasePlayer::PackDeadPlayerItems()
 		CBasePlayerItem *pBestItem = nullptr;
 
 #ifdef REGAMEDLL_ADD 
-		if(iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
+		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
 		{
 			// check if we've just already dropped our active gun 
-			if(!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
+			if (!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
 				pBestItem = m_pActiveItem;
 
@@ -1420,7 +1420,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			}
 
 			// are we allowing nade drop?
-			if((int)nadedrops.value >= 1) 
+			if ((int)nadedrops.value >= 1) 
 			{
 				// goto item loop but skip guns
 				iPackGun = GR_PLR_DROP_GUN_ALL;
@@ -1428,7 +1428,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			}
 		}
 
-		if(iPackGun == GR_PLR_DROP_GUN_ALL)
+		if (iPackGun == GR_PLR_DROP_GUN_ALL)
 #endif
 		{
 			for (int n = 0; n < MAX_ITEM_TYPES; n++)
