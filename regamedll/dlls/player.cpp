@@ -8048,11 +8048,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		Vector vecAngles   = pev->angles;
 		Vector vecVelocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
+bool bPackAmmo = false;
+
 #ifdef REGAMEDLL_ADD
-		bool bPackAmmo = (int)ammodrop.value >= 2 ? true : false;
+    if (ammodrop.value >= 2.0f)
+		    bPackAmmo = true;
 #else
-		bool bPackAmmo = false;
-#endif
 
 		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
 			modelname,
