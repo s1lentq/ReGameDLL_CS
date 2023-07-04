@@ -4335,15 +4335,17 @@ int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPla
 #ifdef REGAMEDLL_ADD
 	switch ((int)weapondrop.value)
 	{
+		case 3:
+			return GR_PLR_DROP_GUN_ALL;
 		case 2: 
 			break;
 		case 1:
-			return GR_PLR_DROP_GUN_ALL; // "ALL" -> the heaviest one
+			return GR_PLR_DROP_GUN_BEST;
 		default: 
 			return GR_PLR_DROP_GUN_NO;
 	}
 #endif
-	return GR_PLR_DROP_GUN_ACTIVE;
+	return GR_PLR_DROP_GUN_ACTIVE; // keep original value in return
 }
 
 int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)

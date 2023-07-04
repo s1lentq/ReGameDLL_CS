@@ -1316,10 +1316,10 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 	return pWeaponBox;
 }
 
-void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+CWeaponBox *PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
-		return;
+		return nullptr;
 
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
@@ -1329,7 +1329,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
 
 		// create a box to pack the stuff into
-		CreateWeaponBox(pItem, pPlayer,
+		return CreateWeaponBox(pItem, pPlayer,
 			modelName,
 			vecOrigin,
 			vecAngles,
@@ -1337,6 +1337,8 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			CGameRules::GetItemKillDelay(), packAmmo
 		);
 	}
+
+	return nullptr;
 }
 
 #ifdef REGAMEDLL_ADD
@@ -1402,13 +1404,20 @@ void CBasePlayer::PackDeadPlayerItems()
 		if (HasShield())
 		{
 			DropShield();
-			bSkipPrimSec = true;
+#ifdef REGAMEDLL_ADD
+			if(iPackGun != GR_PLR_DROP_GUN_ALL)
+#endif
+			{
+				bSkipPrimSec = true;
+			}
 		}
 
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = nullptr;
 
 #ifdef REGAMEDLL_ADD 
+		int iGunsPacked = 0;
+
 		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
 		{
 			// check if we've just already dropped our active gun 
@@ -1428,7 +1437,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			}
 		}
 
-		if (iPackGun == GR_PLR_DROP_GUN_ALL)
+		if (iPackGun == GR_PLR_DROP_GUN_ALL || iPackGun == GR_PLR_DROP_GUN_BEST)
 #endif
 		{
 			for (int n = 0; n < MAX_ITEM_TYPES; n++)
@@ -1451,6 +1460,23 @@ void CBasePlayer::PackDeadPlayerItems()
 #endif
 							)
 						{
+#ifdef REGAMEDLL_ADD 
+							if (iPackGun == GR_PLR_DROP_GUN_ALL)
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+
+								CWeaponBox *pWeaponBox = PackPlayerItem(this, pPlayerItem, bPackAmmo);
+								if (pWeaponBox)
+								{
+									// just push a few units in forward to separate them
+									pWeaponBox->pev->velocity = pWeaponBox->pev->velocity * (1.0 + (iGunsPacked * 0.2)); 
+									iGunsPacked++;
+								}
+								
+								pPlayerItem = pNext;
+								continue;
+							}
+#endif
 							if (info.iWeight > nBestWeight)
 							{
 								nBestWeight = info.iWeight;
