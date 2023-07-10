@@ -6515,7 +6515,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			TraceResult tr;
 			Vector dir(0, 0, 1);
 
-			UTIL_BloodDrips(pev->origin, dir, BLOOD_COLOR_RED, 2000);
+			UTIL_BloodDrips(pev->origin, BLOOD_COLOR_RED, 2000);
 
 			for (int r = 1; r < 4; r++)
 			{

@@ -112,10 +112,7 @@ void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamag
 
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 {
-	UTIL_BloodDrips(vecSpot, 
-		g_vecZero, // dereferencing g_vecAttackDir -> used mostly on singleplayer
-		bloodColor, 
-		int(flDamage));
+	UTIL_BloodDrips(vecSpot, bloodColor, int(flDamage));
 }
 
 NOXREF int DamageDecal(CBaseEntity *pEntity, int bitsDamageType)
