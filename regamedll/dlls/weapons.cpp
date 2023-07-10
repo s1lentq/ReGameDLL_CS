@@ -113,12 +113,9 @@ void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamag
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 {
 	UTIL_BloodDrips(vecSpot, 
-#ifdef REGAMEDLL_FIXES
-		g_vecZero, 	// TODO: this param isn't even used, why still here?
-#else 
-		g_vecAttackDir,	// dereferencing this dumb var used mostly on singleplayer
-#endif
-		bloodColor, int(flDamage));
+		g_vecZero, // dereferencing g_vecAttackDir -> used mostly on singleplayer
+		bloodColor, 
+		int(flDamage));
 }
 
 NOXREF int DamageDecal(CBaseEntity *pEntity, int bitsDamageType)
