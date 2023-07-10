@@ -186,6 +186,10 @@ enum
 	GR_PLR_DROP_AMMO_ALL,
 	GR_PLR_DROP_AMMO_ACTIVE,
 	GR_PLR_DROP_AMMO_NO,
+
+#ifdef REGAMEDLL_ADD
+	GR_PLR_DROP_GUN_BEST,
+#endif
 };
 
 // custom enum

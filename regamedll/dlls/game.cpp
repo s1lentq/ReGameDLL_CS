@@ -109,6 +109,8 @@ cvar_t maxmoney              = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nul
 cvar_t round_infinite        = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
 cvar_t nadedrops             = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t weapondrop            = { "mp_weapondrop", "1", 0, 1.0f, nullptr };
+cvar_t ammodrop              = { "mp_ammodrop", "1", 0, 1.0f, nullptr };
 cvar_t roundrespawn_time     = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
 cvar_t auto_reload_weapons   = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
 cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr }; // Useful for mods like DeathMatch, GunGame, ZombieMod etc
@@ -351,6 +353,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&round_infinite);
 	CVAR_REGISTER(&hegrenade_penetration);
 	CVAR_REGISTER(&nadedrops);
+	CVAR_REGISTER(&weapondrop);
+	CVAR_REGISTER(&ammodrop);
 	CVAR_REGISTER(&roundrespawn_time);
 	CVAR_REGISTER(&auto_reload_weapons);
 	CVAR_REGISTER(&refill_bpammo_weapons);
