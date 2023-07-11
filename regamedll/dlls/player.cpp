@@ -1297,7 +1297,14 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 #else
 			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
 #endif
+#ifndef REGAMEDLL_FIXES
+			// by removing ammo ONLY on exhaustible weapons (slot 4 and 5)
+			// you are allowing to duplicate ammo whenever:
+			// (1) you have 2 weapons sharing the same ammo type (e.g. mp5navy and glock)
+			// (2) you are dropping a weapon alive and pickup another (with same ammo type) without ammo
+			// and, logically, you throw your ammo with your gun with packing enabled
 			if (exhaustibleAmmo)
+#endif
 			{
 				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
 			}
@@ -1309,10 +1316,10 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 	return pWeaponBox;
 }
 
-void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+CWeaponBox *PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
-		return;
+		return nullptr;
 
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
@@ -1322,7 +1329,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
 
 		// create a box to pack the stuff into
-		CreateWeaponBox(pItem, pPlayer,
+		return CreateWeaponBox(pItem, pPlayer,
 			modelName,
 			vecOrigin,
 			vecAngles,
@@ -1330,6 +1337,8 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			CGameRules::GetItemKillDelay(), packAmmo
 		);
 	}
+
+	return nullptr;
 }
 
 #ifdef REGAMEDLL_ADD
@@ -1386,78 +1395,130 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 void CBasePlayer::PackDeadPlayerItems()
 {
 	// get the game rules
-	bool bPackGun = (g_pGameRules->DeadPlayerWeapons(this) != GR_PLR_DROP_GUN_NO);
+	int iPackGun = g_pGameRules->DeadPlayerWeapons(this);
 	bool bPackAmmo = (g_pGameRules->DeadPlayerAmmo(this) != GR_PLR_DROP_AMMO_NO);
 
-	if (bPackGun)
+	if (iPackGun != GR_PLR_DROP_GUN_NO)
 	{
-		bool bShieldDropped = false;
+		bool bSkipPrimSec = false;
 		if (HasShield())
 		{
 			DropShield();
-			bShieldDropped = true;
+#ifdef REGAMEDLL_ADD
+			if(iPackGun != GR_PLR_DROP_GUN_ALL)
+#endif
+			{
+				bSkipPrimSec = true;
+			}
 		}
 
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = nullptr;
 
-		for (int n = 0; n < MAX_ITEM_TYPES; n++)
-		{
-			// there's a weapon here. Should I pack it?
-			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+#ifdef REGAMEDLL_ADD 
+		int iGunsPacked = 0;
 
-			while (pPlayerItem)
+		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
+		{
+			// check if we've just already dropped our active gun 
+			if (!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
-				ItemInfo info;
-				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
-				{
-#ifdef REGAMEDLL_API
-					if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info))
-#else
-					if (pPlayerItem->GetItemInfo(&info))
+				pBestItem = m_pActiveItem;
+
+				// if active item is undroppable, then nothing is dropped
+			}
+
+			// are we allowing nade drop?
+			if ((int)nadedrops.value >= 1) 
+			{
+				// goto item loop but skip guns
+				iPackGun = GR_PLR_DROP_GUN_ALL;
+				bSkipPrimSec = true;
+			}
+		}
+
+		if (iPackGun == GR_PLR_DROP_GUN_ALL || iPackGun == GR_PLR_DROP_GUN_BEST)
 #endif
+		{
+			for (int n = 0; n < MAX_ITEM_TYPES; n++)
+			{
+				// there's a weapon here. Should I pack it?
+				CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+
+				while (pPlayerItem)
+				{
+					ItemInfo info;
+					if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bSkipPrimSec)
 					{
-						if (info.iWeight > nBestWeight)
+#ifdef REGAMEDLL_API
+						if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info)
+#else
+						if (pPlayerItem->GetItemInfo(&info)
+#endif
+#ifdef REGAMEDLL_FIXES
+							&& pPlayerItem->CanDrop() // needs to be droppable
+#endif
+							)
 						{
-							nBestWeight = info.iWeight;
-							pBestItem = pPlayerItem;
+#ifdef REGAMEDLL_ADD 
+							if (iPackGun == GR_PLR_DROP_GUN_ALL)
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+
+								CWeaponBox *pWeaponBox = PackPlayerItem(this, pPlayerItem, bPackAmmo);
+								if (pWeaponBox)
+								{
+									// just push a few units in forward to separate them
+									pWeaponBox->pev->velocity = pWeaponBox->pev->velocity * (1.0 + (iGunsPacked * 0.2)); 
+									iGunsPacked++;
+								}
+								
+								pPlayerItem = pNext;
+								continue;
+							}
+#endif
+							if (info.iWeight > nBestWeight)
+							{
+								nBestWeight = info.iWeight;
+								pBestItem = pPlayerItem;
+							}
 						}
 					}
-				}
-				// drop a grenade after death
-				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
-				{
-					if (AreRunningCZero())
+					// drop a grenade after death
+					else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 					{
+						if (AreRunningCZero())
+						{
 
 #ifdef REGAMEDLL_FIXES
-						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+							if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
 #endif
-						{
-							PackPlayerItem(this, pPlayerItem, true);
+							{
+								PackPlayerItem(this, pPlayerItem, true);
+							}
 						}
-					}
 #ifdef REGAMEDLL_ADD
-					else
-					{
-						switch ((int)nadedrops.value)
+						else
 						{
-						case 1:
-							PackPlayerNade(this, pPlayerItem, true);
-							break;
-						case 2:
-						{
-							CBasePlayerItem *pNext = pPlayerItem->m_pNext;
-							PackPlayerNade(this, pPlayerItem, true);
-							pPlayerItem = pNext;
-							continue;
+							switch ((int)nadedrops.value)
+							{
+							case 1:
+								PackPlayerNade(this, pPlayerItem, true);
+								break;
+							case 2:
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+								PackPlayerNade(this, pPlayerItem, true);
+								pPlayerItem = pNext;
+								continue;
+							}
+							}
 						}
-						}
-					}
 #endif
-				}
+					}
 
-				pPlayerItem = pPlayerItem->m_pNext;
+					pPlayerItem = pPlayerItem->m_pNext;
+				}
 			}
 		}
 
@@ -2046,8 +2107,27 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			}
 
 			TheCareerTasks->HandleDeath(m_iTeam, this);
+
+#ifdef REGAMEDLL_FIXES
+			if (!m_bKilledByBomb)
+			{
+				CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+
+				if(pAttacker /*safety*/ && !pAttacker->IsBot() && pAttacker->m_iTeam != m_iTeam)
+				{
+					if (pAttacker->HasShield())
+						killerHasShield = true;
+
+					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
+						wasBlind = true;
+
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
+				}
+			}
+#endif
 		}
 
+#ifndef REGAMEDLL_FIXES
 		if (!m_bKilledByBomb)
 		{
 			CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
@@ -2077,6 +2157,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				}
 			}
 		}
+#endif
 	}
 
 	if (!m_bKilledByBomb)
@@ -6515,7 +6596,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			TraceResult tr;
 			Vector dir(0, 0, 1);
 
-			UTIL_BloodDrips(pev->origin, dir, BLOOD_COLOR_RED, 2000);
+			UTIL_BloodDrips(pev->origin, BLOOD_COLOR_RED, 2000);
 
 			for (int r = 1; r < 4; r++)
 			{
@@ -8013,13 +8094,21 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		Vector vecAngles   = pev->angles;
 		Vector vecVelocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
+		bool bPackAmmo = false;
+
+#ifdef REGAMEDLL_ADD
+		if (ammodrop.value >= 2.0f)
+			bPackAmmo = true;
+#endif
+
 		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
 			modelname,
 			vecOrigin,
 			vecAngles,
 			vecVelocity,
 			CGameRules::GetItemKillDelay(),
-			false);
+			bPackAmmo
+			);
 
 		if (!pWeaponBox)
 		{
