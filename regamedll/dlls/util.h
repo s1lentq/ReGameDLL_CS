@@ -262,7 +262,7 @@ bool UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator);
 BOOL UTIL_ShouldShowBlood(int color);
 int UTIL_PointContents(const Vector &vec);
 void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, int amount);
-void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, int amount);
+void UTIL_BloodDrips(const Vector &origin, int color, int amount);
 Vector UTIL_RandomBloodVector();
 void UTIL_BloodDecalTrace(TraceResult *pTrace, int bloodColor);
 void UTIL_DecalTrace(TraceResult *pTrace, int decalNumber);
