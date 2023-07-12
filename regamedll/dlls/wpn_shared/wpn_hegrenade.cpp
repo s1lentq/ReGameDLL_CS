@@ -247,7 +247,7 @@ void CHEGrenade::WeaponIdle()
 
 			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 			{
-				SendWeaponAnim(SHIELDREN_IDLE, UseDecrement() != FALSE);
+				SendWeaponAnim(SHIELDGREN_IDLE, UseDecrement() != FALSE);
 			}
 		}
 		else

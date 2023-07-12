@@ -334,9 +334,9 @@ enum shieldgun_e
 // custom
 enum shieldgren_e
 {
-	SHIELDREN_IDLE = 4,
-	SHIELDREN_UP,
-	SHIELDREN_DOWN
+	SHIELDGREN_IDLE = 4,
+	SHIELDGREN_UP,
+	SHIELDGREN_DOWN
 };
 
 enum InventorySlotType
