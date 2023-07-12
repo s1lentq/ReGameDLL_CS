@@ -144,7 +144,7 @@ bool CHEGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 void CHEGrenade::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
+	ShieldSecondaryFire(SHIELDGREN_UP, SHIELDGREN_DOWN);
 }
 
 void CHEGrenade::SetPlayerShieldAnim()

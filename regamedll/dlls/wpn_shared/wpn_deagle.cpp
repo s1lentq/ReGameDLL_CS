@@ -93,7 +93,7 @@ void CDEAGLE::PrimaryAttack()
 
 void CDEAGLE::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
+	ShieldSecondaryFire(DEAGLE_SHIELD_UP, DEAGLE_SHIELD_DOWN);
 }
 
 void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
@@ -204,7 +204,7 @@ void CDEAGLE::WeaponIdle()
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
-			SendWeaponAnim(SHIELDGUN_DRAWN_IDLE, UseDecrement() != FALSE);
+			SendWeaponAnim(DEAGLE_SHIELD_IDLE_UP, UseDecrement() != FALSE);
 		}
 	}
 }

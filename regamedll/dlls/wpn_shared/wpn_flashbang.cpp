@@ -142,7 +142,7 @@ bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 void CFlashbang::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
+	ShieldSecondaryFire(SHIELDGREN_UP, SHIELDGREN_DOWN);
 }
 
 void CFlashbang::SetPlayerShieldAnim()

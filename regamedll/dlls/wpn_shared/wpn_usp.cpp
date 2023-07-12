@@ -279,7 +279,7 @@ void CUSP::WeaponIdle()
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
-			SendWeaponAnim(USP_DRAW, UseDecrement());
+			SendWeaponAnim(USP_SHIELD_IDLE_UP, UseDecrement());
 		}
 	}
 	else if (m_iClip)
