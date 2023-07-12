@@ -5265,8 +5265,19 @@ pt_end:
 	// Track button info so we can detect 'pressed' and 'released' buttons next frame
 	m_afButtonLast = pev->button;
 	m_iGaitsequence = pev->gaitsequence;
-
-	StudioProcessGait();
+	if (m_iGaitsequence)
+	{
+		StudioProcessGait();
+	}
+	else
+	{
+		pev->controller[0] = 127;
+		pev->controller[1] = 127;
+		pev->controller[2] = 127;
+		pev->controller[3] = 127;
+		CalculatePitchBlend();
+		CalculateYawBlend();
+	}
 }
 
 // checks if the spot is clear of players
@@ -5502,7 +5513,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	m_flGaitframe = 0;
 	m_flGaityaw = 0;
 	m_flGaitMovement = 0;
-	m_prevgaitorigin = Vector(0, 0, 0);
+	m_prevgaitorigin = pev->origin;
 	m_progressStart = 0;
 	m_progressEnd = 0;
 
@@ -8583,12 +8594,14 @@ void CBasePlayer::StudioEstimateGait()
 		est_velocity.y = 0;
 	}
 
+	real_t flYaw = pev->angles.y - m_flGaityaw;
+	if (pev->sequence > 100) {
+		m_flGaityaw += flYaw;
+		return;
+	}
 	if (!est_velocity.x && !est_velocity.y)
 	{
-		real_t flYawDiff = pev->angles.y - m_flGaityaw;
-		real_t flYaw = Q_fmod(flYawDiff, 360);
-
-		flYawDiff = flYawDiff - int64(flYawDiff / 360) * 360;
+		real_t flYawDiff = flYaw - (int)(flYaw / 360) * 360;
 
 		if (flYawDiff > 180)
 			flYawDiff -= 360;
@@ -8596,19 +8609,21 @@ void CBasePlayer::StudioEstimateGait()
 		if (flYawDiff < -180)
 			flYawDiff += 360;
 
+		flYaw = fmod(flYaw, 360.0);
+
 		if (flYaw < -180)
 			flYaw += 360;
 
 		else if (flYaw > 180)
 			flYaw -= 360;
 
-		if (flYaw > -5 && flYaw < 5)
+		if (flYaw > -5.0 && flYaw < 5.0)
 			m_flYawModifier = 0.05f;
 
-		if (flYaw < -90 || flYaw > 90)
+		if (flYaw < -90.0 || flYaw > 90.0)
 			m_flYawModifier = 3.5f;
 
-		if (dt < 0.25f)
+		if (dt < 0.25)
 			flYawDiff *= dt * m_flYawModifier;
 		else
 			flYawDiff *= dt;
@@ -8621,7 +8636,7 @@ void CBasePlayer::StudioEstimateGait()
 			flYawDiff = 0;
 
 		m_flGaityaw += flYawDiff;
-		m_flGaityaw -= int64(m_flGaityaw / 360) * 360;
+		m_flGaityaw -= int(m_flGaityaw / 360) * 360;
 		m_flGaitMovement = 0;
 	}
 	else
@@ -8714,17 +8729,11 @@ void CBasePlayer::CalculateYawBlend()
 		}
 	}
 
-	flYaw = (flYaw / 90) * 128 + 127;
+	blend_yaw = (flYaw / 90.0) * 128.0 + 127.0;
+	blend_yaw = clamp<real_t>(blend_yaw, 0.0f, 255.0f);
+	blend_yaw = 255.0 - blend_yaw;
 
-	if (flYaw > 255)
-		flYaw = 255;
-
-	else if (flYaw < 0)
-		flYaw = 0;
-
-	blend_yaw = maxyaw - flYaw;
-
-	pev->blending[0] = int64(blend_yaw);
+	pev->blending[0] = int(blend_yaw);
 	m_flYaw = blend_yaw;
 }
 

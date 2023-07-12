@@ -32,6 +32,8 @@
 
 #define ANIM_SWIM_1                 8
 #define ANIM_SWIM_2                 9
+#define ANIM_WALK_SEQUENCE          3
+#define ANIM_JUMP_SEQUENCE        6
 #define ANIM_FIRST_DEATH_SEQUENCE   101
 
 #include "monsterevent.h"
