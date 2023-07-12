@@ -3857,7 +3857,7 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(3.0f) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(CGameRules::GetDyingTime()) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
 			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
@@ -8818,9 +8818,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 	if (pev->effects & EF_NODRAW)
 		return;
 
-	// do not make a corpse if the player goes to respawn.
-	if (pev->deadflag == DEAD_RESPAWNABLE)
-		return;
+	// deadflag == DEAD_RESPAWNABLE already checked before
 #endif
 
 #ifdef REGAMEDLL_ADD
@@ -8830,6 +8828,41 @@ void CBasePlayer::SpawnClientSideCorpse()
 
 	char *infobuffer = GET_INFO_BUFFER(edict());
 	char *pModel = GET_KEY_VALUE(infobuffer, "model");
+	float timeDiff = pev->animtime - gpGlobals->time;
+
+#ifdef REGAMEDLL_ADD 
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float animDuration = -1.0;
+
+		studiohdr_t *pstudiohdr = (studiohdr_t *)GET_MODEL_PTR(ENT(pev));
+		if (pstudiohdr && pev->sequence < pstudiohdr->numseq) // model ptr and sequence validation
+		{
+			// get current sequence time
+			mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
+			animDuration = pseqdesc->numframes / pseqdesc->fps; 
+		}
+
+		if (animDuration <= 0.0) 
+		{
+			// in case of failure
+			animDuration = DEATH_ANIMATION_TIME;
+		}
+
+		// client receives a negative value 
+		animDuration *= -1.0; 
+
+		if (animDuration < timeDiff) // reasonable way to fix client side unfinished sequence bug
+		{
+			// by some reason, if client receives a value less 
+			// than "(negative current sequence time) * 100" 
+			// animation will play visually awkward
+			// at this function call time, player death animation 
+			// has already finished so we can safely fake it
+			timeDiff = animDuration; 
+		}
+	}
+#endif
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgSendCorpse);
 		WRITE_STRING(pModel);
@@ -8839,14 +8872,17 @@ void CBasePlayer::SpawnClientSideCorpse()
 		WRITE_COORD(pev->angles.x);
 		WRITE_COORD(pev->angles.y);
 		WRITE_COORD(pev->angles.z);
-		WRITE_LONG((pev->animtime - gpGlobals->time) * 100);
+		WRITE_LONG(timeDiff * 100);
 		WRITE_BYTE(pev->sequence);
 		WRITE_BYTE(pev->body);
 		WRITE_BYTE(m_iTeam);
 		WRITE_BYTE(entindex());
 	MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
+	// already defined in StartDeathCam
 	m_canSwitchObserverModes = true;
+#endif 
 
 	if (TheTutor)
 	{
