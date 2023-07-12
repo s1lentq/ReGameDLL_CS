@@ -383,7 +383,7 @@ float CC4::GetMaxSpeed()
 	return C4_MAX_SPEED;
 }
 
-void CC4::AttachToPlayer(CBasePlayer* pPlayer)
+void CC4::AttachToPlayer(CBasePlayer *pPlayer)
 {
 	CBasePlayerWeapon::AttachToPlayer(pPlayer);
 
@@ -393,7 +393,7 @@ void CC4::AttachToPlayer(CBasePlayer* pPlayer)
 
 	if (pPlayer->IsPlayer() && pPlayer->IsAlive())
 	{
-		entvars_t* pevPlayer = pPlayer->pev;
+		entvars_t *pevPlayer = pPlayer->pev;
 		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
 	}
 #endif
@@ -408,7 +408,7 @@ void CC4::TrackPlayerHeldPosition()
 
 	if (m_pPlayer && m_pPlayer->IsPlayer() && m_pPlayer->IsAlive() && (m_pPlayer->pev->flags & FL_ONGROUND))
 	{
-		entvars_t* pevPlayer = m_pPlayer->pev;
+		entvars_t *pevPlayer = m_pPlayer->pev;
 		m_vecLastValidPlayerHeldPosition = pevPlayer->origin + pevPlayer->mins;
 	}
 }

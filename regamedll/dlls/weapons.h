@@ -869,7 +869,7 @@ public:
 	virtual int GetItemInfo(ItemInfo *p);
 	virtual BOOL Deploy();
 	virtual void Holster(int skiplocal);
-	virtual void AttachToPlayer(CBasePlayer* pPlayer);
+	virtual void AttachToPlayer(CBasePlayer *pPlayer);
 	virtual float GetMaxSpeed();
 	virtual int iItemSlot() { return C4_SLOT; }
 	virtual void PrimaryAttack();
