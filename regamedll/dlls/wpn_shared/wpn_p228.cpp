@@ -92,7 +92,7 @@ void CP228::PrimaryAttack()
 
 void CP228::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
+	ShieldSecondaryFire(P228_SHIELD_UP, P228_SHIELD_DOWN);
 }
 
 void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
