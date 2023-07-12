@@ -187,6 +187,10 @@ enum
 	GR_PLR_DROP_AMMO_ALL,
 	GR_PLR_DROP_AMMO_ACTIVE,
 	GR_PLR_DROP_AMMO_NO,
+
+#ifdef REGAMEDLL_ADD
+	GR_PLR_DROP_GUN_BEST,
+#endif
 };
 
 // custom enum
@@ -833,9 +837,11 @@ extern CGameRules DLLEXPORT *g_pGameRules;
 
 #ifdef REGAMEDLL_API
 CGameRules *InstallGameRules_OrigFunc();
+void FreeGameRules_OrigFunc(CGameRules **pGameRules);
 #endif
 
 CGameRules *InstallGameRules();
+void FreeGameRules(CGameRules **pGameRules);
 
 // Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()

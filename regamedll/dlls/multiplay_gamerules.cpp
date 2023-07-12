@@ -1486,6 +1486,12 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 		}
 	}
 
+#ifdef REGAMEDLL_ADD
+	if (hostagesCount > 0 && m_iHostagesRescued >= (hostagesCount * Q_min(hostages_rescued_ratio.value, 1.0f)))
+	{
+		return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
+	}
+#else
 	// There are no hostages alive.. check to see if the CTs have rescued atleast 50% of them.
 	if (!bHostageAlive && hostagesCount > 0)
 	{
@@ -1494,6 +1500,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 			return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
 		}
 	}
+#endif
 
 	return false;
 }
@@ -2028,6 +2035,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
+			
+#ifdef REGAMEDLL_ADD
+			FireTargets("game_entity_restart", pPlayer, nullptr, USE_TOGGLE, 0.0);
+#endif
 		}
 
 		// Gooseman : The following code fixes the HUD icon bug
@@ -2066,6 +2077,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 BOOL CHalfLifeMultiplay::IsThereABomber()
@@ -3901,7 +3916,9 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled,
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-
+#ifdef REGAMEDLL_FIXES 
+	pVictim->pev->flags &= ~FL_FROZEN;
+#endif
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 	pVictim->m_iDeaths++;
 	pVictim->m_bNotKilled = false;
@@ -3919,7 +3936,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
 	{
 		CBasePlayer *pDriver = static_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
+#ifdef REGAMEDLL_FIXES
+		if (pDriver && !pDriver->has_disconnected)
+#else
 		if (pDriver)
+#endif
 		{
 			pKiller = pDriver->pev;
 			peKiller = static_cast<CBasePlayer *>(pDriver);
@@ -3927,7 +3948,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	}
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
-
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{
@@ -4312,11 +4332,29 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWea
 
 int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
-	return GR_PLR_DROP_GUN_ACTIVE;
+#ifdef REGAMEDLL_ADD
+	switch ((int)weapondrop.value)
+	{
+		case 3:
+			return GR_PLR_DROP_GUN_ALL;
+		case 2: 
+			break;
+		case 1:
+			return GR_PLR_DROP_GUN_BEST;
+		default: 
+			return GR_PLR_DROP_GUN_NO;
+	}
+#endif
+	return GR_PLR_DROP_GUN_ACTIVE; // keep original value in return
 }
 
 int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (ammodrop.value == 0.0f)
+		return GR_PLR_DROP_AMMO_NO;
+#endif
+
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 

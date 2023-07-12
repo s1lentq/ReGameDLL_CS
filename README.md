@@ -26,7 +26,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | :---------------------------------- | :---------------------------------------------- |
 | game version                        | Will show GameDLL build version, date & URL. |
 | endround                            | Args:<br/>`T` force round end with Terrorists win. <br/>`CT` force round end with Counter-Terrorists win. <br/> or terminate round draw when called without arguments. |
-| swapteams                           | Swap the teams and restart the game. |
+| swapteams                           | Swap the teams and restart the game (1 sec delay to restart by default).<br/> Args: <br/>`0` - swap teams without restart. <br/> `>0.001` - time delay in seconds to restart the round after swap. |
 | give                                | Give weapon command.<br/> Args:<br/><weapon_name><br/>Usage:<br/>`give weapon_ak47`<br/>`give weapon_usp`<br/><br/>NOTE: `sv_cheats 1` required. |
 | impulse 255                         | Give all weapons.<br/><br/>NOTE: `sv_cheats 1` required. |
 
@@ -45,6 +45,8 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_round_restart_delay             | 5       | -   | -            | Number of seconds to delay before restarting a round after a win. |
 | mp_hegrenade_penetration           | 0       | 0   | 1            | Disable grenade damage through walls.<br/>`0` disabled<br/>`1` enabled |
 | mp_nadedrops                       | 0       | 0   | 2            | Drop a grenade after player death.<br/>`0` disabled<br/>`1` drop first available grenade<br/>`2` drop all grenades |
+| mp_weapondrop                      | 1       | 0   | 3            | Drop player weapon after death.<br/>`0` do not drop weapons after death<br/>`1` drop best/heaviest weapon after death<br/>`2` drop active weapon after death<br/>`3` drop all weapons after death (primary and secondary) |
+| mp_ammodrop                        | 1       | 0   | 2            | Drop ammo on weapon boxes on death or manual drop.<br/>`0` always keep ammo on player<br/>`1` drop all ammo only after death<br/>`2` drop all ammo whenever player drops a weapon |
 | mp_roundrespawn_time               | 20      | 0   | -            | Player cannot respawn until next round if more than N seconds has elapsed since the beginning round.<br />`-1` means no time limit<br /> |
 | mp_auto_reload_weapons             | 0       | 0   | 1            | Automatically reload each weapon on player spawn.<br/>`0` disabled<br/>`1` enabled |
 | mp_refill_bpammo_weapons           | 0       | 0   | 2            | Refill amount of backpack ammo up to the max.<br/>`0` disabled<br/>`1` refill backpack ammo on player spawn<br/>`2` refill backpack ammo on player spawn and on the purchase of the item |
@@ -104,6 +106,9 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | sv_autobunnyhopping                | 0       | 0   | 1            | Players automatically re-jump while holding jump button.<br/>`0` disabled <br/>`1` enabled |
 | sv_enablebunnyhopping              | 0       | 0   | 1            | Allow player speed to exceed maximum running speed.<br/>`0` disabled <br/>`1` enabled |
 | mp_plant_c4_anywhere               | 0       | 0   | 1            | When set, players can plant anywhere, not only in bombsites.<br/>`0` disabled <br/>`1` enabled |
+| mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
+| mp_hostages_rescued_ratio          | 1.0     | 0.0 | 1.0          | Ratio of hostages rescued to win the round. |
+| mp_legacy_vehicle_block            | 1       | 0   | 1            | Legacy func_vehicle behavior when blocked by another entity.<br/>`0` New behavior <br/>`1` Legacy behavior |
 | mp_dying_time                      | 3.0     | 0.0 | -            | Time for switch to free observing after death.<br/>`0` disabled (instant view switch).<br/>`>0.00001` - time delay to start spectate.<br/>`NOTE`: The countdown starts when the player’s death animation is finished.|
 </details>
 

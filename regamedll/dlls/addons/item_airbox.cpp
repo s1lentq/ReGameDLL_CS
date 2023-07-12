@@ -57,7 +57,7 @@ void CItemAirBox::Touch(CBaseEntity *pOther)
 	CArmoury::Touch(pOther);
 
 	// airbox was picked up, so sprite to turn off
-	if ((pev->effects & EF_NODRAW) == EF_NODRAW) 
+	if ((pev->effects & EF_NODRAW) == EF_NODRAW)
 	{
 		m_hSprite->TurnOff();
 
@@ -73,7 +73,7 @@ void CItemAirBox::Restart()
 	UTIL_SetOrigin(pev, pev->oldorigin);
 	pev->velocity = g_vecZero;
 
-	if(m_flyup < 0)
+	if (m_flyup < 0)
 	{
 		m_flyup = -m_flyup;
 	}

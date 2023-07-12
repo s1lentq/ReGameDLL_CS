@@ -141,3 +141,13 @@ CGameRules *EXT_FUNC __API_HOOK(InstallGameRules)()
 
 	return new CHalfLifeMultiplay;
 }
+
+LINK_HOOK_VOID_CHAIN(FreeGameRules, (CGameRules **pGameRules), pGameRules)
+
+void EXT_FUNC __API_HOOK(FreeGameRules)(CGameRules **pGameRules)
+{
+	if (!pGameRules || !(*pGameRules))
+		return;
+
+	delete (*pGameRules);
+}
