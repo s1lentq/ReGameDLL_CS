@@ -6,12 +6,18 @@ void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
 
-	// ceiling at 1500.  The gib velocity equation is not bounded properly.  Rather than tune it
+#ifdef REGAMEDLL_FIXES
+	float topspeed = Q_min(1500.0f, CVAR_GET_FLOAT("sv_maxvelocity"));
+#else
+	float topspeed = 1500.0f;
+#endif
+
+	// ceiling at topspeed.  The gib velocity equation is not bounded properly.  Rather than tune it
 	// in 3 separate places again, I'll just limit it here.
-	if (length > 1500.0)
+	if (length > topspeed)
 	{
 		// This should really be sv_maxvelocity * 0.75 or something
-		pev->velocity = pev->velocity.Normalize() * 1500;
+		pev->velocity = pev->velocity.Normalize() * topspeed;
 	}
 }
 
