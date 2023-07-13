@@ -1960,7 +1960,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 							if (pPlayer->AddPlayerItem(pItem))
 							{
 								pItem->AttachToPlayer(pPlayer);
-								pGivenItem = pItem;
+								givenItem = pItem;
 							}
 
 							// unlink this weapon from the box
@@ -2063,7 +2063,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 		// return FALSE, causing an unarmed player to not deploy any weaponbox grenade
 		if (pPlayer->m_pActiveItem != givenItem && CSGameRules()->FShouldSwitchWeapon(pPlayer, givenItem))
 		{
-			// This check is done after ammo is given 
+			// This re-check is done after ammo is given 
 			// so it ensures player properly deploys grenade from floor
 			pPlayer->SwitchWeapon(givenItem);
 		}
