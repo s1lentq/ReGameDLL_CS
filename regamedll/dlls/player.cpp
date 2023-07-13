@@ -2292,6 +2292,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
 #else
+
+	float flDyingDuration = GetSequenceDuration() + CGameRules::GetDyingTime();
 	switch ((int)fadetoblack.value)
 	{
 	default:
@@ -2309,7 +2311,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 	case 1:
 	{
-		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.5f, flDyingDuration, 255, (FFADE_OUT | FFADE_STAYOUT));
 		break;
 	}
 	case 2:
@@ -2329,7 +2331,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 			if (pObserver == this || (pObserver && pObserver->IsObservingPlayer(this)))
 			{
-				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
+				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 0.5f, flDyingDuration, 255, (FFADE_OUT));
 			}
 		}
 
@@ -8811,6 +8813,23 @@ int GetPlayerGaitsequence(const edict_t *pEdict)
 	return pPlayer->m_iGaitsequence;
 }
 
+float CBasePlayer::GetDyingAnimationDuration() const
+{
+	float animDuration = -1.0f;
+
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float flSequenceDuration = GetSequenceDuration();
+		if (flSequenceDuration > 0)
+			animDuration = flSequenceDuration;
+	}
+
+	if (animDuration <= 0)
+		animDuration = CGameRules::GetDyingTime(); // in case of failure
+
+	return animDuration;
+}
+
 void CBasePlayer::SpawnClientSideCorpse()
 {
 #ifdef REGAMEDLL_FIXES
@@ -8833,21 +8852,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 #ifdef REGAMEDLL_ADD 
 	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
 	{
-		float animDuration = -1.0;
-
-		studiohdr_t *pstudiohdr = (studiohdr_t *)GET_MODEL_PTR(ENT(pev));
-		if (pstudiohdr && pev->sequence < pstudiohdr->numseq) // model ptr and sequence validation
-		{
-			// get current sequence time
-			mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
-			animDuration = pseqdesc->numframes / pseqdesc->fps; 
-		}
-
-		if (animDuration <= 0.0) 
-		{
-			// in case of failure
-			animDuration = DEATH_ANIMATION_TIME;
-		}
+		float animDuration = GetDyingAnimationDuration();
 
 		// client receives a negative value 
 		animDuration *= -1.0; 
