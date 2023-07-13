@@ -2311,7 +2311,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 	case 1:
 	{
-		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.5f, flDyingDuration, 255, (FFADE_OUT | FFADE_STAYOUT));
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT | FFADE_STAYOUT));
 		break;
 	}
 	case 2:
@@ -2325,15 +2325,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
 		MESSAGE_END();
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
-
-			if (pObserver == this || (pObserver && pObserver->IsObservingPlayer(this)))
-			{
-				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 0.5f, flDyingDuration, 255, (FFADE_OUT));
-			}
-		}
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT));
 
 		break;
 	}
