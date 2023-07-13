@@ -2019,7 +2019,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				if (pPlayer->AddPlayerItem(pItem))
 				{
 					pItem->AttachToPlayer(pPlayer);
+#ifdef REGAMEDLL_FIXES
 					givenItem = pItem;
+#else 
+					givenItem = true;
+#endif
 				}
 
 				// unlink this weapon from the box
