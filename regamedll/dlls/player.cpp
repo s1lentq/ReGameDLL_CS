@@ -1691,12 +1691,16 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	{
 		RemoveDefuser();
 
+#ifndef REGAMEDLL_FIXES
+		// NOTE: moved into RemoveDefuser
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
 		SendItemStatus();
+#endif 
+
 		bKillProgBar = true;
 	}
 
@@ -2402,8 +2406,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	SetSuitUpdate(nullptr, SUIT_SENTENCE, SUIT_REPEAT_OK);
-	m_iClientHealth = 0;
 
+	m_iClientHealth = 0;
 	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, nullptr, pev);
 		WRITE_BYTE(m_iClientHealth);
 	MESSAGE_END();
@@ -2433,29 +2437,30 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		RemoveDefuser();
 
 #ifdef REGAMEDLL_FIXES
-		CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", pev->origin, g_vecZero, ENT(pev));
+		SpawnDefuser(pev->origin, ENT(pev));
 
-		pDefuser->SetThink(&CBaseEntity::SUB_Remove);
-		pDefuser->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pDefuser->pev->spawnflags |= SF_NORESPAWN;
+		if (m_bIsDefusing)
+			SetProgressBarTime(0);
+
+		m_bIsDefusing = false;
 #else
 		GiveNamedItem("item_thighpack");
-#endif
 
+		// NOTE: moved into RemoveDefuser
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
 		SendItemStatus();
-	}
-
-	if (m_bIsDefusing)
-	{
 		SetProgressBarTime(0);
+#endif
 	}
 
-	m_bIsDefusing = false;
+#ifndef REGAMEDLL_FIXES
+	m_bIsDefusing = false; // NOTE: moved above
+#endif
+
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
@@ -3775,10 +3780,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	{
 		RemoveDefuser();
 
-#ifndef REGAMEDLL_FIXES
-		GiveNamedItem("item_thighpack");
-#endif
+#ifdef REGAMEDLL_FIXES
+		SpawnDefuser(pev->origin, ENT(pev));
 
+		if (m_bIsDefusing)
+			SetProgressBarTime(0);
+
+		m_bIsDefusing = false;
+#else
+		GiveNamedItem("item_thighpack");
+
+		// NOTE: moved into RemoveDefuser
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
@@ -3786,6 +3798,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 
 		SendItemStatus();
 		SetProgressBarTime(0);
+#endif
 	}
 
 	BuyZoneIcon_Clear(this);
@@ -8286,12 +8299,16 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	{
 		RemoveDefuser();
 
+#ifndef REGAMEDLL_FIXES
+		// NOTE: moved into RemoveDefuser
 		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("defuser");
 		MESSAGE_END();
 
 		SendItemStatus();
+#endif
+
 		SetProgressBarTime(0);
 
 #ifndef REGAMEDLL_FIXES
@@ -10135,6 +10152,29 @@ void CBasePlayer::RemoveDefuser()
 {
 	m_bHasDefuser = false;
 	pev->body = 0;
+
+#ifdef REGAMEDLL_FIXES
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		WRITE_BYTE(STATUSICON_HIDE);
+		WRITE_STRING("defuser");
+	MESSAGE_END();
+
+	SendItemStatus();
+#endif 
+}
+
+CItemThighPack *SpawnDefuser(const Vector &vecOrigin, edict_t *pentOwner)
+{
+	CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", vecOrigin, g_vecZero, pentOwner);
+
+	if (pDefuser)
+	{
+		pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+		pDefuser->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
+		pDefuser->pev->spawnflags |= SF_NORESPAWN;
+	}
+
+	return pDefuser;
 }
 
 void CBasePlayer::Disconnect()
