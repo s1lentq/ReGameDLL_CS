@@ -109,6 +109,8 @@ cvar_t maxmoney              = { "mp_maxmoney", "16000", FCVAR_SERVER, 0.0f, nul
 cvar_t round_infinite        = { "mp_round_infinite", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t hegrenade_penetration = { "mp_hegrenade_penetration", "0", 0, 0.0f, nullptr };
 cvar_t nadedrops             = { "mp_nadedrops", "0", 0, 0.0f, nullptr };
+cvar_t weapondrop            = { "mp_weapondrop", "1", 0, 1.0f, nullptr };
+cvar_t ammodrop              = { "mp_ammodrop", "1", 0, 1.0f, nullptr };
 cvar_t roundrespawn_time     = { "mp_roundrespawn_time", "20", 0, 20.0f, nullptr };
 cvar_t auto_reload_weapons   = { "mp_auto_reload_weapons", "0", 0, 0.0f, nullptr };
 cvar_t refill_bpammo_weapons = { "mp_refill_bpammo_weapons", "0", 0, 0.0f, nullptr }; // Useful for mods like DeathMatch, GunGame, ZombieMod etc
@@ -147,6 +149,28 @@ cvar_t ff_damage_reduction_other        = { "ff_damage_reduction_other",        
 
 cvar_t radio_timeout           = { "mp_radio_timeout", "1.5", FCVAR_SERVER, 1.5f, nullptr };
 cvar_t radio_maxinround        = { "mp_radio_maxinround", "60", FCVAR_SERVER, 60.0f, nullptr };
+cvar_t falldamage              = { "mp_falldamage", "1", FCVAR_SERVER, 1.0f, nullptr };
+
+cvar_t ct_default_grenades               = { "mp_ct_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t ct_give_player_knife              = { "mp_ct_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t ct_default_weapons_secondary      = { "mp_ct_default_weapons_secondary", "usp", 0, 0.0f, nullptr };
+cvar_t ct_default_weapons_primary        = { "mp_ct_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t t_default_grenades                = { "mp_t_default_grenades", "", 0, 0.0f, nullptr };
+cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1.0f, nullptr };
+cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "glock18", 0, 0.0f, nullptr };
+cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
+cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
+cvar_t sv_autobunnyhopping               = { "sv_autobunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t sv_enablebunnyhopping             = { "sv_enablebunnyhopping", "0", 0, 0.0f, nullptr };
+cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0f, nullptr };
+cvar_t give_c4_frags                     = { "mp_give_c4_frags", "3", 0, 3.0f, nullptr };
+
+cvar_t hostages_rescued_ratio = { "mp_hostages_rescued_ratio", "1.0", 0, 1.0f, nullptr };
+
+cvar_t legacy_vehicle_block               = { "mp_legacy_vehicle_block", "1", 0, 0.0f, nullptr };
+
+cvar_t dying_time              = { "mp_dying_time", "3.0", 0, 3.0f, nullptr };
 
 void GameDLL_Version_f()
 {
@@ -183,7 +207,17 @@ void GameDLL_EndRound_f()
 void GameDLL_SwapTeams_f()
 {
 	CSGameRules()->SwapAllPlayers();
-	CVAR_SET_FLOAT("sv_restartround", 1.0);
+
+	float value = 1.0f;
+	if (CMD_ARGC() >= 2)
+	{
+		value = Q_atof(CMD_ARGV(1));
+	}
+
+	if (value > 0.0f)
+	{
+		CVAR_SET_FLOAT("sv_restartround", value);
+	}
 }
 
 #endif // REGAMEDLL_ADD
@@ -233,7 +267,11 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&autoteambalance);
 	CVAR_REGISTER(&tkpunish);
 	CVAR_REGISTER(&hostagepenalty);
+
+#ifndef REGAMEDLL_FIXES
 	CVAR_REGISTER(&mirrordamage);
+#endif
+
 	CVAR_REGISTER(&logmessages);
 	CVAR_REGISTER(&forcecamera);
 	CVAR_REGISTER(&forcechasecam);
@@ -310,13 +348,15 @@ void EXT_FUNC GameDLLInit()
 
 	ADD_SERVER_COMMAND("game", GameDLL_Version_f);
 	ADD_SERVER_COMMAND("endround", GameDLL_EndRound_f);
-	ADD_SERVER_COMMAND("mp_swapteams", GameDLL_SwapTeams_f);
+	ADD_SERVER_COMMAND("swapteams", GameDLL_SwapTeams_f);
 
 	CVAR_REGISTER(&game_version);
 	CVAR_REGISTER(&maxmoney);
 	CVAR_REGISTER(&round_infinite);
 	CVAR_REGISTER(&hegrenade_penetration);
 	CVAR_REGISTER(&nadedrops);
+	CVAR_REGISTER(&weapondrop);
+	CVAR_REGISTER(&ammodrop);
 	CVAR_REGISTER(&roundrespawn_time);
 	CVAR_REGISTER(&auto_reload_weapons);
 	CVAR_REGISTER(&refill_bpammo_weapons);
@@ -359,6 +399,28 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&radio_timeout);
 	CVAR_REGISTER(&radio_maxinround);
+	CVAR_REGISTER(&falldamage);
+
+	CVAR_REGISTER(&ct_default_grenades);
+	CVAR_REGISTER(&ct_give_player_knife);
+	CVAR_REGISTER(&ct_default_weapons_secondary);
+	CVAR_REGISTER(&ct_default_weapons_primary);
+	CVAR_REGISTER(&t_default_grenades);
+	CVAR_REGISTER(&t_give_player_knife);
+	CVAR_REGISTER(&t_default_weapons_secondary);
+	CVAR_REGISTER(&t_default_weapons_primary);
+	CVAR_REGISTER(&free_armor);
+	CVAR_REGISTER(&allchat);
+	CVAR_REGISTER(&sv_autobunnyhopping);
+	CVAR_REGISTER(&sv_enablebunnyhopping);
+	CVAR_REGISTER(&plant_c4_anywhere);
+	CVAR_REGISTER(&give_c4_frags);
+
+	CVAR_REGISTER(&hostages_rescued_ratio);
+
+	CVAR_REGISTER(&legacy_vehicle_block);
+
+	CVAR_REGISTER(&dying_time);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");

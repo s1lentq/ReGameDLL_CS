@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cppunitlite/GradleAdapter.h"
+#include "cppunitlite/MainAdapter.h"
 #include "cppunitlite/Test.h"
 #include "cppunitlite/TestRegistry.h"
 
-int GradleAdapter::writeAllTestsInfoToFile(const char *fname) {
+int MainAdapter::writeAllTestsInfoToFile(const char *fname) {
 	FILE *outFile = fopen(fname, "w");
 	if (!outFile) {
 		return 1;
@@ -32,7 +32,7 @@ int GradleAdapter::writeAllTestsInfoToFile(const char *fname) {
 	return 0;
 }
 
-int GradleAdapter::runTest(const char *groupName, const char *testName) {
+int MainAdapter::runTest(const char *groupName, const char *testName) {
 	Test *curTest = TestRegistry::getFirstTest();
 	while (curTest) {
 		if (!strcmp(groupName, curTest->getGroup()) && !strcmp(testName, curTest->getName())) {
@@ -52,14 +52,18 @@ int GradleAdapter::runTest(const char *groupName, const char *testName) {
 	if (result.getFailureCount()) {
 		return 1;
 	}
+	else if (result.getWarningCount()) {
+		return 3;
+	}
 	else {
 		return 0;
 	}
 }
 
-int GradleAdapter::runGroup(const char *groupName) {
+int MainAdapter::runGroup(const char *groupName) {
 	Test *curTest = TestRegistry::getFirstTest();
 	int ranTests = 0;
+	int warnTest = 0;
 	while (curTest) {
 		if (strcmp(groupName, curTest->getGroup())) {
 			curTest = curTest->getNext();
@@ -74,6 +78,10 @@ int GradleAdapter::runGroup(const char *groupName) {
 			return 1;
 		}
 
+		if (result.getWarningCount()) {
+			warnTest++;
+		}
+
 		curTest = curTest->getNext();
 	}
 
@@ -82,13 +90,19 @@ int GradleAdapter::runGroup(const char *groupName) {
 		return 2;
 	}
 
+	if (warnTest > 0) {
+		printf("There were no test failures, but with warnings: %d; Tests executed: %d\n", warnTest, ranTests);
+		return 3;
+	}
+
 	printf("There were no test failures; Tests executed: %d\n", ranTests);
 	return 0;
 }
 
-int GradleAdapter::runAllTests() {
+int MainAdapter::runAllTests() {
 	Test *curTest = TestRegistry::getFirstTest();
 	int ranTests = 0;
+	int warnTest = 0;
 	while (curTest) {
 		TestResult result;
 		curTest->run(result);
@@ -98,14 +112,23 @@ int GradleAdapter::runAllTests() {
 			return 1;
 		}
 
+		if (result.getWarningCount()) {
+			warnTest++;
+		}
+
 		curTest = curTest->getNext();
+	}
+
+	if (warnTest > 0) {
+		printf("There were no test failures, but with warnings: %d; Tests executed: %d\n", warnTest, ranTests);
+		return 3;
 	}
 
 	printf("There were no test failures; Tests executed: %d\n", ranTests);
 	return 0;
 }
 
-int GradleAdapter::testsEntryPoint(int argc, char *argv[]) {
+int MainAdapter::testsEntryPoint(int argc, char *argv[]) {
 	if (argc < 2 || !strcmp(argv[1], "-all")) {
 		return runAllTests();
 	}

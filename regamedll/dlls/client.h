@@ -102,6 +102,7 @@ C_DLLEXPORT int CountTeams();
 C_DLLEXPORT int CountTeamPlayers(int iTeam);
 
 extern bool g_bServerActive;
+extern bool g_bItemCreatedByBuying;
 extern bool g_skipCareerInitialSpawn;
 
 extern unsigned short m_usResetDecals;

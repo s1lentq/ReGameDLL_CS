@@ -489,14 +489,14 @@ void CCSBot::UpdateSaveProcess()
 	HintMessageToAllPlayers("Saving...");
 	SaveNavigationMap(filename);
 
-	Q_sprintf(msg, "Navigation file '%s' saved.", filename);
+	Q_snprintf(msg, sizeof(msg), "Navigation file '%s' saved.", filename);
 	HintMessageToAllPlayers(msg);
 
 	hideProgressMeter();
 	StartNormalProcess();
 
 #ifndef REGAMEDLL_FIXES
-	Q_sprintf(cmd, "map %s\n", STRING(gpGlobals->mapname));
+	Q_snprintf(cmd, sizeof(cmd), "map %s\n", STRING(gpGlobals->mapname));
 #else
 	Q_snprintf(cmd, sizeof(cmd), "changelevel %s\n", STRING(gpGlobals->mapname));
 #endif

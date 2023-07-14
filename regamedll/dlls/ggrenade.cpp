@@ -1084,8 +1084,12 @@ void CGrenade::__API_HOOK(DefuseBombEnd)(CBasePlayer *pPlayer, bool bDefused)
 			CSGameRules()->m_bBombDefused = true;
 			CSGameRules()->CheckWinConditions();
 
-			// give the defuser credit for defusing the bomb
-			m_pBombDefuser->pev->frags += 3.0f;
+#ifdef REGAMEDLL_ADD
+				m_pBombDefuser->pev->frags += (int)give_c4_frags.value;
+#else
+				// give the defuser credit for defusing the bomb
+				m_pBombDefuser->pev->frags += 3.0f;
+#endif
 
 			MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);
 			MESSAGE_END();
@@ -1202,7 +1206,11 @@ CGrenade *CGrenade::__API_HOOK(ShootSatchelCharge)(entvars_t *pevOwner, VectorRe
 	UTIL_SetOrigin(pGrenade->pev, vecStart);
 	pGrenade->pev->velocity = g_vecZero;
 	pGrenade->pev->angles = vecAngles;
-	pGrenade->pev->owner = ENT(pevOwner);
+
+	if (pevOwner)
+		pGrenade->pev->owner = ENT(pevOwner);
+	else
+		pGrenade->pev->owner = nullptr;
 
 	// Detonate in "time" seconds
 	pGrenade->SetThink(&CGrenade::C4Think);
@@ -1211,7 +1219,7 @@ CGrenade *CGrenade::__API_HOOK(ShootSatchelCharge)(entvars_t *pevOwner, VectorRe
 
 #ifdef REGAMEDLL_FIXES
 	TraceResult tr;
-	UTIL_TraceLine(vecStart,  vecStart + Vector(0, 0, -8192), ignore_monsters, ENT(pevOwner), &tr);
+	UTIL_TraceLine(vecStart,  vecStart + Vector(0, 0, -8192), ignore_monsters, pGrenade->pev->owner, &tr);
 	pGrenade->pev->oldorigin = (tr.flFraction == 1.0) ? vecStart : tr.vecEndPos;
 
 	pGrenade->pev->nextthink = gpGlobals->time + 0.01f;
@@ -1235,15 +1243,15 @@ CGrenade *CGrenade::__API_HOOK(ShootSatchelCharge)(entvars_t *pevOwner, VectorRe
 	pGrenade->pev->friction = 0.9f;
 	pGrenade->m_bJustBlew = false;
 
-	CBasePlayer *pOwner = CBasePlayer::Instance(pevOwner);
-	if (pOwner && pOwner->IsPlayer())
+	edict_t *pEntCurBombTarget = nullptr;
+	if (pevOwner)
 	{
-		pGrenade->m_pentCurBombTarget = pOwner->m_pentCurBombTarget;
+		CBasePlayer *pOwner = CBasePlayer::Instance(pevOwner);
+		if (pOwner && pOwner->IsPlayer())
+			pEntCurBombTarget = pOwner->m_pentCurBombTarget;
 	}
-	else
-	{
-		pGrenade->m_pentCurBombTarget = nullptr;
-	}
+
+	pGrenade->m_pentCurBombTarget = pEntCurBombTarget;
 
 	return pGrenade;
 }
@@ -1431,7 +1439,11 @@ void CGrenade::C4Think()
 		CBasePlayer *pBombOwner = CBasePlayer::Instance(pev->owner);
 		if (pBombOwner)
 		{
+#ifdef REGAMEDLL_ADD
+			pBombOwner->pev->frags += (int)give_c4_frags.value;
+#else
 			pBombOwner->pev->frags += 3.0f;
+#endif
 		}
 
 		MESSAGE_BEGIN(MSG_ALL, gmsgBombPickup);

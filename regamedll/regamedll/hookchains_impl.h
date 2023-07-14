@@ -29,6 +29,7 @@
 #pragma once
 
 #include "hookchains.h"
+#include <type_traits>
 
 #define MAX_HOOKS_IN_CHAIN 30
 
@@ -104,11 +105,28 @@ public:
 			return nexthook(&nextChain, object, args...);
 		}
 
-		return m_OriginalFunc ? (object->*m_OriginalFunc)(args...) : t_ret();
+		return m_OriginalFunc ? (object->*m_OriginalFunc)(args...) : GetDefaultValue<t_ret>();
 	}
 
-	virtual t_ret callOriginal(t_class *object, t_args... args) {
-		return m_OriginalFunc ? (object->*m_OriginalFunc)(args...) : t_ret();
+	virtual t_ret callOriginal(t_class *object, t_args... args)
+	{
+		return m_OriginalFunc ? (object->*m_OriginalFunc)(args...) : GetDefaultValue<t_ret>();
+	}
+
+	template <typename T>
+	typename std::enable_if_t<std::is_void<T>::value == false, T>
+		GetDefaultValue()
+	{
+		typedef typename std::remove_reference<T>::type t_ret_noref;
+
+		static t_ret_noref defaultRet = t_ret_noref{};
+		return defaultRet;
+	}
+
+	template <typename T>
+	typename std::enable_if_t<std::is_void<T>::value == true, T>
+		GetDefaultValue()
+	{
 	}
 
 private:

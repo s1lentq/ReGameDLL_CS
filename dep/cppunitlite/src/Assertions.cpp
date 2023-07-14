@@ -27,13 +27,13 @@ void Assertions::StringEquals(std::string message, const char *expected, const c
 	}
 }
 
-void Assertions::ConditionFailed(std::string message, std::string condition, const char *fileName, long lineNumber) {
+void Assertions::ConditionFailed(std::string message, std::string condition, const char *fileName, long lineNumber, bool onlyWarning) {
 	std::stringstream ss;
 	ss << message << " (condition failed: " << condition << ")";
-	throw TestFailException(ss.str(), std::string(fileName), lineNumber);
+	throw TestFailException(ss.str(), std::string(fileName), lineNumber, onlyWarning);
 }
 
-void Assertions::LongEquals(std::string message, long expected, long actual, const char *fileName, long lineNumber) {
+void Assertions::LongEquals(std::string message, long expected, long actual, const char* fileName, long lineNumber) {
 	if (expected != actual) {
 		std::stringstream ss;
 		ss << message << " (expected '" << expected << "', got '" << actual << "')";
@@ -41,7 +41,7 @@ void Assertions::LongEquals(std::string message, long expected, long actual, con
 	}
 }
 
-void Assertions::UInt32Equals(std::string message, unsigned int expected, unsigned int actual, const char *fileName, long lineNumber) {
+void Assertions::UInt32Equals(std::string message, unsigned int expected, unsigned int actual, const char* fileName, long lineNumber) {
 	if (expected != actual) {
 		std::stringstream ss;
 		ss << message << " (expected '" << expected << "', got '" << actual << "')";
@@ -49,7 +49,7 @@ void Assertions::UInt32Equals(std::string message, unsigned int expected, unsign
 	}
 }
 
-void Assertions::CharEquals(std::string message, char expected, char actual, const char *fileName, long lineNumber) {
+void Assertions::CharEquals(std::string message, char expected, char actual, const char* fileName, long lineNumber) {
 	if (expected != actual) {
 		std::stringstream ss;
 		ss << message << " (expected '" << expected << "', got '" << actual << "')";
@@ -57,15 +57,15 @@ void Assertions::CharEquals(std::string message, char expected, char actual, con
 	}
 }
 
-void Assertions::DoubleEquals(std::string message, double expected, double actual, double epsilon, const char *fileName, long lineNumber) {
-	if (std::abs(expected - actual) > epsilon) {
+void Assertions::DoubleEquals(std::string message, double expected, double actual, double epsilon, const char* fileName, long lineNumber) {
+	if (std::fabs(expected - actual) > epsilon) {
 		std::stringstream ss;
 		ss << message << " (expected '" << expected << "', got '" << actual << "')";
 		throw TestFailException(ss.str(), std::string(fileName), lineNumber);
 	}
 }
 
-void Assertions::MemoryEquals(std::string message, void *expected, void *actual, int size, const char *fileName, long lineNumber) {
+void Assertions::MemoryEquals(std::string message, void* expected, void* actual, int size, const char* fileName, long lineNumber) {
 	if (memcmp(expected, actual, size)) {
 		std::stringstream ss;
 		ss << message << " (expected '";

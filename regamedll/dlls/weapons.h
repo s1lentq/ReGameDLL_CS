@@ -35,11 +35,12 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 
 #define MAX_WEAPONS                 32
 
-#define ITEM_FLAG_SELECTONEMPTY     1
-#define ITEM_FLAG_NOAUTORELOAD      2
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY 4
-#define ITEM_FLAG_LIMITINWORLD      8
-#define ITEM_FLAG_EXHAUSTIBLE       16 // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_SELECTONEMPTY     BIT(0)
+#define ITEM_FLAG_NOAUTORELOAD      BIT(1)
+#define ITEM_FLAG_NOAUTOSWITCHEMPTY BIT(2)
+#define ITEM_FLAG_LIMITINWORLD      BIT(3)
+#define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_NOFIREUNDERWATER  BIT(5)
 
 #define WEAPON_IS_ONTARGET          0x40
 
@@ -425,7 +426,7 @@ public:
 	int m_iShellId;
 	float m_fMaxSpeed;
 	bool m_bDelayFire;
-	int m_iDirection;
+	BOOL m_iDirection;
 	bool m_bSecondarySilencerOn;
 	float m_flAccuracy;
 	float m_flLastFire;
@@ -580,6 +581,11 @@ const float MP5N_MAX_SPEED     = 250.0f;
 const float MP5N_DAMAGE        = 26.0f;
 const float MP5N_RANGE_MODIFER = 0.84f;
 const float MP5N_RELOAD_TIME   = 2.63f;
+#ifdef REGAMEDLL_FIXES
+const float MP5N_ACCURACY_DIVISOR = 220.1f;
+#else
+const double MP5N_ACCURACY_DIVISOR = 220.1;
+#endif
 
 enum mp5n_e
 {
@@ -628,6 +634,11 @@ const float SG552_MAX_SPEED_ZOOM = 200.0f;
 const float SG552_DAMAGE         = 33.0f;
 const float SG552_RANGE_MODIFER  = 0.955f;
 const float SG552_RELOAD_TIME    = 3.0f;
+#ifdef REGAMEDLL_FIXES
+const float SG552_ACCURACY_DIVISOR = 220.0f;
+#else
+const int SG552_ACCURACY_DIVISOR = 220;
+#endif
 
 enum sg552_e
 {
@@ -676,6 +687,11 @@ const float AK47_MAX_SPEED     = 221.0f;
 const float AK47_DAMAGE        = 36.0f;
 const float AK47_RANGE_MODIFER = 0.98f;
 const float AK47_RELOAD_TIME   = 2.45f;
+#ifdef REGAMEDLL_FIXES
+const float AK47_ACCURACY_DIVISOR = 200.0f;
+#else
+const int AK47_ACCURACY_DIVISOR = 200;
+#endif
 
 enum ak47_e
 {
@@ -724,6 +740,11 @@ const float AUG_MAX_SPEED     = 240.0f;
 const float AUG_DAMAGE        = 32.0f;
 const float AUG_RANGE_MODIFER = 0.96f;
 const float AUG_RELOAD_TIME   = 3.3f;
+#ifdef REGAMEDLL_FIXES
+const float AUG_ACCURACY_DIVISOR = 215.0f;
+#else
+const int AUG_ACCURACY_DIVISOR = 215;
+#endif
 
 enum aug_e
 {
@@ -1130,10 +1151,16 @@ public:
 };
 
 
-const float KNIFE_BODYHIT_VOLUME   = 128.0f;
-const float KNIFE_WALLHIT_VOLUME   = 512.0f;
-const float KNIFE_MAX_SPEED        = 250.0f;
-const float KNIFE_MAX_SPEED_SHIELD = 180.0f;
+const float KNIFE_BODYHIT_VOLUME      = 128.0f;
+const float KNIFE_WALLHIT_VOLUME      = 512.0f;
+const float KNIFE_MAX_SPEED           = 250.0f;
+const float KNIFE_MAX_SPEED_SHIELD    = 180.0f;
+const float KNIFE_STAB_DAMAGE         = 65.0f;
+const float KNIFE_SWING_DAMAGE        = 15.0f;
+const float KNIFE_SWING_DAMAGE_FAST   = 20.0f;
+const float KNIFE_STAB_DISTANCE       = 32.0f;
+const float KNIFE_SWING_DISTANCE      = 48.0f;
+const float KNIFE_BACKSTAB_MULTIPLIER = 3.0f;
 
 enum knife_e
 {
@@ -1194,16 +1221,51 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 
-public:
+	float KnifeStabDamage() const;
+	float KnifeSwingDamage(bool fast) const;
+	float KnifeStabDistance() const;
+	float KnifeSwingDistance() const;
+	float KnifeBackStabMultiplier() const;
+
+private:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
+
+#ifdef REGAMEDLL_API
+	float m_flStabBaseDamage;
+	float m_flSwingBaseDamage;
+	float m_flSwingBaseDamage_Fast;
+
+	float m_flStabDistance;
+	float m_flSwingDistance;
+
+	float m_flBackStabMultiplier;
+#endif
 };
 
+#ifdef REGAMEDLL_API
+inline float CKnife::KnifeStabDamage() const			{ return m_flStabBaseDamage; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? m_flSwingBaseDamage_Fast : m_flSwingBaseDamage; }
+inline float CKnife::KnifeStabDistance() const			{ return m_flStabDistance; }
+inline float CKnife::KnifeSwingDistance() const			{ return m_flSwingDistance; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return m_flBackStabMultiplier; }
+#else 
+inline float CKnife::KnifeStabDamage() const			{ return KNIFE_STAB_DAMAGE; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? KNIFE_SWING_DAMAGE_FAST : KNIFE_SWING_DAMAGE; }
+inline float CKnife::KnifeStabDistance() const			{ return KNIFE_STAB_DISTANCE; }
+inline float CKnife::KnifeSwingDistance() const			{ return KNIFE_SWING_DISTANCE; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return KNIFE_BACKSTAB_MULTIPLIER; }
+#endif // REGAMEDLL_API
 
 const float M249_MAX_SPEED     = 220.0f;
 const float M249_DAMAGE        = 32.0f;
 const float M249_RANGE_MODIFER = 0.97f;
 const float M249_RELOAD_TIME   = 4.7f;
+#ifdef REGAMEDLL_FIXES
+const float M249_ACCURACY_DIVISOR = 175.0f;
+#else
+const int M249_ACCURACY_DIVISOR = 175;
+#endif
 
 enum m249_e
 {
@@ -1299,6 +1361,11 @@ const float M4A1_DAMAGE_SIL        = 33.0f;
 const float M4A1_RANGE_MODIFER     = 0.97f;
 const float M4A1_RANGE_MODIFER_SIL = 0.95f;
 const float M4A1_RELOAD_TIME       = 3.05f;
+#ifdef REGAMEDLL_FIXES
+const float M4A1_ACCURACY_DIVISOR = 220.0f;
+#else
+const int M4A1_ACCURACY_DIVISOR = 220;
+#endif
 
 enum m4a1_e
 {
@@ -1359,6 +1426,11 @@ const float MAC10_MAX_SPEED     = 250.0f;
 const float MAC10_DAMAGE        = 29.0f;
 const float MAC10_RANGE_MODIFER = 0.82f;
 const float MAC10_RELOAD_TIME   = 3.15f;
+#ifdef REGAMEDLL_FIXES
+const float MAC10_ACCURACY_DIVISOR = 200.0f;
+#else
+const int MAC10_ACCURACY_DIVISOR = 200;
+#endif
 
 enum mac10_e
 {
@@ -1471,6 +1543,11 @@ const float P90_MAX_SPEED     = 245.0f;
 const float P90_DAMAGE        = 21.0f;
 const float P90_RANGE_MODIFER = 0.885f;
 const float P90_RELOAD_TIME   = 3.4f;
+#ifdef REGAMEDLL_FIXES
+const float P90_ACCURACY_DIVISOR = 175.0f;
+#else
+const int P90_ACCURACY_DIVISOR = 175;
+#endif
 
 enum p90_e
 {
@@ -1613,6 +1690,11 @@ const float TMP_MAX_SPEED     = 250.0f;
 const float TMP_DAMAGE        = 20.0f;
 const float TMP_RANGE_MODIFER = 0.85f;
 const float TMP_RELOAD_TIME   = 2.12f;
+#ifdef REGAMEDLL_FIXES
+const float TMP_ACCURACY_DIVISOR = 200.0f;
+#else
+const int TMP_ACCURACY_DIVISOR = 200;
+#endif
 
 enum tmp_e
 {
@@ -1816,6 +1898,11 @@ const float UMP45_MAX_SPEED     = 250.0f;
 const float UMP45_DAMAGE        = 30.0f;
 const float UMP45_RANGE_MODIFER = 0.82f;
 const float UMP45_RELOAD_TIME   = 3.5f;
+#ifdef REGAMEDLL_FIXES
+const float UMP45_ACCURACY_DIVISOR = 210.0f;
+#else
+const int UMP45_ACCURACY_DIVISOR = 210;
+#endif
 
 enum ump45_e
 {
@@ -1909,6 +1996,11 @@ const float GALIL_MAX_SPEED     = 240.0f;
 const float GALIL_DAMAGE        = 30.0f;
 const float GALIL_RANGE_MODIFER = 0.98f;
 const float GALIL_RELOAD_TIME   = 2.45f;
+#ifdef REGAMEDLL_FIXES
+const float GALIL_ACCURACY_DIVISOR = 200.0f;
+#else
+const int GALIL_ACCURACY_DIVISOR = 200;
+#endif
 
 enum galil_e
 {
@@ -1959,6 +2051,11 @@ const float FAMAS_RELOAD_TIME   = 3.3f;
 const float FAMAS_DAMAGE        = 30.0f;
 const float FAMAS_DAMAGE_BURST  = 34.0f;
 const float FAMAS_RANGE_MODIFER = 0.96f;
+#ifdef REGAMEDLL_FIXES
+const float FAMAS_ACCURACY_DIVISOR = 215.0f;
+#else
+const int FAMAS_ACCURACY_DIVISOR = 215;
+#endif
 
 enum famas_e
 {
@@ -2042,3 +2139,4 @@ void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotat
 void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
+float GetBaseAccuracy(WeaponIdType id);

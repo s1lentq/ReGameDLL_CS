@@ -772,28 +772,28 @@ void UTIL_SayTextAll(const char *pText, CBaseEntity *pEntity)
 
 char *UTIL_dtos1(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 char *UTIL_dtos2(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos3(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
 
 NOXREF char *UTIL_dtos4(int d)
 {
-	static char buf[8];
+	static char buf[12];
 	Q_sprintf(buf, "%d", d);
 	return buf;
 }
@@ -1056,7 +1056,7 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 	MESSAGE_END();
 }
 
-void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, int amount)
+void UTIL_BloodDrips(const Vector &origin, int color, int amount)
 {
 	if (!UTIL_ShouldShowBlood(color))
 		return;
@@ -1497,15 +1497,19 @@ void UTIL_RestartOther(const char *szClassname)
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
+		
+#ifdef REGAMEDLL_ADD
+		FireTargets("game_entity_restart", pEntity, nullptr, USE_TOGGLE, 0.0);
+#endif
 	}
 }
 
 void UTIL_ResetEntities()
 {
-	edict_t *pEdict = INDEXENT(1);
-	for (int i = 1; i < gpGlobals->maxEntities; i++, pEdict++)
+	for (int i = 1; i < gpGlobals->maxEntities; i++)
 	{
-		if (pEdict->free)
+		edict_t *pEdict = INDEXENT(i);
+		if (!pEdict || pEdict->free)
 			continue;
 
 		CBaseEntity *pEntity = CBaseEntity::Instance(pEdict);
@@ -1725,6 +1729,9 @@ bool UTIL_AreHostagesImprov()
 	}
 
 #ifdef REGAMEDLL_ADD
+	if (g_engfuncs.pfnEngCheckParm == nullptr)
+		return false;
+	
 	// someday in CS 1.6
 	int improv = ENG_CHECK_PARM("-host-improv", nullptr);
 	if (improv)

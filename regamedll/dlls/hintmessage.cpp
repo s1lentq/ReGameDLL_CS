@@ -2,7 +2,7 @@
 
 CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const char *> *args, float duration)
 {
-	m_hintString = hintString;
+	m_hintString = CloneString(hintString);
 	m_duration = duration;
 	m_isHint = isHint;
 
@@ -15,10 +15,13 @@ CHintMessage::CHintMessage(const char *hintString, bool isHint, CUtlVector<const
 
 CHintMessage::~CHintMessage()
 {
-	for (int i = 0; i < m_args.Count(); i++)
-		delete[] m_args[i];
+	m_args.PurgeAndDeleteArrays();
 
-	m_args.RemoveAll();
+	if (m_hintString)
+	{
+		delete[] m_hintString;
+		m_hintString = NULL;
+	}
 }
 
 void CHintMessage::Send(CBaseEntity *client)
@@ -29,11 +32,7 @@ void CHintMessage::Send(CBaseEntity *client)
 void CHintMessageQueue::Reset()
 {
 	m_tmMessageEnd = 0;
-
-	for (int i = 0; i < m_messages.Count(); i++)
-		delete m_messages[i];
-
-	m_messages.RemoveAll();
+	m_messages.PurgeAndDeleteElements();
 }
 
 void CHintMessageQueue::Update(CBaseEntity *client)

@@ -371,8 +371,10 @@ void CItemKevlar::Precache()
 BOOL CItemKevlar::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
+	if (!g_bItemCreatedByBuying && pPlayer->HasRestrictItem(ITEM_KEVLAR, ITEM_TYPE_TOUCHED))
 		return FALSE;
+
+	g_bItemCreatedByBuying = false;
 #endif
 
 #ifdef REGAMEDLL_FIXES
@@ -423,8 +425,10 @@ void CItemAssaultSuit::Precache()
 BOOL CItemAssaultSuit::MyTouch(CBasePlayer *pPlayer)
 {
 #ifdef REGAMEDLL_ADD
-	if (pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
+	if (!g_bItemCreatedByBuying && pPlayer->HasRestrictItem(ITEM_ASSAULT, ITEM_TYPE_TOUCHED))
 		return FALSE;
+
+	g_bItemCreatedByBuying = false;
 #endif
 
 #ifdef REGAMEDLL_FIXES
@@ -491,6 +495,8 @@ BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 	MESSAGE_END();
 
 	pPlayer->SendItemStatus();
+	pPlayer->SetScoreboardAttributes();
+
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 
 	if (TheTutor)
@@ -547,6 +553,44 @@ ItemID GetItemIdByArmoury(ArmouryItemPack armoury)
 	case ARMOURY_SG550: return ITEM_SG550;
 	case ARMOURY_GALIL: return ITEM_GALIL;
 	case ARMOURY_UMP45: return ITEM_UMP45;
+	default: return ITEM_NONE;
+	}
+}
+
+ItemID GetItemIdByWeaponId(int weaponId)
+{
+	switch (static_cast<WeaponIdType>(weaponId))
+	{
+	case WEAPON_KNIFE: return ITEM_KNIFE;
+	case WEAPON_MP5N: return ITEM_MP5N;
+	case WEAPON_TMP: return ITEM_TMP;
+	case WEAPON_P90: return ITEM_P90;
+	case WEAPON_MAC10: return ITEM_MAC10;
+	case WEAPON_AK47: return ITEM_AK47;
+	case WEAPON_SG552: return ITEM_SG552;
+	case WEAPON_M4A1: return ITEM_M4A1;
+	case WEAPON_AUG: return ITEM_AUG;
+	case WEAPON_SCOUT: return ITEM_SCOUT;
+	case WEAPON_G3SG1: return ITEM_G3SG1;
+	case WEAPON_AWP: return ITEM_AWP;
+	case WEAPON_M3: return ITEM_M3;
+	case WEAPON_XM1014: return ITEM_XM1014;
+	case WEAPON_C4: return ITEM_C4;
+	case WEAPON_M249: return ITEM_M249;
+	case WEAPON_FLASHBANG: return ITEM_FLASHBANG;
+	case WEAPON_HEGRENADE: return ITEM_HEGRENADE;
+	case WEAPON_SMOKEGRENADE: return ITEM_SMOKEGRENADE;
+	case WEAPON_SHIELDGUN: return ITEM_SHIELDGUN;
+	case WEAPON_GLOCK18: return ITEM_GLOCK18;
+	case WEAPON_USP: return ITEM_USP;
+	case WEAPON_ELITE: return ITEM_ELITE;
+	case WEAPON_FIVESEVEN: return ITEM_FIVESEVEN;
+	case WEAPON_P228: return ITEM_P228;
+	case WEAPON_DEAGLE: return ITEM_DEAGLE;
+	case WEAPON_FAMAS: return ITEM_FAMAS;
+	case WEAPON_SG550: return ITEM_SG550;
+	case WEAPON_GALIL: return ITEM_GALIL;
+	case WEAPON_UMP45: return ITEM_UMP45;
 	default: return ITEM_NONE;
 	}
 }

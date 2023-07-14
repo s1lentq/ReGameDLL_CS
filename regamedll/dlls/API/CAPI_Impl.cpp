@@ -38,6 +38,18 @@ const char *EXT_FUNC Cmd_Argv_api(int i) {
 	return CMD_ARGV_(i);
 }
 
+CGrenade *PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity) {
+	return CGrenade::ShootSatchelCharge(pevOwner, vecStart, vecVelocity);
+}
+
+CGib *SpawnHeadGib_api(entvars_t *pevVictim) {
+	return CGib::SpawnHeadGib(pevVictim);
+}
+
+void SpawnRandomGibs_api(entvars_t *pevVictim, int cGibs, int human) {
+	CGib::SpawnRandomGibs(pevVictim, cGibs, human);
+}
+
 ReGameFuncs_t g_ReGameApiFuncs = {
 	&CREATE_NAMED_ENTITY,
 
@@ -54,7 +66,16 @@ ReGameFuncs_t g_ReGameApiFuncs = {
 	&RemoveEntityHashValue,
 
 	Cmd_Argc_api,
-	Cmd_Argv_api
+	Cmd_Argv_api,
+
+	PlantBomb_api,
+
+	SpawnHeadGib_api,
+	SpawnRandomGibs_api,
+
+	UTIL_RestartOther_api,
+	UTIL_ResetEntities_api,
+	UTIL_RemoveOther_api,
 };
 
 GAMEHOOK_REGISTRY(CBasePlayer_Spawn);
@@ -168,6 +189,27 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultReload);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_DefaultShotgunReload);
 GAMEHOOK_REGISTRY(CBasePlayer_DropIdlePlayer);
 
+GAMEHOOK_REGISTRY(CreateWeaponBox);
+
+GAMEHOOK_REGISTRY(SpawnHeadGib);
+GAMEHOOK_REGISTRY(SpawnRandomGibs);
+GAMEHOOK_REGISTRY(CGib_Spawn);
+GAMEHOOK_REGISTRY(CGib_BounceGibTouch);
+GAMEHOOK_REGISTRY(CGib_WaitTillLand);
+
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBuckshots);
+GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
+
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_SetMode);
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
+
+GAMEHOOK_REGISTRY(CBasePlayer_Pain);
+GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
+GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
+
+GAMEHOOK_REGISTRY(FreeGameRules);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
@@ -258,6 +300,19 @@ EXT_FUNC void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttack
 EXT_FUNC void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
+}
+
+EXT_FUNC void UTIL_RestartOther_api(const char *szClassname) {
+	UTIL_RestartOther(szClassname);
+}
+
+EXT_FUNC void UTIL_ResetEntities_api() {
+	UTIL_ResetEntities();
+}
+
+EXT_FUNC void UTIL_RemoveOther_api(const char *szClassname, int nCount)
+{
+	UTIL_RemoveOther(szClassname, nCount);
 }
 
 EXPOSE_SINGLE_INTERFACE(CReGameApi, IReGameApi, VRE_GAMEDLL_API_VERSION);

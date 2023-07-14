@@ -409,8 +409,15 @@ private:
 	bool IsPlayerInBombSite(CBasePlayer *pPlayer);
 public:
 	virtual void Spawn();
+	virtual void KeyValue(KeyValueData *pkvd);
+
 	void EXPORT BombTargetTouch(CBaseEntity *pOther);
 	void EXPORT BombTargetUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+
+#ifdef REGAMEDLL_ADD
+public:
+	bool m_bStrictTouch;
+#endif
 };
 
 class CHostageRescue: public CBaseTrigger

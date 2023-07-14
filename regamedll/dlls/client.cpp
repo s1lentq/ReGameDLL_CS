@@ -134,6 +134,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 };
 
 bool g_bServerActive = false;
+bool g_bItemCreatedByBuying = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
 unsigned short m_usResetDecals;
 unsigned short g_iShadowSprite;
@@ -244,6 +245,13 @@ void WriteSigonMessages()
 		else
 			pszName = info.pszName;
 
+		int iFlags = info.iFlags;
+
+#ifdef PLAY_GAMEDLL
+		// TODO: fix test demo
+		iFlags &= ~ITEM_FLAG_NOFIREUNDERWATER;
+#endif
+
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
 			WRITE_STRING(pszName);
 			WRITE_BYTE(CBasePlayer::GetAmmoIndex(info.pszAmmo1));
@@ -253,7 +261,7 @@ void WriteSigonMessages()
 			WRITE_BYTE(info.iSlot);
 			WRITE_BYTE(info.iPosition);
 			WRITE_BYTE(info.iId);
-			WRITE_BYTE(info.iFlags);
+			WRITE_BYTE(iFlags);
 		MESSAGE_END();
 	}
 }
@@ -367,29 +375,13 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pPlayer->GetObserverMode() != OBS_NONE)
-		return;
-
-	if (pPlayer->m_iJoiningState != JOINED)
-		return;
-
 	// prevent suiciding too often
 	if (pPlayer->m_fNextSuicideTime > gpGlobals->time)
 		return;
 
-	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
-
-	// don't let them suicide for 5 seconds after suiciding
+	// don't let them suicide for 1 second after suiciding
 	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
-
-	// have the player kill themself
-	pEntity->v.health = 0;
-	pPlayer->Killed(pev, GIB_NEVER);
-
-	if (CSGameRules()->m_pVIP == pPlayer)
-	{
-		CSGameRules()->m_iConsecutiveVIP = 10;
-	}
+	pPlayer->Kill();
 }
 
 LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText), pPlayer, bitsValidSlots, nDisplayTime, fNeedMore, pszText)
@@ -735,7 +727,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	}
 
 #ifdef REGAMEDLL_API
-	pPlayer->CSPlayer()->Reset();
+	pPlayer->CSPlayer()->ResetVars();
 #endif
 
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
@@ -771,7 +763,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			p = (char *)CMD_ARGS();
+			Q_strlcpy(szTemp, CMD_ARGS());
+			p = szTemp;
 		}
 		else
 		{
@@ -783,12 +776,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			Q_sprintf(szTemp, "%s %s", (char *)pcmd, (char *)CMD_ARGS());
+			Q_sprintf(szTemp, "%s %s", pcmd, CMD_ARGS());
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_sprintf(szTemp, "%s", (char *)pcmd);
+			Q_sprintf(szTemp, "%s", pcmd);
 		}
 
 		p = szTemp;
@@ -805,8 +798,16 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		p[Q_strlen(p) - 1] = '\0';
 	}
 
+	// Check if buffer contains an invalid unicode sequence
+	// This can happen after truncation up to 127 chars into SV_ParseStringCommand
+	if (!Q_UnicodeValidate(p))
+	{
+		// Try fix invalid sequence in UTF-8
+		Q_UnicodeRepair(p);
+	}
+
 	// make sure the text has content
-	if (/*!p || */!p[0] || !Q_UnicodeValidate(p))
+	if (!p[0])
 	{
 		// no character found, so say nothing
 		return;
@@ -963,7 +964,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if (teamonly && pReceiver->m_iTeam != pPlayer->m_iTeam)
 			continue;
 
-		if ((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead))
+		if (
+#ifdef REGAMEDLL_ADD
+			!(bool)allchat.value &&
+#endif
+			((pReceiver->pev->deadflag != DEAD_NO && !bSenderDead) || (pReceiver->pev->deadflag == DEAD_NO && bSenderDead)))
 		{
 			if (!(pPlayer->pev->flags & FL_PROXY))
 				continue;
@@ -1493,7 +1498,10 @@ void BuyItem(CBasePlayer *pPlayer, int iSlot)
 
 	if (pszItem)
 	{
+		g_bItemCreatedByBuying = true;
 		pPlayer->GiveNamedItem(pszItem);
+		g_bItemCreatedByBuying = false;
+
 		pPlayer->AddAccount(-iItemPrice, RT_PLAYER_BOUGHT_SOMETHING);
 	}
 
@@ -1832,10 +1840,11 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		{
 			if (pPlayer->m_iTeam != UNASSIGNED && pPlayer->pev->deadflag == DEAD_NO)
 			{
-				ClientKill(pPlayer->edict());
-
-				// add 1 to frags to balance out the 1 subtracted for killing yourself
-				pPlayer->pev->frags++;
+				if (pPlayer->Kill())
+				{
+					// add 1 to frags to balance out the 1 subtracted for killing yourself
+					pPlayer->pev->frags++;
+				}
 			}
 
 			pPlayer->RemoveAllItems(TRUE);
@@ -2067,10 +2076,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		pPlayer->m_iMenu = Menu_ChooseAppearance;
 
 		// Show the appropriate Choose Appearance menu
-		// This must come before ClientKill() for CheckWinConditions() to function properly
+		// This must come before pPlayer->Kill() for CheckWinConditions() to function properly
 		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
-			ClientKill(pPlayer->edict());
+			pPlayer->Kill();
 		}
 	}
 
@@ -3213,7 +3222,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_autoBuyString[0] != '\0')
 			return;
-		
+
 		pPlayer->ClearAutoBuyData();
 
 		for (int i = 1; i < CMD_ARGC_(); i++)
@@ -3233,7 +3242,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (pPlayer->pev->deadflag != DEAD_NO && pPlayer->m_rebuyString)
 			return;
-		
+
 		if (CMD_ARGC_() == 2)
 		{
 			pPlayer->InitRebuyData(parg1);
@@ -3628,7 +3637,7 @@ void EXT_FUNC ClientUserInfoChanged(edict_t *pEntity, char *infobuffer)
 		if (!pPlayer->SetClientUserInfoName(infobuffer, szName))
 		{
 			// so to back old name into buffer
-			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", (char *)STRING(pPlayer->pev->netname));
+			SET_CLIENT_KEY_VALUE(pPlayer->entindex(), infobuffer, "name", STRING(pPlayer->pev->netname));
 		}
 	}
 
@@ -3927,7 +3936,7 @@ void ClientPrecache()
 			if (!fname)
 				break;
 
-			PRECACHE_MODEL((char *)fname);
+			PRECACHE_MODEL(fname);
 		}
 	}
 
@@ -4787,7 +4796,12 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 				// Get The ID
 				ItemInfo II;
 				Q_memset(&II, 0, sizeof(II));
+
+#ifdef REGAMEDLL_API
+				pPlayerItem->CSPlayerItem()->GetItemInfo(&II);
+#else
 				weapon->GetItemInfo(&II);
+#endif
 
 				if (II.iId >= 0 && II.iId < MAX_WEAPONS)
 				{
@@ -4893,7 +4907,12 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 		cd->m_flNextAttack = pPlayer->m_flNextAttack;
 
 		int iUser3 = 0;
-		if (pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing)
+
+		if (
+#ifdef REGAMEDLL_API
+			pPlayer->CSPlayer()->m_bCanShootOverride ||
+#endif
+			(pPlayer->m_bCanShoot && !pPlayer->m_bIsDefusing))
 			iUser3 |= PLAYER_CAN_SHOOT;
 
 		if (g_pGameRules->IsFreezePeriod())
@@ -4920,7 +4939,13 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 			Q_memset(&II, 0, sizeof(II));
 
 			CBasePlayerWeapon *weapon = (CBasePlayerWeapon *)pPlayer->m_pActiveItem->GetWeaponPtr();
-			if (weapon && weapon->UseDecrement() && weapon->GetItemInfo(&II))
+			if (weapon && weapon->UseDecrement() &&
+#ifdef REGAMEDLL_API
+				weapon->CSPlayerItem()->GetItemInfo(&II)
+#else
+				weapon->GetItemInfo(&II)
+#endif
+				)
 			{
 				cd->m_iId = II.iId;
 

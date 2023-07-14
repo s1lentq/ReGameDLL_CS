@@ -298,9 +298,18 @@ enum MusicState { SILENT, CALM, INTENSE };
 
 class CCSPlayer;
 
+#define ALL_OTHER_ITEMS        6
+
 class CStripWeapons: public CPointEntity {
 public:
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void KeyValue(KeyValueData *pkvd);
+
+#ifdef REGAMEDLL_ADD
+public:
+	int m_bitsIgnoreSlots;
+	int m_iszSpecialItem;
+#endif
 };
 
 // Dead HEV suit prop
@@ -430,6 +439,11 @@ public:
 	bool HintMessageEx_OrigFunc(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
 	void UseEmpty_OrigFunc();
 	void DropIdlePlayer_OrigFunc(const char *reason);
+	void Observer_SetMode_OrigFunc(int iMode);
+	EXT_FUNC void Observer_FindNextPlayer_OrigFunc(bool bReverse, const char* name = nullptr);
+	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
+	void DeathSound_OrigFunc();
+	void JoiningThink_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -569,6 +583,7 @@ public:
 	bool IsHittingShield(Vector &vecDirection, TraceResult *ptr);
 	bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	bool IsReloading() const;
+	bool HasTimePassedSinceDeath(float duration) const;
 	bool IsBlind() const { return (m_blindUntilTime > gpGlobals->time); }
 	bool IsAutoFollowAllowed() const { return (gpGlobals->time > m_allowAutoFollowTime); }
 	void InhibitAutoFollow(float duration) { m_allowAutoFollowTime = gpGlobals->time + duration; }
@@ -627,6 +642,7 @@ public:
 	void RemoveSpawnProtection();
 	void UseEmpty();
 	void DropIdlePlayer(const char *reason);
+	bool Kill();
 
 	// templates
 	template<typename T = CBasePlayerItem, typename Functor>
@@ -635,10 +651,11 @@ public:
 		auto item = m_rgpPlayerItems[slot];
 		while (item)
 		{
+			auto next = item->m_pNext;
 			if (func(static_cast<T *>(item)))
 				return static_cast<T *>(item);
 
-			item = item->m_pNext;
+			item = next;
 		}
 
 		return nullptr;
@@ -651,10 +668,11 @@ public:
 		{
 			while (item)
 			{
+				auto next = item->m_pNext;
 				if (func(static_cast<T *>(item)))
 					return static_cast<T *>(item);
 
-				item = item->m_pNext;
+				item = next;
 			}
 		}
 
@@ -887,6 +905,9 @@ public:
 #endif
 };
 
+CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+CWeaponBox *CreateWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+
 class CWShield: public CBaseEntity
 {
 public:
@@ -914,6 +935,11 @@ inline bool CBasePlayer::IsReloading() const
 	}
 
 	return false;
+}
+
+inline bool CBasePlayer::HasTimePassedSinceDeath(float duration) const
+{
+	return gpGlobals->time > (m_fDeadTime + duration);
 }
 
 #ifdef REGAMEDLL_API

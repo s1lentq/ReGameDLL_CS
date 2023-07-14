@@ -54,7 +54,7 @@ int CFamas::GetItemInfo(ItemInfo *p)
 	p->iSlot = 0;
 	p->iPosition = 18;
 	p->iId = m_iId = WEAPON_FAMAS;
-	p->iFlags = 0;
+	p->iFlags = ITEM_FLAG_NOFIREUNDERWATER;
 	p->iWeight = FAMAS_WEIGHT;
 
 	return 1;
@@ -90,13 +90,6 @@ void CFamas::SecondaryAttack()
 
 void CFamas::PrimaryAttack()
 {
-	if (m_pPlayer->pev->waterlevel == 3)
-	{
-		PlayEmptySound();
-		m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
-		return;
-	}
-
 	bool bFireBurst = (m_iWeaponState & WPNSTATE_FAMAS_BURST_MODE) == WPNSTATE_FAMAS_BURST_MODE;
 
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
@@ -131,7 +124,7 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / 215) + 0.3f;
+	m_flAccuracy = (m_iShotsFired * m_iShotsFired * m_iShotsFired / FAMAS_ACCURACY_DIVISOR) + 0.3f;
 
 	if (m_flAccuracy > 1.0f)
 		m_flAccuracy = 1.0f;
@@ -176,6 +169,12 @@ void CFamas::FamasFire(float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL
 	flag = FEV_NOTHOST;
 #else
 	flag = 0;
+#endif
+
+#ifdef REGAMEDLL_ADD
+		// HACKHACK: client-side weapon prediction fix
+		if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+			flag = 0;
 #endif
 
 	PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFamas, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,

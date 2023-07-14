@@ -167,6 +167,7 @@ int UTIL_HumansInGame(bool ignoreSpectators = false);
 
 bool UTIL_IsNameTaken(const char *name, bool ignoreHumans = false);
 int UTIL_ClientsInGame();
+int UTIL_SpectatorsInGame();
 int UTIL_ActivePlayersInGame();
 int UTIL_BotsInGame();
 bool UTIL_KickBotFromTeam(TeamName kickTeam);

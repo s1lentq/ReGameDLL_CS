@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+LINK_ENTITY_TO_CLASS(gib, CGib, CCSGib)
+
 void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
@@ -74,7 +76,9 @@ NOXREF void CGib::SpawnStickyGibs(entvars_t *pevVictim, Vector vecOrigin, int cG
 	}
 }
 
-void CGib::SpawnHeadGib(entvars_t *pevVictim)
+LINK_HOOK_GLOB_CLASS_CHAIN(CGib *, CGib, SpawnHeadGib, (entvars_t *pevVictim), pevVictim)
+
+CGib *CGib::__API_HOOK(SpawnHeadGib)(entvars_t *pevVictim)
 {
 	CGib *pGib = GetClassPtr<CCSGib>((CGib *)nullptr);
 
@@ -132,9 +136,13 @@ void CGib::SpawnHeadGib(entvars_t *pevVictim)
 	}
 
 	pGib->LimitVelocity();
+
+	return pGib;
 }
 
-void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
+LINK_HOOK_GLOB_CLASS_VOID_CHAIN(CGib, SpawnRandomGibs, (entvars_t *pevVictim, int cGibs, int human), pevVictim, cGibs, human)
+
+void CGib::__API_HOOK(SpawnRandomGibs)(entvars_t *pevVictim, int cGibs, int human)
 {
 	for (int cSplat = 0; cSplat < cGibs; cSplat++)
 	{
@@ -198,11 +206,14 @@ void CGib::SpawnRandomGibs(entvars_t *pevVictim, int cGibs, int human)
 			pGib->pev->solid = SOLID_BBOX;
 			UTIL_SetSize(pGib->pev, Vector(0, 0, 0), Vector(0, 0, 0));
 		}
+
 		pGib->LimitVelocity();
 	}
 }
 
-void CGib::BounceGibTouch(CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, BounceGibTouch, (CBaseEntity *pOther), pOther)
+
+void CGib::__API_HOOK(BounceGibTouch)(CBaseEntity *pOther)
 {
 	if (pev->flags & FL_ONGROUND)
 	{
@@ -260,7 +271,9 @@ void CGib::StickyGibTouch(CBaseEntity *pOther)
 	pev->movetype = MOVETYPE_NONE;
 }
 
-void CGib::Spawn(const char *szGibModel)
+LINK_HOOK_CLASS_VOID_CHAIN(CGib, Spawn, (const char *szGibModel), szGibModel)
+
+void CGib::__API_HOOK(Spawn)(const char *szGibModel)
 {
 	pev->movetype = MOVETYPE_BOUNCE;
 
@@ -291,4 +304,32 @@ void CGib::Spawn(const char *szGibModel)
 
 	// how many blood decals this gib can place (1 per bounce until none remain).
 	m_cBloodDecals = 5;
+}
+
+LINK_HOOK_CLASS_VOID_CHAIN2(CGib, WaitTillLand)
+
+void CGib::__API_HOOK(WaitTillLand)()
+{
+	if (!IsInWorld())
+	{
+		UTIL_Remove(this);
+		return;
+	}
+
+	if (pev->velocity == g_vecZero)
+	{
+		SetThink(&CBaseEntity::SUB_StartFadeOut);
+		pev->nextthink = gpGlobals->time + m_lifeTime;
+
+#ifndef REGAMEDLL_FIXES
+		if (m_bloodColor != DONT_BLEED)
+		{
+			CSoundEnt::InsertSound(bits_SOUND_MEAT, pev->origin, 384, 25);
+		}
+#endif
+	}
+	else
+	{
+		pev->nextthink = gpGlobals->time + 0.5f;
+	}
 }

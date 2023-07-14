@@ -1017,21 +1017,27 @@
 @PointClass base(Targetname, Angles, Sequence) size(-16 -16 0, 16 16 72) studio() = cycler : "Monster Cycler"
 [
 	model(studio) : "Model"
+	body(integer) : "Skin" : 0
+	skin(integer) : "Body" : 0
 ]
 
 // line below edited by Dmitrich! -->
 // was: @PointClass base(Targetname, Angles, RenderFields) iconsprite("sprites/CS/cycler_sprite.spr") = cycler_sprite : "Sprite Cycler"
 @PointClass base(Targetname, Angles, RenderFields) size(-16 -16 0, 16 16 72) studio() = cycler_sprite : "Sprite Cycler"
 [
-	model(studio) : "Model / Sprite" : ""
-	sequence(string) : "Animation # sequence (Models only)" : ""
-	framerate(integer) : "Frames per second" : 10
+	model(sprite) : "Sprite name" : ""
+	model(studio) : "Model name" : ""
+	scale(string) : "Scale (Sprites only)" : "1.0"
+	body(integer) : "Skin (Models only)" : 0
+	skin(integer) : "Body (Models only)" : 0
+	sequence(integer) : "Animation # sequence (Models only)" : 0
+	framerate(string) : "Frames per second" : "10.0"
 ]
 
 @PointClass sprite() base(Targetname, Angles, RenderFields) size(-4 -4 -4, 4 4 4) iconsprite("sprites/CS/cycler_wreckage.spr") = cycler_wreckage : "Wreckage"
 [
-	framerate(string) : "Framerate" : "10.0"
 	model(sprite) : "Sprite Name" : "sprites/dot.spr"
+	framerate(string) : "Framerate" : "10.0"
 	scale(string) : "Scale" : "1.0"
 	spawnflags(flags) =
 	[
@@ -1407,6 +1413,7 @@
 	spawnflags(flags) =
 	[
 		1: "Use Only" : 0
+		2: "Remove Weapons" : 0
 	]
 	weapon_knife (choices) : "Give Knife" : 0 =
 	[
@@ -1523,12 +1530,12 @@
 		0: "No"
 		1: "Yes"
 	]
-	weapon_famas (choices) : "CS 1.6 Famas (762nato)" : 0 =
+	weapon_famas (choices) : "CS 1.6 Famas (556nato Calibre)" : 0 =
 	[
 		0: "No"
 		1: "Yes"
 	]
-	weapon_galil (choices) : "CS 1.6 Galil (556natobox)"  : 0 =
+	weapon_galil (choices) : "CS 1.6 Galil (556natobox Calibre)"  : 0 =
 	[
 		0: "No"
 		1: "Yes"
@@ -1579,8 +1586,8 @@
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
 		2: "2 Clips"
-		3: "3 Clips (Fill Glock 18)"
-		4: "4 Clips (Fill Elites, MP5 & TMP)"
+		3: "3 Clips"
+		4: "4 Clips (Fill Elites, MP5, TMP, Glock 18)"
 	]
 	ammo_45acp (choices) : "Give .45 ACP Ammo" : 0 =
 	[
@@ -1588,12 +1595,12 @@
 		1: "1 Clip (12 Bullets Per Clip)"
 		2: "2 Clips"
 		3: "3 Clips"
-		4: "4 Clips (Fill USP45)"
+		4: "4 Clips"
 		5: "5 Clips"
 		6: "6 Clips"
 		7: "7 Clips"
-		8: "8 Clips (Fill Mac-10)"
-		9: "9 Clips (Fill UMP 45)"
+		8: "8 Clips"
+		9: "9 Clips (Fill UMP 45, Mac-10, USP45)"
 	]
 	ammo_50ae (choices) : "Give .50 Deagle Ammo" : 0 =
 	[
@@ -1608,7 +1615,7 @@
 	[
 		0: "No"
 		1: "1 Clip (50 Bullets Per Clip)"
-		2: "2 Clips (Fill Five-Seven & P90)"
+		2: "2 Clips (Fill Five-Seven, P90)"
 	]
 	ammo_357sig (choices) : "Give .357 SIG Ammo" : 0 =
 	[
@@ -1630,15 +1637,15 @@
 	[
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
-		2: "2 Clips (Fill Scout & G3/S-G1)"
-		3: "3 Clips (Fill AK-47)"
+		2: "2 Clips"
+		3: "3 Clips (Fill AK-47, Scout, G3/S-G1)"
 	]
 	ammo_556nato (choices) : "Give 5.56mm NATO Ammo" : 0 =
 	[
 		0: "No"
 		1: "1 Clip (30 Bullets Per Clip)"
 		2: "2 Clips"
-		3: "3 Fill SG552 M4A1 Aug SG550"
+		3: "3 Fill SG552, M4A1, Aug, SG550, Famas"
 	]
 	ammo_556natobox (choices) : "Give 5.56mm NATO Box Ammo" : 0 =
 	[
@@ -1797,7 +1804,7 @@
 
 @PointClass iconsprite("sprites/CS/hostage_entity.spr") base(PlayerClass, RenderFields) = hostage_entity : "Hostage"
 [
-	model(string) : "Model" : "models/hostage.mdl"
+	model(studio) : "Model" : "models/hostage.mdl"
 	skin(choices) : "Skin" : 0 =
 	[
 		0: "Orange Suit Worker"
@@ -1917,7 +1924,7 @@
 
 @PointClass iconsprite("sprites/CS/info_map_parameters.spr") = info_map_parameters : "Miscellaneous mapping parameters"
 [
-	buying(choices)  : "Weapon_Buying" : 0 =
+	buying(choices)  : "Weapon Buying" : 0 =
 	[
 		0: "Both teams can buy guns"
 		1: "Only CT's can buy guns"
@@ -2032,7 +2039,40 @@
 	speed(integer) : "New Train Speed" : 0
 ]
 
-@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) iconsprite("sprites/CS/player_weaponstrip.spr") = player_weaponstrip : "Strips player's weapons" []
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) iconsprite("sprites/CS/player_weaponstrip.spr") = player_weaponstrip : "Strips player's weapons"
+[
+	primary(choices) : "Ignore primary weapons" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	secondary(choices) : "Ignore pistols" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	knife(choices) : "Ignore knife" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	grenade(choices) : "Ignore grenades" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	bomb(choices) : "Ignore bomb" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	items(choices) : "Ignore other items (shield, defuser, kevlar etc)" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	special(string) : "Special item to strip"
+]
 
 // Monsters
 @PointClass iconsprite("sprites/CS/hostage_entity.spr") base(PlayerClass, RenderFields) size(-16 -16 0, 16 16 72) = monster_scientist : "Scientist Hostage"
@@ -2222,12 +2262,25 @@
 	]
 ]
 
-@SolidClass base(Trigger) = trigger_teleport : "Trigger teleport" []
+@SolidClass base(Trigger) = trigger_teleport : "Trigger teleport" 
+[
+	spawnflags(flags) =
+	[
+		256: "Keep angles" : 0
+		512: "Keep velocity" : 0
+		1024: "Redirect velocity with yaw from destination" : 0
+	]
+]
 
 // Function entities
 @SolidClass = func_bomb_target : "Bomb target zone"
 [
 	target(target_destination) : "Target (when bomb blows)"
+	strict_touch(choices) : "Touch mode" : 0 = 
+	[
+		0: "Legacy"
+		1: "New one (is more strict)"
+	]
 ]
 
 @SolidClass base(Targetname) = trigger_cdaudio : "Trigger CD Audio"
@@ -2436,7 +2489,7 @@
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_healthcharger: "Wall health recharger"
 [
 	health(integer) : "Healthcharger Capacity" : 50
-	dmdelay(integer) : "Deathmatch recharge delay" : 60
+	dmdelay(integer) : "Recharge delay" : 60
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
@@ -2544,7 +2597,7 @@
 @SolidClass base(Global, RenderFields, ZHLT, TexLightType) = func_recharge: "Battery recharger"
 [
 	armorvalue(integer) : "Suitcharger Capacity" : 30
-	dmdelay(integer) : "Deathmatch recharge delay" : 30
+	dmdelay(integer) : "Recharge delay" : 30
 	_minlight(string) : "Minimum light level" : "0"
 ]
 
@@ -2577,6 +2630,8 @@
 		1 : "Not solid" : 0
 		2 : "Reverse Dir" : 0
 		32: "Toggle" : 0
+		64: "Z Axis" : 0
+		128: "X Axis" : 0
 		256: "Touch Activates": 0
 	]
 	_minlight(string) : "Minimum light level" : "0"

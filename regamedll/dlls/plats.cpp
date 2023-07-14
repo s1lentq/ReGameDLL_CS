@@ -44,6 +44,15 @@ void CBasePlatTrain::KeyValue(KeyValueData *pkvd)
 	else if (FStrEq(pkvd->szKeyName, "volume"))
 	{
 		m_volume = Q_atof(pkvd->szValue);
+
+#ifdef REGAMEDLL_FIXES
+		if (m_volume > 1.0)
+			m_volume = 1.0;
+
+		if (m_volume < 0.0)
+			m_volume = 0.0;
+#endif
+
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -927,6 +936,14 @@ void CFuncTrackTrain::KeyValue(KeyValueData *pkvd)
 		// rounding values to integer
 		m_flVolume = Q_atoi(pkvd->szValue);
 		m_flVolume *= 0.1f;
+
+#ifdef REGAMEDLL_FIXES
+		if (m_flVolume > 1.0)
+			m_flVolume = 1.0;
+
+		if (m_flVolume < 0.0)
+			m_flVolume = 0.0;
+#endif
 
 		pkvd->fHandled = TRUE;
 	}

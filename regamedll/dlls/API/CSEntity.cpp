@@ -33,6 +33,11 @@ void CCSEntity::FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, 
 	m_pContainingEntity->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker);
 }
 
+void CCSEntity::FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+{
+	m_pContainingEntity->FireBuckshots(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iTracerFreq, iDamage, pevAttacker);
+}
+
 Vector CCSEntity::FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
 {
 	return m_pContainingEntity->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand);

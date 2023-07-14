@@ -107,6 +107,8 @@ bool CCStrikeGameMgrHelper::__API_HOOK(CanPlayerHearPlayer)(CBasePlayer *pListen
 		return (pListener->m_iTeam == pSender->m_iTeam || pListener->m_iTeam == SPECTATOR || pListener->m_iTeam == UNASSIGNED);
 	case 4:
 		return (pListener->IsAlive() == pSender->IsAlive() || pSender->IsAlive());
+	case 5:
+		return ((pListener->IsAlive() == pSender->IsAlive() && pListener->m_iTeam == pSender->m_iTeam) || !pListener->IsAlive());
 #endif
 	default:
 	{
@@ -878,7 +880,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinConditions)()
 #ifdef REGAMEDLL_FIXES
 	// If a winner has already been determined.. then get the heck out of here
 	if (m_iRoundWinStatus != WINSTATUS_NONE)
+	{
+		// still check if we lost players to where we need to do a full reset next round...
+		int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
+		InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
 		return;
+	}
 #else
 	// If a winner has already been determined and game of started.. then get the heck out of here
 	if (m_bGameStarted && m_iRoundWinStatus != WINSTATUS_NONE)
@@ -1478,6 +1486,12 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 		}
 	}
 
+#ifdef REGAMEDLL_ADD
+	if (hostagesCount > 0 && m_iHostagesRescued >= (hostagesCount * Q_min(hostages_rescued_ratio.value, 1.0f)))
+	{
+		return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
+	}
+#else
 	// There are no hostages alive.. check to see if the CTs have rescued atleast 50% of them.
 	if (!bHostageAlive && hostagesCount > 0)
 	{
@@ -1486,6 +1500,7 @@ bool CHalfLifeMultiplay::HostageRescueRoundEndCheck()
 			return OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_ALL_HOSTAGES_RESCUED, GetRoundRestartDelay());
 		}
 	}
+#endif
 
 	return false;
 }
@@ -1501,6 +1516,12 @@ void CHalfLifeMultiplay::SwapAllPlayers()
 
 		if (pEntity->IsDormant())
 			continue;
+
+#ifdef REGAMEDLL_FIXES
+		// ignore HLTV
+		if (pEntity->IsProxy())
+			continue;
+#endif
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 		pPlayer->SwitchTeam();
@@ -2014,6 +2035,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
+			
+#ifdef REGAMEDLL_ADD
+			FireTargets("game_entity_restart", pPlayer, nullptr, USE_TOGGLE, 0.0);
+#endif
 		}
 
 		// Gooseman : The following code fixes the HUD icon bug
@@ -2052,6 +2077,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 	m_bTargetBombed = m_bBombDefused = false;
 	m_bLevelInitialized = false;
 	m_bCompleteReset = false;
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_start", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 BOOL CHalfLifeMultiplay::IsThereABomber()
@@ -2980,23 +3009,30 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 	}
 #endif
 
+#ifdef REGAMEDLL_ADD
+	int scenarioFlags = UTIL_ReadFlags(round_infinite.string);
+#else
+	// the icc compiler will cut out all of the code which refers to it
+	int scenarioFlags = 0;
+#endif
+
 	// New code to get rid of round draws!!
-	if (m_bMapHasBombTarget)
+	if (!(scenarioFlags & SCENARIO_BLOCK_BOMB_TIME) && m_bMapHasBombTarget)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_TARGET_SAVED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
+	else if (!(scenarioFlags & SCENARIO_BLOCK_HOSTAGE_RESCUE_TIME) && UTIL_FindEntityByClassname(nullptr, "hostage_entity"))
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_HOSTAGE_NOT_RESCUED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (m_bMapHasEscapeZone)
+	else if (!(scenarioFlags & SCENARIO_BLOCK_PRISON_ESCAPE_TIME) && m_bMapHasEscapeZone)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_TERRORISTS_NOT_ESCAPED, GetRoundRestartDelay()))
 			return;
 	}
-	else if (m_bMapHasVIPSafetyZone)
+	else if (!(scenarioFlags & SCENARIO_BLOCK_VIP_ESCAPE_TIME) && m_bMapHasVIPSafetyZone)
 	{
 		if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_VIP_NOT_ESCAPED, GetRoundRestartDelay()))
 			return;
@@ -3004,9 +3040,31 @@ void CHalfLifeMultiplay::CheckRoundTimeExpired()
 #ifdef REGAMEDLL_ADD
 	else if (roundover.value)
 	{
-		// round is over
-		if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
-			return;
+		switch ((int)roundover.value)
+		{
+		case 1:
+		default:
+		{
+			if (!OnRoundEnd_Intercept(WINSTATUS_DRAW, ROUND_GAME_OVER, GetRoundRestartDelay()))
+				return;
+
+			break;
+		}
+		case 2:
+		{
+			if (!OnRoundEnd_Intercept(WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, GetRoundRestartDelay()))
+				return;
+
+			break;
+		}
+		case 3:
+		{
+			if (!OnRoundEnd_Intercept(WINSTATUS_CTS, ROUND_CTS_WIN, GetRoundRestartDelay()))
+				return;
+
+			break;
+		}
+		}
 	}
 #endif
 
@@ -3205,14 +3263,30 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FShouldSwitchWeapon)(CBasePlayer *p
 		return TRUE;
 	}
 
-	if (!pPlayer->m_iAutoWepSwitch)
+	if (pPlayer->m_iAutoWepSwitch == 0)
 		return FALSE;
+
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->m_iAutoWepSwitch == 2 && (pPlayer->m_afButtonLast & (IN_ATTACK | IN_ATTACK2)))
+		return FALSE;
+#endif
 
 	if (!pPlayer->m_pActiveItem->CanHolster())
 	{
 		// can't put away the active item.
 		return FALSE;
 	}
+
+#ifdef REGAMEDLL_FIXES
+	if (pPlayer->pev->waterlevel == 3)
+	{
+		if (pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
+			return FALSE;
+
+		if (pPlayer->m_pActiveItem->iFlags() & ITEM_FLAG_NOFIREUNDERWATER)
+			return TRUE;
+	}
+#endif
 
 	if (pWeapon->iWeight() > pPlayer->m_pActiveItem->iWeight())
 		return TRUE;
@@ -3228,6 +3302,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 	CBasePlayerItem *pBest; // this will be used in the event that we don't find a weapon in the same category.
 	int iBestWeight;
 	int i;
+	bool inWater = pPlayer->pev->waterlevel == 3;
 
 	if (!pCurrentWeapon->CanHolster())
 	{
@@ -3245,7 +3320,11 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetNextBestWeapon)(CBasePlayer *pPl
 		while (pCheck)
 		{
 			// don't reselect the weapon we're trying to get rid of
-			if (pCheck->iWeight() > iBestWeight && pCheck != pCurrentWeapon)
+			if (pCheck->iWeight() > iBestWeight && pCheck != pCurrentWeapon
+#ifdef REGAMEDLL_FIXES
+				&& !(inWater && (pCheck->iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
+#endif
+				)
 			{
 				//ALERT (at_console, "Considering %s\n", STRING(pCheck->pev->classname));
 				// we keep updating the 'best' weapon just in case we can't find a weapon of the same weight
@@ -3573,9 +3652,18 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 					int iMode = pObserver->pev->iuser1;
 
 					pObserver->pev->iuser1 = OBS_NONE;
+#ifdef REGAMEDLL_FIXES
+					pObserver->m_flNextFollowTime = 0.0;
+#endif
 					pObserver->Observer_SetMode(iMode);
 				}
 			}
+
+#ifdef REGAMEDLL_FIXES
+			// Client is gone, make sure that his body disappeared and became not solid
+			pPlayer->MakeDormant();
+#endif
+
 		}
 	}
 
@@ -3586,6 +3674,14 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(float, CHalfLifeMultiplay, CSGameRules, FlPlayerFal
 
 float EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FlPlayerFallDamage)(CBasePlayer *pPlayer)
 {
+
+#ifdef REGAMEDLL_ADD
+	if (!falldamage.value)
+	{
+		return 0.0f;
+	}
+#endif
+
 	pPlayer->m_flFallVelocity -= MAX_PLAYER_SAFE_FALL_SPEED;
 	return pPlayer->m_flFallVelocity * DAMAGE_FOR_FALL_SPEED * 1.25;
 }
@@ -3631,7 +3727,11 @@ void CHalfLifeMultiplay::PlayerThink(CBasePlayer *pPlayer)
 	if (pPlayer->m_pActiveItem && pPlayer->m_pActiveItem->IsWeapon())
 	{
 		CBasePlayerWeapon *pWeapon = static_cast<CBasePlayerWeapon *>(pPlayer->m_pActiveItem->GetWeaponPtr());
-		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
+		if (pWeapon->m_iWeaponState & WPNSTATE_SHIELD_DRAWN
+#ifdef REGAMEDLL_ADD
+			|| ((pWeapon->iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && pPlayer->pev->waterlevel == 3)
+#endif
+			)
 		{
 			pPlayer->m_bCanShoot = false;
 		}
@@ -3718,9 +3818,18 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 	if (pPlayer->m_bJustConnected)
 		return;
 
+#ifdef REGAMEDLL_ADD
+	int iAutoWepSwitch = pPlayer->m_iAutoWepSwitch;
+	pPlayer->m_iAutoWepSwitch = 1;
+#endif
+
 	pPlayer->pev->weapons |= (1 << WEAPON_SUIT);
 	pPlayer->OnSpawnEquip();
 	pPlayer->SetPlayerModel(false);
+
+#ifdef REGAMEDLL_ADD
+	pPlayer->m_iAutoWepSwitch = iAutoWepSwitch;
+#endif
 
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunitytime.value > 0)
@@ -3811,7 +3920,9 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled,
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-
+#ifdef REGAMEDLL_FIXES 
+	pVictim->pev->flags &= ~FL_FROZEN;
+#endif
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 	pVictim->m_iDeaths++;
 	pVictim->m_bNotKilled = false;
@@ -3829,7 +3940,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	else if (ktmp && ktmp->Classify() == CLASS_VEHICLE)
 	{
 		CBasePlayer *pDriver = static_cast<CBasePlayer *>(((CFuncVehicle *)ktmp)->m_pDriver);
+#ifdef REGAMEDLL_FIXES
+		if (pDriver && !pDriver->has_disconnected)
+#else
 		if (pDriver)
+#endif
 		{
 			pKiller = pDriver->pev;
 			peKiller = static_cast<CBasePlayer *>(pDriver);
@@ -3837,7 +3952,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	}
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
-
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{
@@ -3848,9 +3962,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	{
 		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
 		CBasePlayer *killer = GetClassPtr<CCSPlayer>((CBasePlayer *)pKiller);
-		bool killedByFFA = IsFreeForAll();
 
-		if (killer->m_iTeam == pVictim->m_iTeam && !killedByFFA)
+		if (g_pGameRules->PlayerRelationship(pVictim, killer) == GR_TEAMMATE)
 		{
 			// if a player dies by from teammate
 			pKiller->frags -= IPointsForKill(peKiller, pVictim);
@@ -4223,11 +4336,29 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWea
 
 int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
-	return GR_PLR_DROP_GUN_ACTIVE;
+#ifdef REGAMEDLL_ADD
+	switch ((int)weapondrop.value)
+	{
+		case 3:
+			return GR_PLR_DROP_GUN_ALL;
+		case 2: 
+			break;
+		case 1:
+			return GR_PLR_DROP_GUN_BEST;
+		default: 
+			return GR_PLR_DROP_GUN_NO;
+	}
+#endif
+	return GR_PLR_DROP_GUN_ACTIVE; // keep original value in return
 }
 
 int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (ammodrop.value == 0.0f)
+		return GR_PLR_DROP_AMMO_NO;
+#endif
+
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 
@@ -4401,7 +4532,12 @@ int ReloadMapCycleFile(char *filename, mapcycle_t *cycle)
 			if (Q_strlen(pToken) <= 0)
 				break;
 
+#ifdef REGAMEDLL_FIXES
+			Q_strncpy(szMap, pToken, sizeof(szMap) - 1);
+			szMap[sizeof(szMap) - 1] = '\0';
+#else
 			Q_strcpy(szMap, pToken);
+#endif
 
 			// Any more tokens on this line?
 			if (SharedTokenWaiting(pFileList))

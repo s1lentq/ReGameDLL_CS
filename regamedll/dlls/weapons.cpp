@@ -49,6 +49,31 @@ int MaxAmmoCarry(WeaponIdType weaponId)
 	return CBasePlayerItem::m_ItemInfoArray[weaponId].iMaxAmmo1;
 }
 
+// All automatic weapons are represented here
+float GetBaseAccuracy(WeaponIdType id)
+{
+	switch (id)
+	{
+	case WEAPON_M4A1:
+	case WEAPON_AK47:
+	case WEAPON_AUG:
+	case WEAPON_SG552:
+	case WEAPON_FAMAS:
+	case WEAPON_GALIL:
+	case WEAPON_M249:
+	case WEAPON_P90:
+	case WEAPON_TMP:
+		return 0.2f;
+	case WEAPON_MAC10:
+		return 0.15f;
+	case WEAPON_UMP45:
+	case WEAPON_MP5N:
+		return 0.0f;
+	}
+
+	return 0.0f;
+}
+
 // Resets the global multi damage accumulator
 void ClearMultiDamage()
 {
@@ -87,7 +112,7 @@ void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamag
 
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 {
-	UTIL_BloodDrips(vecSpot, g_vecAttackDir, bloodColor, int(flDamage));
+	UTIL_BloodDrips(vecSpot, bloodColor, int(flDamage));
 }
 
 NOXREF int DamageDecal(CBaseEntity *pEntity, int bitsDamageType)
@@ -736,8 +761,9 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	if (bIsGlock)
 	{
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
+#ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_9mm;
-
+#endif
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 			int(m_pPlayer->pev->punchangle.x * 10000), int(m_pPlayer->pev->punchangle.y * 10000), m_iClip == 0, FALSE);
 	}
@@ -745,7 +771,15 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	{
 
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
+#ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_556nato;
+#endif
+
+#ifdef REGAMEDLL_ADD
+		// HACKHACK: client-side weapon prediction fix
+		if (!(iFlags() & ITEM_FLAG_NOFIREUNDERWATER) && m_pPlayer->pev->waterlevel == 3)
+			flag = 0;
+#endif
 
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireFamas, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 			int(m_pPlayer->pev->punchangle.x * 10000000), int(m_pPlayer->pev->punchangle.y * 10000000), FALSE, FALSE);
@@ -834,8 +868,9 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	{
 		m_iClip = iMaxClip();
 	}
-	else if ((nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO &&
+	else if ((nInfiniteAmmo == WPNMODE_INFINITE_BPAMMO
 #ifdef REGAMEDLL_API
+		&&
 		((m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds & (1 << m_iId)) || (m_pPlayer->CSPlayer()->m_iWeaponInfiniteIds <= 0 && !IsGrenadeWeapon(m_iId)))
 #endif
 		)
@@ -917,7 +952,15 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Add them to the clip
 		m_iClip += j;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+
+#ifdef REGAMEDLL_ADD
+		// Do not remove bpammo of the player,
+		// if cvar allows to refill bpammo on during reloading the weapons
+		if (refill_bpammo_weapons.value < 3.0f)
+#endif
+		{
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
+		}
 
 		m_pPlayer->TabulateAmmo();
 		m_fInReload = FALSE;
@@ -948,9 +991,22 @@ void CBasePlayerWeapon::ItemPostFrame()
 
 		// Can't shoot during the freeze period
 		// Always allow firing in single player
-		if ((m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
+		if (
+#ifdef REGAMEDLL_API
+			m_pPlayer->CSPlayer()->m_bCanShootOverride ||
+#endif
+			(m_pPlayer->m_bCanShoot && g_pGameRules->IsMultiplayer() && !g_pGameRules->IsFreezePeriod() && !m_pPlayer->m_bIsDefusing) || !g_pGameRules->IsMultiplayer())
 		{
-			PrimaryAttack();
+			// don't fire underwater
+			if (m_pPlayer->pev->waterlevel == 3 && (iFlags() & ITEM_FLAG_NOFIREUNDERWATER))
+			{
+				PlayEmptySound();
+				m_flNextPrimaryAttack = GetNextAttackDelay(0.15);
+			}
+			else
+			{
+				PrimaryAttack();
+			}
 		}
 	}
 	else if ((m_pPlayer->pev->button & IN_RELOAD) && iMaxClip() != WEAPON_NOCLIP && !m_fInReload && m_flNextPrimaryAttack < UTIL_WeaponTimeBase())
@@ -996,6 +1052,14 @@ void CBasePlayerWeapon::ItemPostFrame()
 			{
 				m_flDecreaseShotsFired = gpGlobals->time + 0.0225f;
 				m_iShotsFired--;
+
+#ifdef REGAMEDLL_FIXES
+				// Reset accuracy
+				if (m_iShotsFired == 0)
+				{
+					m_flAccuracy = GetBaseAccuracy((WeaponIdType)m_iId);
+				}
+#endif
 			}
 		}
 
@@ -1124,6 +1188,7 @@ void CBasePlayerItem::AttachToPlayer(CBasePlayer *pPlayer)
 
 void CBasePlayerWeapon::Spawn()
 {
+#ifdef REGAMEDLL_API
 	ItemInfo info;
 	Q_memset(&info, 0, sizeof(info));
 
@@ -1132,6 +1197,7 @@ void CBasePlayerWeapon::Spawn()
 	}
 
 	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
+#endif
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
@@ -1432,8 +1498,15 @@ bool EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultShotgunReload)(int iAnim, int
 #endif
 	{
 		m_iClip++;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		m_pPlayer->ammo_buckshot--;
+
+#ifdef REGAMEDLL_ADD
+		if (refill_bpammo_weapons.value < 3.0f)
+#endif
+		{
+			m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
+			m_pPlayer->ammo_buckshot--;
+		}
+
 		m_fInSpecialReload = 1;
 	}
 
@@ -1525,7 +1598,17 @@ int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 		iAmmo = m_iClip;
 	}
 
-	return pWeapon->m_pPlayer->GiveAmmo(iAmmo, pszAmmo1(), iMaxAmmo1());
+	int iIdAmmo = pWeapon->m_pPlayer->GiveAmmo(iAmmo, pszAmmo1(), iMaxAmmo1());
+
+#ifdef REGAMEDLL_FIXES
+	if (iIdAmmo > 0 && IsGrenadeWeapon(m_iId))
+	{
+		// grenades have WEAPON_NOCLIP force play the "got ammo" sound.
+		EMIT_SOUND(pWeapon->m_pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+	}
+#endif
+
+	return iIdAmmo;
 }
 
 // RetireWeapon - no more ammo for this gun, put it away.
@@ -1850,19 +1933,35 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
 
 #ifdef REGAMEDLL_FIXES
-					auto info = GetWeaponInfo(pGrenade->m_iId);
-					if (info && playerGrenades < info->maxRounds)
-					{
-						auto pNext = m_rgpPlayerItems[i]->m_pNext;
-						if (pPlayer->AddPlayerItem(pItem))
-						{
-							pItem->AttachToPlayer(pPlayer);
-							bEmitSound = true;
-						}
+					// sorry for hardcode :(
+					const int boxAmmoSlot = 1;
 
-						// unlink this weapon from the box
-						m_rgpPlayerItems[i] = pItem = pNext;
-						continue;
+					if (playerGrenades < pGrenade->iMaxAmmo1())
+					{
+						if (m_rgAmmo[boxAmmoSlot] > 1 && playerGrenades > 0)
+						{
+							if (!FStringNull(m_rgiszAmmo[boxAmmoSlot])
+								&& pPlayer->GiveAmmo(1, STRING(m_rgiszAmmo[boxAmmoSlot]), pGrenade->iMaxAmmo1()) != -1)
+							{
+								m_rgAmmo[boxAmmoSlot]--;
+
+								EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+							}
+						}
+						else
+						{
+							auto pNext = m_rgpPlayerItems[i]->m_pNext;
+
+							if (pPlayer->AddPlayerItem(pItem))
+							{
+								pItem->AttachToPlayer(pPlayer);
+								bEmitSound = true;
+							}
+
+							// unlink this weapon from the box
+							m_rgpPlayerItems[i] = pItem = pNext;
+							continue;
+						}
 					}
 #else
 
@@ -1936,7 +2035,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			if (!FStringNull(m_rgiszAmmo[n]))
 			{
 				// there's some ammo of this type.
+#ifndef REGAMEDLL_ADD
 				pPlayer->GiveAmmo(m_rgAmmo[n], (char *)STRING(m_rgiszAmmo[n]), MaxAmmoCarry(m_rgiszAmmo[n]));
+#else
+				pPlayer->GiveAmmo(m_rgAmmo[n], STRING(m_rgiszAmmo[n]), m_rgAmmo[n]);
+#endif
 
 				// now empty the ammo from the weaponbox since we just gave it to the player
 				m_rgiszAmmo[n] = iStringNull;
