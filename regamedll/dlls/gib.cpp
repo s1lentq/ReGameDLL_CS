@@ -7,7 +7,7 @@ void CGib::LimitVelocity()
 	float length = pev->velocity.Length();
 
 #ifdef REGAMEDLL_FIXES
-	float topspeed = Q_min(1500.0f, CVAR_GET_FLOAT("sv_maxvelocity"));
+	float topspeed = CVAR_GET_FLOAT("sv_maxvelocity") * 0.75;
 #else
 	float topspeed = 1500.0f;
 #endif
@@ -16,7 +16,7 @@ void CGib::LimitVelocity()
 	// in 3 separate places again, I'll just limit it here.
 	if (length > topspeed)
 	{
-		// This should really be sv_maxvelocity * 0.75 or something
+		// DONE: This should really be sv_maxvelocity * 0.75 or something
 		pev->velocity = pev->velocity.Normalize() * topspeed;
 	}
 }
