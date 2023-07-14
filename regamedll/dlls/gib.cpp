@@ -5,12 +5,7 @@ LINK_ENTITY_TO_CLASS(gib, CGib, CCSGib)
 void CGib::LimitVelocity()
 {
 	float length = pev->velocity.Length();
-
-#ifdef REGAMEDLL_FIXES
-	float topspeed = CVAR_GET_FLOAT("sv_maxvelocity") * 0.75;
-#else
-	float topspeed = 1500.0f;
-#endif
+	float topspeed = CVAR_GET_FLOAT("sv_maxvelocity") * 0.75f;
 
 	// ceiling at topspeed.  The gib velocity equation is not bounded properly.  Rather than tune it
 	// in 3 separate places again, I'll just limit it here.
