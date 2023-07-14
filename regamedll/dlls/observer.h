@@ -32,9 +32,11 @@
 #define CAMERA_MODE_SPEC_ONLY_TEAM         1
 #define CAMERA_MODE_SPEC_ONLY_FIRST_PERSON 2
 
-#define FADETOBLACK_OFF       0
-#define FADETOBLACK_STAY      1
-#define FADETOBLACK_AT_DYING 2
+enum FadeToBlack {
+	FADETOBLACK_OFF,
+	FADETOBLACK_STAY,
+	FADETOBLACK_AT_DYING
+};
 
 int GetForceCamera(CBasePlayer *pObserver);
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
