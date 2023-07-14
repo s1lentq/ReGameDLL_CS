@@ -35,7 +35,7 @@
 enum FadeToBlack {
 	FADETOBLACK_OFF,
 	FADETOBLACK_STAY,
-	FADETOBLACK_AT_DYING
+	FADETOBLACK_AT_DYING,
 };
 
 int GetForceCamera(CBasePlayer *pObserver);
