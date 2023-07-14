@@ -58,11 +58,7 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
 
 		// do we have fadetoblack on? (need to fade their screen back in)
-#ifndef REGAMEDLL_ADD
-		if (fadetoblack.value)
-#else
 		if (fadetoblack.value == FADETOBLACK_STAY)
-#endif
 		{
 			UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 		}
