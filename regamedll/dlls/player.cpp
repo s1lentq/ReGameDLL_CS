@@ -3651,16 +3651,22 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 			ResetMenu();
 			m_iJoiningState = SHOWTEAMSELECT;
 
+#ifdef REGAMEDLL_FIXES
+			RemoveDefuser();
+#else 
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
 			MESSAGE_END();
 
 			m_bHasDefuser = false;
+#endif
 			m_fLastMovement = gpGlobals->time;
 			m_bMissionBriefing = false;
 
+#ifndef REGAMEDLL_FIXES
 			SendItemStatus();
+#endif
 			break;
 		}
 		case READINGLTEXT:
