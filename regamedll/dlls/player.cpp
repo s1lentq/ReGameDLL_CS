@@ -1690,18 +1690,6 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
-#ifndef REGAMEDLL_FIXES
-		// NOTE: moved into RemoveDefuser
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-#endif 
-
-		bKillProgBar = true;
 	}
 
 	if (m_bHasC4)
@@ -2435,30 +2423,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
 #ifdef REGAMEDLL_FIXES
 		SpawnDefuser(pev->origin, ENT(pev));
-
-		if (m_bIsDefusing)
-			SetProgressBarTime(0);
-
-		m_bIsDefusing = false;
 #else
 		GiveNamedItem("item_thighpack");
-
-		// NOTE: moved into RemoveDefuser
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-		SetProgressBarTime(0);
 #endif
 	}
 
 #ifndef REGAMEDLL_FIXES
-	m_bIsDefusing = false; // NOTE: moved above
+	// NOTE: moved to RemoveDefuser
+	m_bIsDefusing = false; 
 #endif
 
 	BuyZoneIcon_Clear(this);
@@ -3651,22 +3625,20 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 			ResetMenu();
 			m_iJoiningState = SHOWTEAMSELECT;
 
-#ifdef REGAMEDLL_FIXES
-			RemoveDefuser();
-#else 
-			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+#ifndef REGAMEDLL_FIXES
+			// client already clears StatusIcon on join
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev); 
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
 			MESSAGE_END();
 
-			m_bHasDefuser = false;
+			m_bHasDefuser = false; // unneded
 #endif
 			m_fLastMovement = gpGlobals->time;
 			m_bMissionBriefing = false;
 
-#ifndef REGAMEDLL_FIXES
-			SendItemStatus();
-#endif
+			SendItemStatus(); 
+
 			break;
 		}
 		case READINGLTEXT:
@@ -3785,25 +3757,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
 #ifdef REGAMEDLL_FIXES
 		SpawnDefuser(pev->origin, ENT(pev));
-
-		if (m_bIsDefusing)
-			SetProgressBarTime(0);
-
-		m_bIsDefusing = false;
 #else
 		GiveNamedItem("item_thighpack");
-
-		// NOTE: moved into RemoveDefuser
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-		SetProgressBarTime(0);
 #endif
 	}
 
@@ -5707,10 +5664,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	ReloadWeapons();
 #endif
 
-	if (m_bHasDefuser)
-		pev->body = 1;
-	else
-		pev->body = 0;
+	pev->body = m_bHasDefuser ? 1 : 0;
 
 	if (m_bMissionBriefing)
 	{
@@ -8306,18 +8260,6 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 		RemoveDefuser();
 
 #ifndef REGAMEDLL_FIXES
-		// NOTE: moved into RemoveDefuser
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-#endif
-
-		SetProgressBarTime(0);
-
-#ifndef REGAMEDLL_FIXES
 		// NOTE: unreachable code - Vaqtincha
 		for (int i = 0; i < MAX_ITEM_TYPES; i++)
 		{
@@ -10159,14 +10101,22 @@ void CBasePlayer::RemoveDefuser()
 	m_bHasDefuser = false;
 	pev->body = 0;
 
-#ifdef REGAMEDLL_FIXES
 	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 		WRITE_BYTE(STATUSICON_HIDE);
 		WRITE_STRING("defuser");
 	MESSAGE_END();
 
 	SendItemStatus();
-#endif 
+
+#ifdef REGAMEDLL_FIXES
+	if (m_bIsDefusing)
+	{
+		SetProgressBarTime(0);
+		m_bIsDefusing = false;
+	}
+#else 
+	SetProgressBarTime(0);
+#endif
 }
 
 CItemThighPack *SpawnDefuser(const Vector &vecOrigin, edict_t *pentOwner)
