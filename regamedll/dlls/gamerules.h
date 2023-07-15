@@ -46,6 +46,7 @@ const float ROUND_RESPAWN_TIME  = 20.0f;
 const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
 const float ITEM_KILL_DELAY     = 300.0f;
 const float RADIO_TIMEOUT       = 1.5f;
+const float DEATH_ANIMATION_TIME = 3.0f;
 
 const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
 
@@ -186,6 +187,10 @@ enum
 	GR_PLR_DROP_AMMO_ALL,
 	GR_PLR_DROP_AMMO_ACTIVE,
 	GR_PLR_DROP_AMMO_NO,
+
+#ifdef REGAMEDLL_ADD
+	GR_PLR_DROP_GUN_BEST,
+#endif
 };
 
 // custom enum
@@ -202,7 +207,7 @@ enum
 	SCENARIO_BLOCK_PRISON_ESCAPE_TIME      = BIT(8), // flag "i"
 	SCENARIO_BLOCK_BOMB_TIME               = BIT(9), // flag "j"
 	SCENARIO_BLOCK_HOSTAGE_RESCUE_TIME     = BIT(10), // flag "k"
-	
+
 };
 
 // Player relationship return codes
@@ -332,6 +337,7 @@ public:
 	inline void SetGameOver() { m_bGameOver = true; }
 	static float GetItemKillDelay();
 	static float GetRadioTimeout();
+	static float GetDyingTime();
 
 public:
 	BOOL m_bFreezePeriod;	// TRUE at beginning of round, set to FALSE when the period expires
@@ -831,9 +837,11 @@ extern CGameRules DLLEXPORT *g_pGameRules;
 
 #ifdef REGAMEDLL_API
 CGameRules *InstallGameRules_OrigFunc();
+void FreeGameRules_OrigFunc(CGameRules **pGameRules);
 #endif
 
 CGameRules *InstallGameRules();
+void FreeGameRules(CGameRules **pGameRules);
 
 // Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()
@@ -912,6 +920,15 @@ inline float CGameRules::GetRadioTimeout()
 	return radio_timeout.value;
 #else
 	return RADIO_TIMEOUT;
+#endif
+}
+
+inline float CGameRules::GetDyingTime()
+{
+#ifdef REGAMEDLL_ADD
+	return dying_time.value;
+#else
+	return DEATH_ANIMATION_TIME;
 #endif
 }
 

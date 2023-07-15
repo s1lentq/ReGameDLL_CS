@@ -78,21 +78,19 @@ void CAUG::SecondaryAttack()
 
 void CAUG::PrimaryAttack()
 {
+	const float flCycleTime = (m_pPlayer->pev->fov == DEFAULT_FOV) ? 0.0825f : 0.135f;
+
 	if (!(m_pPlayer->pev->flags & FL_ONGROUND))
 	{
-		AUGFire(0.035 + (0.4 * m_flAccuracy), 0.0825, FALSE);
+		AUGFire(0.035 + (0.4 * m_flAccuracy), flCycleTime, FALSE);
 	}
 	else if (m_pPlayer->pev->velocity.Length2D() > 140)
 	{
-		AUGFire(0.035 + (0.07 * m_flAccuracy), 0.0825, FALSE);
-	}
-	else if (m_pPlayer->pev->fov == DEFAULT_FOV)
-	{
-		AUGFire(0.02 * m_flAccuracy, 0.0825, FALSE);
+		AUGFire(0.035 + (0.07 * m_flAccuracy), flCycleTime, FALSE);
 	}
 	else
 	{
-		AUGFire(0.02 * m_flAccuracy, 0.135, FALSE);
+		AUGFire(0.02 * m_flAccuracy, flCycleTime, FALSE);
 	}
 }
 

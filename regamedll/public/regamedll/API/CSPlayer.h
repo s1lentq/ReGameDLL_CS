@@ -49,7 +49,8 @@ public:
 		m_bGameForcingRespawn(false),
 		m_bAutoBunnyHopping(false),
 		m_bMegaBunnyJumping(false),
-		m_bPlantC4Anywhere(false)
+		m_bPlantC4Anywhere(false),
+		m_bSpawnProtectionEffects(false)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -99,8 +100,11 @@ public:
 	virtual void SetSpawnProtection(float flProtectionTime);
 	virtual void RemoveSpawnProtection();
 	virtual bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
+	virtual void Reset();
+	virtual void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
+	virtual void SetScoreboardAttributes(CBasePlayer *destination = nullptr);
 
-	void Reset();
+	void ResetVars();
 
 	void OnSpawn();
 	void OnKilled();
@@ -131,6 +135,7 @@ public:
 	bool m_bAutoBunnyHopping;
 	bool m_bMegaBunnyJumping;
 	bool m_bPlantC4Anywhere;
+	bool m_bSpawnProtectionEffects;
 };
 
 // Inlines
