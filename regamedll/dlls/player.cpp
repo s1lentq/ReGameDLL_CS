@@ -3626,18 +3626,18 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 			m_iJoiningState = SHOWTEAMSELECT;
 
 #ifndef REGAMEDLL_FIXES
-			// client already clears StatusIcon on join
+			// NOTE: client already clears StatusIcon on join
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev); 
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
 			MESSAGE_END();
 
-			m_bHasDefuser = false; // unneded
+			m_bHasDefuser = false; // set in ClientPutInServer
 #endif
 			m_fLastMovement = gpGlobals->time;
 			m_bMissionBriefing = false;
 
-			SendItemStatus(); 
+			SendItemStatus();  // NOTE: must be on UpdateClientData
 
 			break;
 		}
