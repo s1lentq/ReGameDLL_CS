@@ -1967,7 +1967,9 @@ void PM_Duck()
 	}
 }
 
-void PM_LadderMove(physent_t *pLadder)
+LINK_HOOK_VOID_CHAIN(PM_LadderMove, (physent_t *pLadder), pLadder);
+
+void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 {
 	vec3_t ladderCenter;
 	trace_t trace;
