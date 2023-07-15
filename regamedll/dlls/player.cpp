@@ -9931,7 +9931,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	const char *placeName = "";
 
-	if (pev->deadflag == DEAD_NO && AreRunningCZero())
+	if (pev->deadflag == DEAD_NO && AreBotsAllowed())
 	{
 		// search the place name where is located the player
 		Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
