@@ -534,7 +534,7 @@ enum usp_shield_e
 	USP_SHIELD_SHOOT_EMPTY,
 	USP_SHIELD_RELOAD,
 	USP_SHIELD_DRAW,
-	USP_SHIELD_UP_IDLE,
+	USP_SHIELD_IDLE_UP,
 	USP_SHIELD_UP,
 	USP_SHIELD_DOWN,
 };
@@ -900,6 +900,19 @@ enum deagle_e
 	DEAGLE_DRAW,
 };
 
+enum deagle_shield_e
+{
+	DEAGLE_SHIELD_IDLE1,
+	DEAGLE_SHIELD_SHOOT,
+	DEAGLE_SHIELD_SHOOT2,
+	DEAGLE_SHIELD_SHOOT_EMPTY,
+	DEAGLE_SHIELD_RELOAD,
+	DEAGLE_SHIELD_DRAW,
+	DEAGLE_SHIELD_IDLE_UP,
+	DEAGLE_SHIELD_UP,
+	DEAGLE_SHIELD_DOWN,
+};
+
 class CDEAGLE: public CBasePlayerWeapon
 {
 public:
@@ -1065,7 +1078,7 @@ enum glock18_shield_e
 	GLOCK18_SHIELD_SHOOT_EMPTY,
 	GLOCK18_SHIELD_RELOAD,
 	GLOCK18_SHIELD_DRAW,
-	GLOCK18_SHIELD_IDLE,
+	GLOCK18_SHIELD_IDLE_UP,
 	GLOCK18_SHIELD_UP,
 	GLOCK18_SHIELD_DOWN,
 };
@@ -1151,15 +1164,16 @@ public:
 };
 
 
-const float KNIFE_BODYHIT_VOLUME    = 128.0f;
-const float KNIFE_WALLHIT_VOLUME    = 512.0f;
-const float KNIFE_MAX_SPEED         = 250.0f;
-const float KNIFE_MAX_SPEED_SHIELD  = 180.0f;
-const float KNIFE_STAB_DAMAGE       = 65.0f;
-const float KNIFE_SWING_DAMAGE      = 15.0f;
-const float KNIFE_SWING_DAMAGE_FAST = 20.0f;
-const float KNIFE_STAB_DISTANCE     = 32.0f;
-const float KNIFE_SWING_DISTANCE    = 48.0f;
+const float KNIFE_BODYHIT_VOLUME      = 128.0f;
+const float KNIFE_WALLHIT_VOLUME      = 512.0f;
+const float KNIFE_MAX_SPEED           = 250.0f;
+const float KNIFE_MAX_SPEED_SHIELD    = 180.0f;
+const float KNIFE_STAB_DAMAGE         = 65.0f;
+const float KNIFE_SWING_DAMAGE        = 15.0f;
+const float KNIFE_SWING_DAMAGE_FAST   = 20.0f;
+const float KNIFE_STAB_DISTANCE       = 32.0f;
+const float KNIFE_SWING_DISTANCE      = 48.0f;
+const float KNIFE_BACKSTAB_MULTIPLIER = 3.0f;
 
 enum knife_e
 {
@@ -1179,7 +1193,7 @@ enum knife_shield_e
 	KNIFE_SHIELD_SLASH,
 	KNIFE_SHIELD_ATTACKHIT,
 	KNIFE_SHIELD_DRAW,
-	KNIFE_SHIELD_UPIDLE,
+	KNIFE_SHIELD_IDLE_UP,
 	KNIFE_SHIELD_UP,
 	KNIFE_SHIELD_DOWN,
 };
@@ -1220,19 +1234,41 @@ public:
 	void SetPlayerShieldAnim();
 	void ResetPlayerShieldAnim();
 
+	float KnifeStabDamage() const;
+	float KnifeSwingDamage(bool fast) const;
+	float KnifeStabDistance() const;
+	float KnifeSwingDistance() const;
+	float KnifeBackStabMultiplier() const;
+
 private:
 	TraceResult m_trHit;
 	unsigned short m_usKnife;
 
-	// Extra RegameDLL features
+#ifdef REGAMEDLL_API
 	float m_flStabBaseDamage;
 	float m_flSwingBaseDamage;
 	float m_flSwingBaseDamage_Fast;
 
 	float m_flStabDistance;
 	float m_flSwingDistance;
+
+	float m_flBackStabMultiplier;
+#endif
 };
 
+#ifdef REGAMEDLL_API
+inline float CKnife::KnifeStabDamage() const			{ return m_flStabBaseDamage; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? m_flSwingBaseDamage_Fast : m_flSwingBaseDamage; }
+inline float CKnife::KnifeStabDistance() const			{ return m_flStabDistance; }
+inline float CKnife::KnifeSwingDistance() const			{ return m_flSwingDistance; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return m_flBackStabMultiplier; }
+#else 
+inline float CKnife::KnifeStabDamage() const			{ return KNIFE_STAB_DAMAGE; }
+inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? KNIFE_SWING_DAMAGE_FAST : KNIFE_SWING_DAMAGE; }
+inline float CKnife::KnifeStabDistance() const			{ return KNIFE_STAB_DISTANCE; }
+inline float CKnife::KnifeSwingDistance() const			{ return KNIFE_SWING_DISTANCE; }
+inline float CKnife::KnifeBackStabMultiplier() const	{ return KNIFE_BACKSTAB_MULTIPLIER; }
+#endif // REGAMEDLL_API
 
 const float M249_MAX_SPEED     = 220.0f;
 const float M249_DAMAGE        = 32.0f;
@@ -1833,6 +1869,19 @@ enum fiveseven_e
 	FIVESEVEN_SHOOT_EMPTY,
 	FIVESEVEN_RELOAD,
 	FIVESEVEN_DRAW,
+};
+
+enum fiveseven_shield_e
+{
+	FIVESEVEN_SHIELD_IDLE1,
+	FIVESEVEN_SHIELD_SHOOT,
+	FIVESEVEN_SHIELD_SHOOT2,
+	FIVESEVEN_SHIELD_SHOOT_EMPTY,
+	FIVESEVEN_SHIELD_RELOAD,
+	FIVESEVEN_SHIELD_DRAW,
+	FIVESEVEN_SHIELD_IDLE_UP,
+	FIVESEVEN_SHIELD_UP,
+	FIVESEVEN_SHIELD_DOWN,
 };
 
 class CFiveSeven: public CBasePlayerWeapon

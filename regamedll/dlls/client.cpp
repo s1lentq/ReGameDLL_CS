@@ -375,29 +375,13 @@ void EXT_FUNC ClientKill(edict_t *pEntity)
 	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = CBasePlayer::Instance(pev);
 
-	if (pPlayer->GetObserverMode() != OBS_NONE)
-		return;
-
-	if (pPlayer->m_iJoiningState != JOINED)
-		return;
-
 	// prevent suiciding too often
 	if (pPlayer->m_fNextSuicideTime > gpGlobals->time)
 		return;
 
-	pPlayer->m_LastHitGroup = HITGROUP_GENERIC;
-
 	// don't let them suicide for 1 second after suiciding
 	pPlayer->m_fNextSuicideTime = gpGlobals->time + 1.0f;
-
-	// have the player kill themself
-	pEntity->v.health = 0;
-	pPlayer->Killed(pev, GIB_NEVER);
-
-	if (CSGameRules()->m_pVIP == pPlayer)
-	{
-		CSGameRules()->m_iConsecutiveVIP = 10;
-	}
+	pPlayer->Kill();
 }
 
 LINK_HOOK_VOID_CHAIN(ShowMenu, (CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText), pPlayer, bitsValidSlots, nDisplayTime, fNeedMore, pszText)
@@ -743,7 +727,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	}
 
 #ifdef REGAMEDLL_API
-	pPlayer->CSPlayer()->Reset();
+	pPlayer->CSPlayer()->ResetVars();
 #endif
 
 	UTIL_ClientPrintAll(HUD_PRINTNOTIFY, "#Game_connected", (sName[0] != '\0') ? sName : "<unconnected>");
@@ -1856,10 +1840,11 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		{
 			if (pPlayer->m_iTeam != UNASSIGNED && pPlayer->pev->deadflag == DEAD_NO)
 			{
-				ClientKill(pPlayer->edict());
-
-				// add 1 to frags to balance out the 1 subtracted for killing yourself
-				pPlayer->pev->frags++;
+				if (pPlayer->Kill())
+				{
+					// add 1 to frags to balance out the 1 subtracted for killing yourself
+					pPlayer->pev->frags++;
+				}
 			}
 
 			pPlayer->RemoveAllItems(TRUE);
@@ -1926,7 +1911,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			MESSAGE_END();
 #endif
 			// do we have fadetoblack on? (need to fade their screen back in)
-			if (fadetoblack.value)
+			if (fadetoblack.value == FADETOBLACK_STAY)
 			{
 				UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 			}
@@ -2087,10 +2072,10 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 		pPlayer->m_iMenu = Menu_ChooseAppearance;
 
 		// Show the appropriate Choose Appearance menu
-		// This must come before ClientKill() for CheckWinConditions() to function properly
+		// This must come before pPlayer->Kill() for CheckWinConditions() to function properly
 		if (pPlayer->pev->deadflag == DEAD_NO)
 		{
-			ClientKill(pPlayer->edict());
+			pPlayer->Kill();
 		}
 	}
 

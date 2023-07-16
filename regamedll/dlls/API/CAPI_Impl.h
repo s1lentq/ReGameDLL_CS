@@ -357,6 +357,10 @@ typedef IHookChainRegistryImpl<void, struct playermove_s *, int> CReGameHookRegi
 typedef IHookChainImpl<void, int> CReGameHook_PM_AirMove;
 typedef IHookChainRegistryImpl<void, int> CReGameHookRegistry_PM_AirMove;
 
+// PM_LadderMove hook
+typedef IHookChainImpl<void, struct physent_s *> CReGameHook_PM_LadderMove;
+typedef IHookChainRegistryImpl<void, struct physent_s *> CReGameHookRegistry_PM_LadderMove;
+
 // HandleMenu_ChooseAppearance hook
 typedef IHookChainImpl<void, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
 typedef IHookChainRegistryImpl<void, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
@@ -641,6 +645,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_JoiningThink;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_JoiningThink;
 
+// FreeGameRules hook
+typedef IHookChainImpl<void, CGameRules **> CReGameHook_FreeGameRules;
+typedef IHookChainRegistryImpl<void, CGameRules **> CReGameHookRegistry_FreeGameRules;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -773,6 +781,10 @@ public:
 	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
+	
+	CReGameHookRegistry_PM_LadderMove m_PM_LadderMove;
+
+	CReGameHookRegistry_FreeGameRules m_FreeGameRules;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -904,6 +916,9 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink();
+
+	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules();
+	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
@@ -937,3 +952,7 @@ void RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAtta
 void ClearMultiDamage_api();
 void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker);
 void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
+
+void UTIL_RestartOther_api(const char *szClassname);
+void UTIL_ResetEntities_api();
+void UTIL_RemoveOther_api(const char *szClassname, int nCount = 0);

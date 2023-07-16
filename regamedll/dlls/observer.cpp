@@ -6,7 +6,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 {
 	int retVal;
 
-	if (!fadetoblack.value)
+	if (fadetoblack.value != FADETOBLACK_STAY)
 	{
 		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
 
@@ -51,7 +51,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 {
 	bool clearProgress = false;
 	bool clearBlindness = false;
-	bool blindnessOk = (fadetoblack.value == 0);
+	bool blindnessOk = (fadetoblack.value != FADETOBLACK_STAY);
 	bool clearNightvision = false;
 
 	if (pObserver->GetObserverMode() == OBS_IN_EYE)

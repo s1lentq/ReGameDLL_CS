@@ -1292,9 +1292,19 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
 		if (exhaustibleAmmo || packAmmo)
 		{
+#ifndef REGAMEDLL_ADD
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-
+#else
+			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
+#endif
+#ifndef REGAMEDLL_FIXES
+			// by removing ammo ONLY on exhaustible weapons (slot 4 and 5)
+			// you are allowing to duplicate ammo whenever:
+			// (1) you have 2 weapons sharing the same ammo type (e.g. mp5navy and glock)
+			// (2) you are dropping a weapon alive and pickup another (with same ammo type) without ammo
+			// and, logically, you throw your ammo with your gun with packing enabled
 			if (exhaustibleAmmo)
+#endif
 			{
 				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
 			}
@@ -1306,10 +1316,10 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 	return pWeaponBox;
 }
 
-void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
+CWeaponBox *PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 {
 	if (!pItem)
-		return;
+		return nullptr;
 
 	const char *modelName = GetCSModelName(pItem->m_iId);
 	if (modelName)
@@ -1319,7 +1329,7 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 		Vector vecVelocity = pPlayer->pev->velocity * 0.75f;
 
 		// create a box to pack the stuff into
-		CreateWeaponBox(pItem, pPlayer,
+		return CreateWeaponBox(pItem, pPlayer,
 			modelName,
 			vecOrigin,
 			vecAngles,
@@ -1327,6 +1337,8 @@ void PackPlayerItem(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 			CGameRules::GetItemKillDelay(), packAmmo
 		);
 	}
+
+	return nullptr;
 }
 
 #ifdef REGAMEDLL_ADD
@@ -1383,78 +1395,130 @@ void PackPlayerNade(CBasePlayer *pPlayer, CBasePlayerItem *pItem, bool packAmmo)
 void CBasePlayer::PackDeadPlayerItems()
 {
 	// get the game rules
-	bool bPackGun = (g_pGameRules->DeadPlayerWeapons(this) != GR_PLR_DROP_GUN_NO);
+	int iPackGun = g_pGameRules->DeadPlayerWeapons(this);
 	bool bPackAmmo = (g_pGameRules->DeadPlayerAmmo(this) != GR_PLR_DROP_AMMO_NO);
 
-	if (bPackGun)
+	if (iPackGun != GR_PLR_DROP_GUN_NO)
 	{
-		bool bShieldDropped = false;
+		bool bSkipPrimSec = false;
 		if (HasShield())
 		{
 			DropShield();
-			bShieldDropped = true;
+#ifdef REGAMEDLL_ADD
+			if(iPackGun != GR_PLR_DROP_GUN_ALL)
+#endif
+			{
+				bSkipPrimSec = true;
+			}
 		}
 
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = nullptr;
 
-		for (int n = 0; n < MAX_ITEM_TYPES; n++)
-		{
-			// there's a weapon here. Should I pack it?
-			CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+#ifdef REGAMEDLL_ADD 
+		int iGunsPacked = 0;
 
-			while (pPlayerItem)
+		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
+		{
+			// check if we've just already dropped our active gun 
+			if (!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
-				ItemInfo info;
-				if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bShieldDropped)
-				{
-#ifdef REGAMEDLL_API
-					if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info))
-#else
-					if (pPlayerItem->GetItemInfo(&info))
+				pBestItem = m_pActiveItem;
+
+				// if active item is undroppable, then nothing is dropped
+			}
+
+			// are we allowing nade drop?
+			if ((int)nadedrops.value >= 1) 
+			{
+				// goto item loop but skip guns
+				iPackGun = GR_PLR_DROP_GUN_ALL;
+				bSkipPrimSec = true;
+			}
+		}
+
+		if (iPackGun == GR_PLR_DROP_GUN_ALL || iPackGun == GR_PLR_DROP_GUN_BEST)
 #endif
+		{
+			for (int n = 0; n < MAX_ITEM_TYPES; n++)
+			{
+				// there's a weapon here. Should I pack it?
+				CBasePlayerItem *pPlayerItem = m_rgpPlayerItems[n];
+
+				while (pPlayerItem)
+				{
+					ItemInfo info;
+					if (pPlayerItem->iItemSlot() < KNIFE_SLOT && !bSkipPrimSec)
 					{
-						if (info.iWeight > nBestWeight)
+#ifdef REGAMEDLL_API
+						if (pPlayerItem->CSPlayerItem()->GetItemInfo(&info)
+#else
+						if (pPlayerItem->GetItemInfo(&info)
+#endif
+#ifdef REGAMEDLL_FIXES
+							&& pPlayerItem->CanDrop() // needs to be droppable
+#endif
+							)
 						{
-							nBestWeight = info.iWeight;
-							pBestItem = pPlayerItem;
+#ifdef REGAMEDLL_ADD 
+							if (iPackGun == GR_PLR_DROP_GUN_ALL)
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+
+								CWeaponBox *pWeaponBox = PackPlayerItem(this, pPlayerItem, bPackAmmo);
+								if (pWeaponBox)
+								{
+									// just push a few units in forward to separate them
+									pWeaponBox->pev->velocity = pWeaponBox->pev->velocity * (1.0 + (iGunsPacked * 0.2)); 
+									iGunsPacked++;
+								}
+								
+								pPlayerItem = pNext;
+								continue;
+							}
+#endif
+							if (info.iWeight > nBestWeight)
+							{
+								nBestWeight = info.iWeight;
+								pBestItem = pPlayerItem;
+							}
 						}
 					}
-				}
-				// drop a grenade after death
-				else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
-				{
-					if (AreRunningCZero())
+					// drop a grenade after death
+					else if (pPlayerItem->iItemSlot() == GRENADE_SLOT)
 					{
+						if (AreRunningCZero())
+						{
 
 #ifdef REGAMEDLL_FIXES
-						if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
+							if (pPlayerItem->m_flStartThrow == 0.0f && m_rgAmmo[pPlayerItem->PrimaryAmmoIndex()] > 0)
 #endif
-						{
-							PackPlayerItem(this, pPlayerItem, true);
+							{
+								PackPlayerItem(this, pPlayerItem, true);
+							}
 						}
-					}
 #ifdef REGAMEDLL_ADD
-					else
-					{
-						switch ((int)nadedrops.value)
+						else
 						{
-						case 1:
-							PackPlayerNade(this, pPlayerItem, true);
-							break;
-						case 2:
-						{
-							CBasePlayerItem *pNext = pPlayerItem->m_pNext;
-							PackPlayerNade(this, pPlayerItem, true);
-							pPlayerItem = pNext;
-							continue;
+							switch ((int)nadedrops.value)
+							{
+							case 1:
+								PackPlayerNade(this, pPlayerItem, true);
+								break;
+							case 2:
+							{
+								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
+								PackPlayerNade(this, pPlayerItem, true);
+								pPlayerItem = pNext;
+								continue;
+							}
+							}
 						}
-						}
-					}
 #endif
-				}
+					}
 
-				pPlayerItem = pPlayerItem->m_pNext;
+					pPlayerItem = pPlayerItem->m_pNext;
+				}
 			}
 		}
 
@@ -2043,8 +2107,27 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			}
 
 			TheCareerTasks->HandleDeath(m_iTeam, this);
+
+#ifdef REGAMEDLL_FIXES
+			if (!m_bKilledByBomb)
+			{
+				CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
+
+				if(pAttacker /*safety*/ && !pAttacker->IsBot() && pAttacker->m_iTeam != m_iTeam)
+				{
+					if (pAttacker->HasShield())
+						killerHasShield = true;
+
+					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
+						wasBlind = true;
+
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
+				}
+			}
+#endif
 		}
 
+#ifndef REGAMEDLL_FIXES
 		if (!m_bKilledByBomb)
 		{
 			CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
@@ -2074,6 +2157,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				}
 			}
 		}
+#endif
 	}
 
 	if (!m_bKilledByBomb)
@@ -2208,6 +2292,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
 #else
+
+	float flDyingDuration = GetSequenceDuration() + CGameRules::GetDyingTime();
 	switch ((int)fadetoblack.value)
 	{
 	default:
@@ -2223,12 +2309,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 		break;
 	}
-	case 1:
+	case FADETOBLACK_STAY:
 	{
-		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT | FFADE_STAYOUT));
 		break;
 	}
-	case 2:
+	case FADETOBLACK_AT_DYING:
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
 		pev->iuser2 = ENTINDEX(edict());
@@ -2239,15 +2325,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
 		MESSAGE_END();
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
-
-			if (pObserver == this || (pObserver && pObserver->IsObservingPlayer(this)))
-			{
-				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
-			}
-		}
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT));
 
 		break;
 	}
@@ -3773,7 +3851,7 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(3.0f) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(CGameRules::GetDyingTime()) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
 			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
@@ -3862,9 +3940,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(RoundRespawn)()
 
 #ifdef REGAMEDLL_FIXES
 	if (m_bPunishedForTK && pev->health > 0)
-	{
-		ClientKill(ENT(pev));
-	}
+		Kill();
 #endif
 
 }
@@ -4030,7 +4106,12 @@ void CBasePlayer::PlayerUse()
 			CBaseEntity *pTrain = Instance(pev->groundentity);
 			if (pTrain && pTrain->Classify() == CLASS_VEHICLE)
 			{
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			}
 			return;
 		}
@@ -4572,7 +4653,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value)
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 				return;
 			}
 		}
@@ -4581,7 +4667,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
+#ifdef REGAMEDLL_ADD
+			if (legacy_vehicle_block.value)
+				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#else
 			((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+#endif
 			return;
 		}
 
@@ -4720,7 +4811,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 		{
 			switch (i)
 			{
-			case ITBD_PARALLYZE:
+			case ITBD_PARALYZE:
 				// UNDONE - flag movement as half-speed
 				bDuration = PARALYZE_DURATION;
 				break;
@@ -6499,7 +6590,7 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 			TraceResult tr;
 			Vector dir(0, 0, 1);
 
-			UTIL_BloodDrips(pev->origin, dir, BLOOD_COLOR_RED, 2000);
+			UTIL_BloodDrips(pev->origin, BLOOD_COLOR_RED, 2000);
 
 			for (int r = 1; r < 4; r++)
 			{
@@ -7997,13 +8088,21 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		Vector vecAngles   = pev->angles;
 		Vector vecVelocity = gpGlobals->v_forward * 300 + gpGlobals->v_forward * 100;
 
+		bool bPackAmmo = false;
+
+#ifdef REGAMEDLL_ADD
+		if (ammodrop.value >= 2.0f)
+			bPackAmmo = true;
+#endif
+
 		CWeaponBox *pWeaponBox = CreateWeaponBox(pWeapon, this,
 			modelname,
 			vecOrigin,
 			vecAngles,
 			vecVelocity,
 			CGameRules::GetItemKillDelay(),
-			false);
+			bPackAmmo
+			);
 
 		if (!pWeaponBox)
 		{
@@ -8706,6 +8805,23 @@ int GetPlayerGaitsequence(const edict_t *pEdict)
 	return pPlayer->m_iGaitsequence;
 }
 
+float CBasePlayer::GetDyingAnimationDuration() const
+{
+	float animDuration = -1.0f;
+
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float flSequenceDuration = GetSequenceDuration();
+		if (flSequenceDuration > 0)
+			animDuration = flSequenceDuration;
+	}
+
+	if (animDuration <= 0)
+		animDuration = CGameRules::GetDyingTime(); // in case of failure
+
+	return animDuration;
+}
+
 void CBasePlayer::SpawnClientSideCorpse()
 {
 #ifdef REGAMEDLL_FIXES
@@ -8713,9 +8829,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 	if (pev->effects & EF_NODRAW)
 		return;
 
-	// do not make a corpse if the player goes to respawn.
-	if (pev->deadflag == DEAD_RESPAWNABLE)
-		return;
+	// deadflag == DEAD_RESPAWNABLE already checked before
 #endif
 
 #ifdef REGAMEDLL_ADD
@@ -8725,6 +8839,27 @@ void CBasePlayer::SpawnClientSideCorpse()
 
 	char *infobuffer = GET_INFO_BUFFER(edict());
 	char *pModel = GET_KEY_VALUE(infobuffer, "model");
+	float timeDiff = pev->animtime - gpGlobals->time;
+
+#ifdef REGAMEDLL_ADD 
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float animDuration = GetDyingAnimationDuration();
+
+		// client receives a negative value 
+		animDuration *= -1.0; 
+
+		if (animDuration < timeDiff) // reasonable way to fix client side unfinished sequence bug
+		{
+			// by some reason, if client receives a value less 
+			// than "(negative current sequence time) * 100" 
+			// animation will play visually awkward
+			// at this function call time, player death animation 
+			// has already finished so we can safely fake it
+			timeDiff = animDuration; 
+		}
+	}
+#endif
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgSendCorpse);
 		WRITE_STRING(pModel);
@@ -8734,14 +8869,17 @@ void CBasePlayer::SpawnClientSideCorpse()
 		WRITE_COORD(pev->angles.x);
 		WRITE_COORD(pev->angles.y);
 		WRITE_COORD(pev->angles.z);
-		WRITE_LONG((pev->animtime - gpGlobals->time) * 100);
+		WRITE_LONG(timeDiff * 100);
 		WRITE_BYTE(pev->sequence);
 		WRITE_BYTE(pev->body);
 		WRITE_BYTE(m_iTeam);
 		WRITE_BYTE(entindex());
 	MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
+	// already defined in StartDeathCam
 	m_canSwitchObserverModes = true;
+#endif 
 
 	if (TheTutor)
 	{
@@ -9790,7 +9928,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	const char *placeName = "";
 
-	if (pev->deadflag == DEAD_NO && AreRunningCZero())
+	if (pev->deadflag == DEAD_NO && AreBotsAllowed())
 	{
 		// search the place name where is located the player
 		Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
@@ -10031,7 +10169,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(OnSpawnEquip)(bool addDefault, bool equipG
 	}
 
 #ifdef REGAMEDLL_ADD
-	if(!m_bIsVIP)
+	if (!m_bIsVIP)
 	{
 		switch (static_cast<ArmorType>((int)free_armor.value))
 		{
@@ -10232,6 +10370,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetSpawnProtection)(float flProtectionTime
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunity_effects.value > 0)
 	{
+		CSPlayer()->m_bSpawnProtectionEffects = true;
 		pev->rendermode = kRenderTransAdd;
 		pev->renderamt  = 100.0f;
 
@@ -10253,12 +10392,11 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, RemoveSpawnProtection)
 void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 {
 #ifdef REGAMEDLL_ADD
-	if (respawn_immunity_effects.value > 0)
+	if (CSPlayer()->m_bSpawnProtectionEffects)
 	{
-		if (pev->rendermode == kRenderTransAdd &&
-			pev->renderamt == 100.0f)
+		if (pev->rendermode == kRenderTransAdd && pev->renderamt == 100.0f)
 		{
-			pev->renderamt  = 255.0f;
+			pev->renderamt = 255.0f;
 			pev->rendermode = kRenderNormal;
 		}
 
@@ -10266,6 +10404,8 @@ void CBasePlayer::__API_HOOK(RemoveSpawnProtection)()
 			WRITE_BYTE(STATUSICON_HIDE);
 			WRITE_STRING("suithelmet_full");
 		MESSAGE_END();
+
+		CSPlayer()->m_bSpawnProtectionEffects = false;
 	}
 
 	CSPlayer()->m_flSpawnProtectionEndTime = 0.0f;
@@ -10295,4 +10435,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(DropIdlePlayer)(const char *reason)
 #else
 	SERVER_COMMAND(UTIL_VarArgs("kick \"%s\"\n", STRING(pev->netname)));
 #endif // #ifdef REGAMEDLL_FIXES
+}
+
+bool CBasePlayer::Kill()
+{
+	if (GetObserverMode() != OBS_NONE)
+		return false;
+	
+	if (m_iJoiningState != JOINED)
+		return false;
+	
+	m_LastHitGroup = HITGROUP_GENERIC;
+
+	// have the player kill himself
+	pev->health = 0.0f;
+	Killed(pev, GIB_NEVER);
+
+	if (CSGameRules()->m_pVIP == this)
+		CSGameRules()->m_iConsecutiveVIP = 10;
+	
+	return true;
 }

@@ -1737,10 +1737,12 @@ Vector CBlood::BloodPosition(CBaseEntity *pActivator)
 
 void CBlood::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
+	const Vector direction = Direction();
+
 	if (pev->spawnflags & SF_BLOOD_STREAM)
-		UTIL_BloodStream(BloodPosition(pActivator), Direction(), (Color() == BLOOD_COLOR_RED) ? 70 : Color(), int(BloodAmount()));
+		UTIL_BloodStream(BloodPosition(pActivator), direction, (Color() == BLOOD_COLOR_RED) ? 70 : Color(), int(BloodAmount()));
 	else
-		UTIL_BloodDrips(BloodPosition(pActivator), Direction(), Color(), int(BloodAmount()));
+		UTIL_BloodDrips(BloodPosition(pActivator), Color(), int(BloodAmount()));
 
 	if (pev->spawnflags & SF_BLOOD_DECAL)
 	{

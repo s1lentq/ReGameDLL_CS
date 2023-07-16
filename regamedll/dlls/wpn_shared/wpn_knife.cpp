@@ -12,12 +12,16 @@ void CKnife::Spawn()
 	m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 	m_iClip = WEAPON_NOCLIP;
 
+#ifdef REGAMEDLL_API
 	m_flStabBaseDamage = KNIFE_STAB_DAMAGE;
 	m_flSwingBaseDamage = KNIFE_SWING_DAMAGE;
 	m_flSwingBaseDamage_Fast = KNIFE_SWING_DAMAGE_FAST;
 
 	m_flStabDistance = KNIFE_STAB_DISTANCE;
 	m_flSwingDistance = KNIFE_SWING_DISTANCE;
+
+	m_flBackStabMultiplier = KNIFE_BACKSTAB_MULTIPLIER;
+#endif
 
 	// Get ready to fall down
 	FallInit();
@@ -44,12 +48,16 @@ void CKnife::Precache()
 
 	m_usKnife = PRECACHE_EVENT(1, "events/knife.sc");
 
+#ifdef REGAMEDLL_API
 	m_flStabBaseDamage = KNIFE_STAB_DAMAGE;
 	m_flSwingBaseDamage = KNIFE_SWING_DAMAGE;
 	m_flSwingBaseDamage_Fast = KNIFE_SWING_DAMAGE_FAST;
 
 	m_flStabDistance = KNIFE_STAB_DISTANCE;
 	m_flSwingDistance = KNIFE_SWING_DISTANCE;
+
+	m_flBackStabMultiplier = KNIFE_BACKSTAB_MULTIPLIER;
+#endif
 }
 
 int CKnife::GetItemInfo(ItemInfo *p)
@@ -121,6 +129,9 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 	distance = 1e6f;
 
 	vecHullEnd = vecSrc + ((vecHullEnd - vecSrc) * 2);
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecHullEnd, dont_ignore_monsters, pEntity, &tmpTrace);
 
 	if (tmpTrace.flFraction < 1.0f)
@@ -139,6 +150,9 @@ void FindHullIntersection(const Vector &vecSrc, TraceResult &tr, float *mins, fl
 				vecEnd.y = vecHullEnd.y + minmaxs[j][1];
 				vecEnd.z = vecHullEnd.z + minmaxs[k][2];
 
+#ifdef REGAMEDLL_ADD
+				gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 				UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, pEntity, &tmpTrace);
 
 				if (tmpTrace.flFraction < 1.0f)
@@ -166,14 +180,7 @@ void CKnife::SetPlayerShieldAnim()
 	if (!m_pPlayer->HasShield())
 		return;
 
-	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
-	}
-	else
-	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
-	}
+	Q_strcpy(m_pPlayer->m_szAnimExtention, (m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != 0 ? "shield" : "shieldknife");
 }
 
 void CKnife::ResetPlayerShieldAnim()
@@ -271,13 +278,23 @@ BOOL CKnife::Swing(BOOL fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * m_flSwingDistance;
+	vecEnd = vecSrc + gpGlobals->v_forward * KnifeSwingDistance();
 
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+#ifdef REGAMEDLL_ADD
+		// We manually reset it because Engine doesn't unlike TraceLine
+		gpGlobals->trace_flags = 0;
+#endif
 
 		if (tr.flFraction < 1.0f)
 		{
@@ -303,8 +320,8 @@ BOOL CKnife::Swing(BOOL fFirst)
 			{
 				switch ((m_iSwing++) % 2)
 				{
-				case 0: SendWeaponAnim(KNIFE_MIDATTACK1HIT, UseDecrement() != FALSE); break;
-				case 1: SendWeaponAnim(KNIFE_MIDATTACK2HIT, UseDecrement() != FALSE); break;
+					case 0: SendWeaponAnim(KNIFE_MIDATTACK1HIT, UseDecrement() != FALSE); break;
+					case 1: SendWeaponAnim(KNIFE_MIDATTACK2HIT, UseDecrement() != FALSE); break;
 				}
 
 				// miss
@@ -322,10 +339,15 @@ BOOL CKnife::Swing(BOOL fFirst)
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 			// play wiff or swish sound
-			if (RANDOM_LONG(0, 1))
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
-			else
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
+			EMIT_SOUND_DYN(m_pPlayer->edict(), 
+				CHAN_WEAPON, 
+				RANDOM_LONG(0, 1) ? 
+					"weapons/knife_slash1.wav" :
+					"weapons/knife_slash2.wav", 
+				VOL_NORM, 
+				ATTN_NORM, 
+				0, 
+				94);
 
 			// player "shoot" animation
 			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
@@ -340,8 +362,8 @@ BOOL CKnife::Swing(BOOL fFirst)
 		{
 			switch ((m_iSwing++) % 2)
 			{
-			case 0: SendWeaponAnim(KNIFE_MIDATTACK1HIT, UseDecrement() != FALSE); break;
-			case 1: SendWeaponAnim(KNIFE_MIDATTACK2HIT, UseDecrement() != FALSE); break;
+				case 0: SendWeaponAnim(KNIFE_MIDATTACK1HIT, UseDecrement() != FALSE); break;
+				case 1: SendWeaponAnim(KNIFE_MIDATTACK2HIT, UseDecrement() != FALSE); break;
 			}
 
 			m_flNextPrimaryAttack = GetNextAttackDelay(0.4);
@@ -368,10 +390,11 @@ BOOL CKnife::Swing(BOOL fFirst)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
 
-		if (m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase())
-			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage_Fast, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
-		else
-			pEntity->TraceAttack(m_pPlayer->pev, m_flSwingBaseDamage, gpGlobals->v_forward, &tr, (DMG_NEVERGIB | DMG_BULLET));
+		pEntity->TraceAttack(m_pPlayer->pev, 
+			KnifeSwingDamage(m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase()),
+			gpGlobals->v_forward, 
+			&tr, 
+			(DMG_NEVERGIB | DMG_BULLET));
 
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
 
@@ -379,28 +402,27 @@ BOOL CKnife::Swing(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE 
 #ifdef REGAMEDLL_FIXES
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
-#else
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+				&& pEntity->Classify() != CLASS_VEHICLE
 #endif
+				)
 			{
 				// play thwack or smack sound
 				switch (RANDOM_LONG(0, 3))
 				{
-				case 0: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit1.wav", VOL_NORM, ATTN_NORM); break;
-				case 1: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit2.wav", VOL_NORM, ATTN_NORM); break;
-				case 2: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit3.wav", VOL_NORM, ATTN_NORM); break;
-				case 3: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit4.wav", VOL_NORM, ATTN_NORM); break;
+					case 0: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit1.wav", VOL_NORM, ATTN_NORM); break;
+					case 1: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit2.wav", VOL_NORM, ATTN_NORM); break;
+					case 2: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit3.wav", VOL_NORM, ATTN_NORM); break;
+					case 3: EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_hit4.wav", VOL_NORM, ATTN_NORM); break;
 				}
 
 				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;
 
 				if (!pEntity->IsAlive())
 					return TRUE;
-				else
-					flVol = 0.1f;
 
+				flVol = 0.1f;
 				fHitWorld = FALSE;
 			}
 		}
@@ -449,13 +471,23 @@ BOOL CKnife::Stab(BOOL fFirst)
 	UTIL_MakeVectors(m_pPlayer->pev->v_angle);
 
 	vecSrc = m_pPlayer->GetGunPosition();
-	vecEnd = vecSrc + gpGlobals->v_forward * m_flStabDistance;
+	vecEnd = vecSrc + gpGlobals->v_forward * KnifeStabDistance();
 
+#ifdef REGAMEDLL_ADD
+	gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 	UTIL_TraceLine(vecSrc, vecEnd, dont_ignore_monsters, m_pPlayer->edict(), &tr);
 
 	if (tr.flFraction >= 1.0f)
 	{
+#ifdef REGAMEDLL_ADD
+		gpGlobals->trace_flags = FTRACE_KNIFE;
+#endif
 		UTIL_TraceHull(vecSrc, vecEnd, dont_ignore_monsters, head_hull, m_pPlayer->edict(), &tr);
+#ifdef REGAMEDLL_ADD
+		// We manually reset it because Engine doesn't unlike TraceLine
+		gpGlobals->trace_flags = 0;
+#endif
 
 		if (tr.flFraction < 1.0f)
 		{
@@ -486,10 +518,15 @@ BOOL CKnife::Stab(BOOL fFirst)
 			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 			// play wiff or swish sound
-			if (RANDOM_LONG(0, 1))
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash1.wav", VOL_NORM, ATTN_NORM, 0, 94);
-			else
-				EMIT_SOUND_DYN(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_slash2.wav", VOL_NORM, ATTN_NORM, 0, 94);
+			EMIT_SOUND_DYN(m_pPlayer->edict(), 
+				CHAN_WEAPON, 
+				RANDOM_LONG(0, 1) ? 
+					"weapons/knife_slash1.wav" : 
+					"weapons/knife_slash2.wav", 
+				VOL_NORM, 
+				ATTN_NORM, 
+				0, 
+				94);
 
 			// player "shoot" animation
 			m_pPlayer->SetAnimation(PLAYER_ATTACK1);
@@ -517,7 +554,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		// player "shoot" animation
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
-		float flDamage = m_flStabBaseDamage;
+		float flDamage = KnifeStabDamage();
 
 		if (pEntity && pEntity->IsPlayer())
 		{
@@ -532,10 +569,10 @@ BOOL CKnife::Stab(BOOL fFirst)
 
 			flDot = DotProduct(vec2LOS, gpGlobals->v_forward.Make2D());
 
-			//Triple the damage if we are stabbing them in the back.
+			// Multiply the damage if we are stabbing them in the back.
 			if (flDot > 0.80f)
 			{
-				flDamage *= 3.0f;
+				flDamage *= KnifeBackStabMultiplier();
 			}
 		}
 
@@ -549,11 +586,11 @@ BOOL CKnife::Stab(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE 
 #ifdef REGAMEDLL_FIXES
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE && pEntity->Classify() != CLASS_VEHICLE)
-#else
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE)
+				&& pEntity->Classify() != CLASS_VEHICLE
 #endif
+				)
 			{
 				EMIT_SOUND(m_pPlayer->edict(), CHAN_WEAPON, "weapons/knife_stab.wav", VOL_NORM, ATTN_NORM);
 				m_pPlayer->m_iWeaponVolume = KNIFE_BODYHIT_VOLUME;

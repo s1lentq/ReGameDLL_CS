@@ -92,7 +92,7 @@ void CFiveSeven::PrimaryAttack()
 
 void CFiveSeven::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_UP, SHIELDGUN_DOWN);
+	ShieldSecondaryFire(FIVESEVEN_SHIELD_UP, FIVESEVEN_SHIELD_DOWN);
 }
 
 void CFiveSeven::FiveSevenFire(float flSpread, float flCycleTime, BOOL fUseSemi)
@@ -208,7 +208,7 @@ void CFiveSeven::WeaponIdle()
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
-			SendWeaponAnim(SHIELDGUN_DRAWN_IDLE, UseDecrement() != FALSE);
+			SendWeaponAnim(FIVESEVEN_SHIELD_IDLE_UP, UseDecrement() != FALSE);
 		}
 	}
 	else if (m_iClip)

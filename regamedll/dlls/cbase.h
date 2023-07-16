@@ -369,6 +369,7 @@ public:
 	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers();
 
+	float GetSequenceDuration() const;
 	float SetBlending(int iBlender, float flValue);
 	void GetBonePosition(int iBone, Vector &origin, Vector &angles);
 	void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);
@@ -585,9 +586,9 @@ T *GetClassPtr(T *a)
 		a->pev = pev;
 
 #ifdef REGAMEDLL_API
-		a->OnCreate();
 		a->m_pEntity = new W();
 		a->m_pEntity->m_pContainingEntity = a;
+		a->OnCreate();
 #endif
 
 	}

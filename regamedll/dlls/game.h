@@ -138,6 +138,8 @@ extern cvar_t maxmoney;
 extern cvar_t round_infinite;
 extern cvar_t hegrenade_penetration;
 extern cvar_t nadedrops;
+extern cvar_t weapondrop;
+extern cvar_t ammodrop;
 extern cvar_t roundrespawn_time;
 extern cvar_t auto_reload_weapons;
 extern cvar_t refill_bpammo_weapons;
@@ -189,6 +191,9 @@ extern cvar_t sv_autobunnyhopping;
 extern cvar_t sv_enablebunnyhopping;
 extern cvar_t plant_c4_anywhere;
 extern cvar_t give_c4_frags;
+extern cvar_t hostages_rescued_ratio;
+extern cvar_t legacy_vehicle_block;
+extern cvar_t dying_time;
 extern cvar_t sv_legacy_movement;
 
 #endif

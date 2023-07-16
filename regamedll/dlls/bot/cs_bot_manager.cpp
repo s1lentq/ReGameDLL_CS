@@ -78,7 +78,7 @@ CCSBotManager::CCSBotManager()
 	char *dataPointer = (char *)LOAD_FILE_FOR_ME((char *)filename, &dataLength);
 	if (!dataPointer)
 	{
-		TheBotProfiles->Init("BotProfile.db");
+		TheBotProfiles->Init(cv_bot_profile_db.string);
 	}
 	else
 	{
@@ -410,11 +410,7 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 			{
 				if (killThemAll || FStrEq(name, msg))
 				{
-#ifdef REGAMEDLL_FIXES
-					ClientKill(pPlayer->edict());
-#else
-					pPlayer->TakeDamage(pPlayer->pev, pPlayer->pev, 9999.9f, DMG_CRUSH);
-#endif
+					pPlayer->Kill();
 				}
 			}
 		}
