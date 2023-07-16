@@ -357,10 +357,6 @@ typedef IHookChainRegistryImpl<void, struct playermove_s *, int> CReGameHookRegi
 typedef IHookChainImpl<void, int> CReGameHook_PM_AirMove;
 typedef IHookChainRegistryImpl<void, int> CReGameHookRegistry_PM_AirMove;
 
-// PM_LadderMove hook
-typedef IHookChainImpl<void, struct physent_s *> CReGameHook_PM_LadderMove;
-typedef IHookChainRegistryImpl<void, struct physent_s *> CReGameHookRegistry_PM_LadderMove;
-
 // HandleMenu_ChooseAppearance hook
 typedef IHookChainImpl<void, CBasePlayer *, int> CReGameHook_HandleMenu_ChooseAppearance;
 typedef IHookChainRegistryImpl<void, CBasePlayer *, int> CReGameHookRegistry_HandleMenu_ChooseAppearance;
@@ -649,6 +645,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainImpl<void, CGameRules **> CReGameHook_FreeGameRules;
 typedef IHookChainRegistryImpl<void, CGameRules **> CReGameHookRegistry_FreeGameRules;
 
+// PM_LadderMove hook
+typedef IHookChainImpl<void, struct physent_s *> CReGameHook_PM_LadderMove;
+typedef IHookChainRegistryImpl<void, struct physent_s *> CReGameHookRegistry_PM_LadderMove;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -782,9 +782,8 @@ public:
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
 	
-	CReGameHookRegistry_PM_LadderMove m_PM_LadderMove;
-
 	CReGameHookRegistry_FreeGameRules m_FreeGameRules;
+	CReGameHookRegistry_PM_LadderMove m_PM_LadderMove;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
