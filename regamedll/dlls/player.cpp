@@ -4784,6 +4784,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 #endif
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, CheckTimeBasedDamage)
+
 // If player is taking time based damage, continue doing damage to player -
 // this simulates the effect of being poisoned, gassed, dosed with radiation etc -
 // anything that continues to do damage even after the initial contact stops.
@@ -4792,7 +4794,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 // The m_bitsDamageType bit MUST be set if any damage is to be taken.
 // This routine will detect the initial on value of the m_bitsDamageType
 // and init the appropriate counter.  Only processes damage every second.
-void CBasePlayer::CheckTimeBasedDamage()
+void EXT_FUNC CBasePlayer::__API_HOOK(CheckTimeBasedDamage)()
 {
 	int i;
 	byte bDuration = 0;

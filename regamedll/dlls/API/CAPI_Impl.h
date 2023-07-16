@@ -705,6 +705,10 @@ typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePl
 typedef IHookChainClassImpl<void, CBotManager, GameEventType, CBaseEntity *, CBaseEntity *> CReGameHook_CBotManager_OnEvent;
 typedef IHookChainRegistryClassEmptyImpl<void, CBotManager, GameEventType, CBaseEntity*, CBaseEntity*> CReGameHookRegistry_CBotManager_OnEvent;
 
+// CBasePlayer::CheckTimeBasedDamage hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_CheckTimeBasedDamage;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage;
+
 // CBasePlayer::EntSelectSpawnPoint hook
 typedef IHookChainClassImpl<edict_t *, CBasePlayer> CReGameHook_CBasePlayer_EntSelectSpawnPoint;
 typedef IHookChainRegistryClassImpl<edict_t *, CBasePlayer> CReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
@@ -866,6 +870,7 @@ public:
 	CReGameHookRegistry_CSGameRules_TeamStacked m_CSGameRules_TeamStacked;
 	CReGameHookRegistry_CSGameRules_PlayerGotWeapon m_CSGameRules_PlayerGotWeapon;
 	CReGameHookRegistry_CBotManager_OnEvent m_CBotManager_OnEvent;
+	CReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage m_CBasePlayer_CheckTimeBasedDamage;
 	CReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint m_CBasePlayer_EntSelectSpawnPoint;
 	CReGameHookRegistry_CBasePlayerWeapon_KickBack m_CBasePlayerWeapon_KickBack;
 	CReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim m_CBasePlayerWeapon_SendWeaponAnim;
@@ -1017,6 +1022,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked();
 	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon();
 	virtual IReGameHookRegistry_CBotManager_OnEvent *CBotManager_OnEvent();
+	virtual IReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage *CBasePlayer_CheckTimeBasedDamage();
 	virtual IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint *CBasePlayer_EntSelectSpawnPoint();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim();
