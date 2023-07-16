@@ -698,8 +698,8 @@ typedef IHookChainClassImpl<edict_t *, CBasePlayer> CReGameHook_CBasePlayer_EntS
 typedef IHookChainRegistryClassImpl<edict_t *, CBasePlayer> CReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
 
 // CBasePlayerWeapon::KickBack hook
-typedef IHookChainClassImpl<int, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHook_CBasePlayerWeapon_KickBack;
-typedef IHookChainRegistryClassImpl<int, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHookRegistry_CBasePlayerWeapon_KickBack;
+typedef IHookChainClassImpl<void, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHook_CBasePlayerWeapon_KickBack;
+typedef IHookChainRegistryClassImpl<void, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHookRegistry_CBasePlayerWeapon_KickBack;
 
 // CBasePlayerWeapon::SendWeaponAnim hook
 typedef IHookChainClassImpl<void, CBasePlayerWeapon, int, int> CReGameHook_CBasePlayerWeapon_SendWeaponAnim;

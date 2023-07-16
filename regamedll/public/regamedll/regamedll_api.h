@@ -557,28 +557,28 @@ typedef IHookChain<void, entvars_t *, entvars_t *> IReGameHook_ApplyMultiDamage;
 typedef IHookChainRegistry<void, entvars_t *, entvars_t *> IReGameHookRegistry_ApplyMultiDamage;
 
 // CHalfLifeMultiplay::TeamFull hook
-typedef IHookChainClass<BOOL, class CHalfLifeMultiplay, int> IReGameHook_CSGameRules_TeamFull;
-typedef IHookChainRegistryClass<BOOL, class CHalfLifeMultiplay, int> IReGameHookRegistry_CSGameRules_TeamFull;
+typedef IHookChain<BOOL, int> IReGameHook_CSGameRules_TeamFull;
+typedef IHookChainRegistry<BOOL, int> IReGameHookRegistry_CSGameRules_TeamFull;
 
 // CHalfLifeMultiplay::TeamStacked hook
-typedef IHookChainClass<BOOL, class CHalfLifeMultiplay, int, int> IReGameHook_CSGameRules_TeamStacked;
-typedef IHookChainRegistryClass<BOOL, class CHalfLifeMultiplay, int, int> IReGameHookRegistry_CSGameRules_TeamStacked;
+typedef IHookChain<BOOL, int, int> IReGameHook_CSGameRules_TeamStacked;
+typedef IHookChainRegistry<BOOL, int, int> IReGameHookRegistry_CSGameRules_TeamStacked;
 
 // CHalfLifeMultiplay::PlayerGotWeapon hook
-typedef IHookChainClass<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> IReGameHook_CSGameRules_PlayerGotWeapon;
-typedef IHookChainRegistryClass<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> IReGameHookRegistry_CSGameRules_PlayerGotWeapon;
+typedef IHookChain<void, CBasePlayer *, CBasePlayerItem *> IReGameHook_CSGameRules_PlayerGotWeapon;
+typedef IHookChainRegistry<void, CBasePlayer *, CBasePlayerItem *> IReGameHookRegistry_CSGameRules_PlayerGotWeapon;
 
 // CBotManager::OnEvent hook
-typedef IHookChainClass<void, CBotManager, GameEventType, CBaseEntity *, CBaseEntity *> IReGameHook_CBotManager_OnEvent;
-typedef IHookChainRegistryClass<void, CBotManager, GameEventType, CBaseEntity*, CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
+typedef IHookChain<void, GameEventType, CBaseEntity *, CBaseEntity *> IReGameHook_CBotManager_OnEvent;
+typedef IHookChainRegistry<void, GameEventType, CBaseEntity*, CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
 
 // CBasePlayer::EntSelectSpawnPoint hook
 typedef IHookChainClass<edict_t *, CBasePlayer> IReGameHook_CBasePlayer_EntSelectSpawnPoint;
 typedef IHookChainRegistryClass<edict_t *, CBasePlayer> IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
 
 // CBasePlayerWeapon::KickBack hook
-typedef IHookChainClass<int, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHook_CBasePlayerWeapon_KickBack;
-typedef IHookChainRegistryClass<int, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHookRegistry_CBasePlayerWeapon_KickBack;
+typedef IHookChainClass<void, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHook_CBasePlayerWeapon_KickBack;
+typedef IHookChainRegistryClass<void, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHookRegistry_CBasePlayerWeapon_KickBack;
 
 // CBasePlayerWeapon::SendWeaponAnim hook
 typedef IHookChainClass<void, CBasePlayerWeapon, int, int> IReGameHook_CBasePlayerWeapon_SendWeaponAnim;
