@@ -326,6 +326,7 @@ GAMEHOOK_REGISTRY(CSGameRules_PlayerGotWeapon);
 GAMEHOOK_REGISTRY(CBotManager_OnEvent);
 GAMEHOOK_REGISTRY(CBasePlayer_CheckTimeBasedDamage);
 GAMEHOOK_REGISTRY(CBasePlayer_EntSelectSpawnPoint);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_ItemPostFrame);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_SendWeaponAnim);
 

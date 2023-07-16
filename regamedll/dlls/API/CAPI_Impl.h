@@ -713,6 +713,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainClassImpl<edict_t *, CBasePlayer> CReGameHook_CBasePlayer_EntSelectSpawnPoint;
 typedef IHookChainRegistryClassImpl<edict_t *, CBasePlayer> CReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
 
+// CBasePlayerWeapon::ItemPostFrame hook
+typedef IHookChainClassImpl<void, CBasePlayerWeapon> CReGameHook_CBasePlayerWeapon_ItemPostFrame;
+typedef IHookChainRegistryClassImpl<void, CBasePlayerWeapon> CReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame;
+
 // CBasePlayerWeapon::KickBack hook
 typedef IHookChainClassImpl<void, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHook_CBasePlayerWeapon_KickBack;
 typedef IHookChainRegistryClassImpl<void, CBasePlayerWeapon, float, float, float, float, float, float, int> CReGameHookRegistry_CBasePlayerWeapon_KickBack;
@@ -872,6 +876,7 @@ public:
 	CReGameHookRegistry_CBotManager_OnEvent m_CBotManager_OnEvent;
 	CReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage m_CBasePlayer_CheckTimeBasedDamage;
 	CReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint m_CBasePlayer_EntSelectSpawnPoint;
+	CReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame m_CBasePlayerWeapon_ItemPostFrame;
 	CReGameHookRegistry_CBasePlayerWeapon_KickBack m_CBasePlayerWeapon_KickBack;
 	CReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim m_CBasePlayerWeapon_SendWeaponAnim;
 
@@ -1024,6 +1029,7 @@ public:
 	virtual IReGameHookRegistry_CBotManager_OnEvent *CBotManager_OnEvent();
 	virtual IReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage *CBasePlayer_CheckTimeBasedDamage();
 	virtual IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint *CBasePlayer_EntSelectSpawnPoint();
+	virtual IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame *CBasePlayerWeapon_ItemPostFrame();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim();
 };

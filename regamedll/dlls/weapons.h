@@ -405,6 +405,7 @@ public:
 	bool DefaultShotgunReload_OrigFunc(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2);
 	void KickBack_OrigFunc(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
 	void SendWeaponAnim_OrigFunc(int iAnim, int skiplocal);
+	void ItemPostFrame_OrigFunc();
 
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif

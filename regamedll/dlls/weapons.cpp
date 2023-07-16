@@ -896,7 +896,9 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	}
 }
 
-void CBasePlayerWeapon::ItemPostFrame()
+LINK_HOOK_CLASS_VOID_CHAIN2(ItemPostFrame)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(ItemPostFrame)()
 {
 	int usableButtons = m_pPlayer->pev->button;
 
