@@ -162,7 +162,9 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	return CHAR_TEX_CONCRETE;
 }
 
-void PM_PlayStepSound(int step, float fvol)
+LINK_HOOK_VOID_CHAIN(PM_PlayStepSound, (int step, float fvol), step, fvol)
+
+void EXT_FUNC __API_HOOK(PM_PlayStepSound)(int step, float fvol)
 {
 	static int iSkipStep = 0;
 	int irand;
@@ -1127,7 +1129,9 @@ void PM_Friction()
 	VectorCopy(newvel, pmove->velocity);
 }
 
-void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
+LINK_HOOK_VOID_CHAIN(PM_AirAccelerate, (vec_t *wishdir, float wishspeed, float accel), wishdir, wishspeed, accel)
+
+void EXT_FUNC __API_HOOK(PM_AirAccelerate)(vec_t *wishdir, float wishspeed, float accel)
 {
 	int i;
 	float addspeed;
@@ -2123,7 +2127,9 @@ physent_t *PM_Ladder()
 	return nullptr;
 }
 
-void PM_WaterJump()
+LINK_HOOK_VOID_CHAIN2(PM_WaterJump)
+
+void EXT_FUNC __API_HOOK(PM_WaterJump)()
 {
 	if (pmove->waterjumptime > 10000)
 	{

@@ -649,6 +649,10 @@ typedef IHookChainRegistryImpl<void, CGameRules **> CReGameHookRegistry_FreeGame
 typedef IHookChainImpl<void, struct physent_s *> CReGameHook_PM_LadderMove;
 typedef IHookChainRegistryImpl<void, struct physent_s *> CReGameHookRegistry_PM_LadderMove;
 
+// PM_WaterJump hook
+typedef IHookChainImpl<void> CReGameHook_PM_WaterJump;
+typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_WaterJump;
+
 // PM_CheckWaterJump hook
 typedef IHookChainImpl<void> CReGameHook_PM_CheckWaterJump;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_CheckWaterJump;
@@ -664,6 +668,14 @@ typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_Duck;
 // PM_UnDuck hook
 typedef IHookChainImpl<void> CReGameHook_PM_UnDuck;
 typedef IHookChainRegistryImpl<void> CReGameHookRegistry_PM_UnDuck;
+
+// PM_PlayStepSound hook
+typedef IHookChainImpl<void, int, float> CReGameHook_PM_PlayStepSound;
+typedef IHookChainRegistryImpl<void, int, float> CReGameHookRegistry_PM_PlayStepSound;
+
+// PM_AirAccelerate hook
+typedef IHookChainImpl<void, vec_t *, float, float> CReGameHook_PM_AirAccelerate;
+typedef IHookChainRegistryImpl<void, vec_t *, float, float> CReGameHookRegistry_PM_AirAccelerate;
 
 // ClearMultiDamage hook
 typedef IHookChainImpl<void> CReGameHook_ClearMultiDamage;

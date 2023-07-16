@@ -528,6 +528,10 @@ typedef IHookChainRegistry<void, class CGameRules **> IReGameHookRegistry_FreeGa
 typedef IHookChain<void, struct physent_s *> IReGameHook_PM_LadderMove;
 typedef IHookChainRegistry<void, struct physent_s *> IReGameHookRegistry_PM_LadderMove;
 
+// PM_WaterJump hook
+typedef IHookChain<void> IReGameHook_PM_WaterJump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_WaterJump;
+
 // PM_CheckWaterJump hook
 typedef IHookChain<void> IReGameHook_PM_CheckWaterJump;
 typedef IHookChainRegistry<void> IReGameHookRegistry_PM_CheckWaterJump;
@@ -543,6 +547,14 @@ typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Duck;
 // PM_UnDuck hook
 typedef IHookChain<void> IReGameHook_PM_UnDuck;
 typedef IHookChainRegistry<void> IReGameHookRegistry_PM_UnDuck;
+
+// PM_PlayStepSound hook
+typedef IHookChain<void, int, float> IReGameHook_PM_PlayStepSound;
+typedef IHookChainRegistry<void, int, float> IReGameHookRegistry_PM_PlayStepSound;
+
+// PM_AirAccelerate hook
+typedef IHookChain<void, vec_t *, float, float> IReGameHook_PM_AirAccelerate;
+typedef IHookChainRegistry<void, vec_t *, float, float> IReGameHookRegistry_PM_AirAccelerate;
 
 // ClearMultiDamage hook
 typedef IHookChain<void> IReGameHook_ClearMultiDamage;
@@ -720,10 +732,13 @@ public:
 
 	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules() = 0;
 	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove() = 0;
+	virtual IReGameHookRegistry_PM_WaterJump *PM_WaterJump() = 0;
 	virtual IReGameHookRegistry_PM_CheckWaterJump *PM_CheckWaterJump() = 0;
 	virtual IReGameHookRegistry_PM_Jump *PM_Jump() = 0;
 	virtual IReGameHookRegistry_PM_Duck *PM_Duck() = 0;
 	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck() = 0;
+	virtual IReGameHookRegistry_PM_PlayStepSound *PM_PlayStepSound() = 0;
+	virtual IReGameHookRegistry_PM_AirAccelerate *PM_AirAccelerate() = 0;
 	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage() = 0;
 	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage() = 0;
 	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage() = 0;
