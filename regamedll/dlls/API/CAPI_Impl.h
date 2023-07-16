@@ -944,14 +944,3 @@ public:
 	EXT_FUNC virtual bool BGetICSEntity(const char *pchVersion) const;
 	EXT_FUNC virtual bool BGetIGameRules(const char *pchVersion) const;
 };
-
-void Regamedll_ChangeString_api(char *&dest, const char *source);
-void RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType);
-
-void ClearMultiDamage_api();
-void ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker);
-void AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
-
-void UTIL_RestartOther_api(const char *szClassname);
-void UTIL_ResetEntities_api();
-void UTIL_RemoveOther_api(const char *szClassname, int nCount = 0);
