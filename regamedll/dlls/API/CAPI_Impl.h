@@ -852,10 +852,13 @@ public:
 	
 	CReGameHookRegistry_FreeGameRules m_FreeGameRules;
 	CReGameHookRegistry_PM_LadderMove m_PM_LadderMove;
+	CReGameHookRegistry_PM_WaterJump m_PM_WaterJump;
 	CReGameHookRegistry_PM_CheckWaterJump m_PM_CheckWaterJump;
 	CReGameHookRegistry_PM_Jump m_PM_Jump;
 	CReGameHookRegistry_PM_Duck m_PM_Duck;
 	CReGameHookRegistry_PM_UnDuck m_PM_UnDuck;
+	CReGameHookRegistry_PM_PlayStepSound m_PM_PlayStepSound;
+	CReGameHookRegistry_PM_AirAccelerate m_PM_AirAccelerate;
 	CReGameHookRegistry_ClearMultiDamage m_ClearMultiDamage;
 	CReGameHookRegistry_AddMultiDamage m_AddMultiDamage;
 	CReGameHookRegistry_ApplyMultiDamage m_ApplyMultiDamage;
