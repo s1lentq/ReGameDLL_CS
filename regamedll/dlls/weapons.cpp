@@ -896,7 +896,7 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CHAIN2(ItemPostFrame)
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayerWeapon, ItemPostFrame)
 
 void EXT_FUNC CBasePlayerWeapon::__API_HOOK(ItemPostFrame)()
 {
