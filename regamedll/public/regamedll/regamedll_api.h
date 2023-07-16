@@ -528,6 +528,62 @@ typedef IHookChainRegistry<void, class CGameRules **> IReGameHookRegistry_FreeGa
 typedef IHookChain<void, struct physent_s *> IReGameHook_PM_LadderMove;
 typedef IHookChainRegistry<void, struct physent_s *> IReGameHookRegistry_PM_LadderMove;
 
+// PM_CheckWaterJump hook
+typedef IHookChain<void> IReGameHook_PM_CheckWaterJump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_CheckWaterJump;
+
+// PM_Jump hook
+typedef IHookChain<void> IReGameHook_PM_Jump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Jump;
+
+// PM_Duck hook
+typedef IHookChain<void> IReGameHook_PM_Duck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Duck;
+
+// PM_UnDuck hook
+typedef IHookChain<void> IReGameHook_PM_UnDuck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_UnDuck;
+
+// ClearMultiDamage hook
+typedef IHookChain<void> IReGameHook_ClearMultiDamage;
+typedef IHookChainRegistry<void> IReGameHookRegistry_ClearMultiDamage;
+
+// AddMultiDamage hook
+typedef IHookChain<void, entvars_t *, CBaseEntity *, float, int> IReGameHook_AddMultiDamage;
+typedef IHookChainRegistry<void, entvars_t *, CBaseEntity *, float, int> IReGameHookRegistry_AddMultiDamage;
+
+// ApplyMultiDamage hook
+typedef IHookChain<void, entvars_t *, entvars_t *> IReGameHook_ApplyMultiDamage;
+typedef IHookChainRegistry<void, entvars_t *, entvars_t *> IReGameHookRegistry_ApplyMultiDamage;
+
+// CHalfLifeMultiplay::TeamFull hook
+typedef IHookChainClass<BOOL, class CHalfLifeMultiplay, int> IReGameHook_CSGameRules_TeamFull;
+typedef IHookChainRegistryClass<BOOL, class CHalfLifeMultiplay, int> IReGameHookRegistry_CSGameRules_TeamFull;
+
+// CHalfLifeMultiplay::TeamStacked hook
+typedef IHookChainClass<BOOL, class CHalfLifeMultiplay, int, int> IReGameHook_CSGameRules_TeamStacked;
+typedef IHookChainRegistryClass<BOOL, class CHalfLifeMultiplay, int, int> IReGameHookRegistry_CSGameRules_TeamStacked;
+
+// CHalfLifeMultiplay::PlayerGotWeapon hook
+typedef IHookChainClass<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> IReGameHook_CSGameRules_PlayerGotWeapon;
+typedef IHookChainRegistryClass<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> IReGameHookRegistry_CSGameRules_PlayerGotWeapon;
+
+// CBotManager::OnEvent hook
+typedef IHookChainClass<void, CBotManager, GameEventType, CBaseEntity *, CBaseEntity *> IReGameHook_CBotManager_OnEvent;
+typedef IHookChainRegistryClass<void, CBotManager, GameEventType, CBaseEntity*, CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
+
+// CBasePlayer::EntSelectSpawnPoint hook
+typedef IHookChainClass<edict_t *, CBasePlayer> IReGameHook_CBasePlayer_EntSelectSpawnPoint;
+typedef IHookChainRegistryClass<edict_t *, CBasePlayer> IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
+
+// CBasePlayerWeapon::KickBack hook
+typedef IHookChainClass<int, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHook_CBasePlayerWeapon_KickBack;
+typedef IHookChainRegistryClass<int, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHookRegistry_CBasePlayerWeapon_KickBack;
+
+// CBasePlayerWeapon::SendWeaponAnim hook
+typedef IHookChainClass<void, CBasePlayerWeapon, int, int> IReGameHook_CBasePlayerWeapon_SendWeaponAnim;
+typedef IHookChainRegistryClass<void, CBasePlayerWeapon, int, int> IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -664,6 +720,20 @@ public:
 
 	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules() = 0;
 	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove() = 0;
+	virtual IReGameHookRegistry_PM_CheckWaterJump *PM_CheckWaterJump() = 0;
+	virtual IReGameHookRegistry_PM_Jump *PM_Jump() = 0;
+	virtual IReGameHookRegistry_PM_Duck *PM_Duck() = 0;
+	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck() = 0;
+	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage() = 0;
+	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage() = 0;
+	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage() = 0;
+	virtual IReGameHookRegistry_CSGameRules_TeamFull *CSGameRules_TeamFull() = 0;
+	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked() = 0;
+	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon() = 0;
+	virtual IReGameHookRegistry_CBotManager_OnEvent *CBotManager_OnEvent() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint *CBasePlayer_EntSelectSpawnPoint() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim() = 0;
 };
 
 struct ReGameFuncs_t {

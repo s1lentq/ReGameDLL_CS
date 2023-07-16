@@ -85,6 +85,10 @@ void PM_Move_OrigFunc(struct playermove_s *ppmove, int server);
 void PM_AirMove_OrigFunc(int playerIndex = 0);
 void PM_UpdateStepSound_OrigFunc();
 void PM_LadderMove_OrigFunc(physent_t *pLadder);
+void PM_CheckWaterJump_Orig();
+void PM_Jump_Orig();
+void PM_Duck_Orig();
+void PM_UnDuck_Orig();
 #else
 void PM_AirMove(int playerIndex = 0);
 #endif

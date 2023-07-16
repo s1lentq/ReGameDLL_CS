@@ -81,6 +81,10 @@ public:
 	virtual void OnEvent(GameEventType event, CBaseEntity *pEntity = nullptr, CBaseEntity *pOther = nullptr);	// Invoked when event occurs in the game (some events have NULL entity).
 	virtual unsigned int GetPlayerPriority(CBasePlayer *pPlayer) const = 0;										// return priority of player (0 = max pri)
 
+#ifdef REGAMEDLL_API
+	void OnEvent_OrigFunc(GameEventType event, CBaseEntity* pEntity = nullptr, CBaseEntity* pOther = nullptr);
+#endif
+
 public:
 	const char *GetNavMapFilename() const;										// return the filename for this map's "nav" file
 

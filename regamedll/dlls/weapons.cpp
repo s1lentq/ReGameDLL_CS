@@ -74,16 +74,20 @@ float GetBaseAccuracy(WeaponIdType id)
 	return 0.0f;
 }
 
+LINK_HOOK_VOID_CHAIN2(ClearMultiDamage)
+
 // Resets the global multi damage accumulator
-void ClearMultiDamage()
+void EXT_FUNC __API_HOOK(ClearMultiDamage)()
 {
 	gMultiDamage.pEntity = nullptr;
 	gMultiDamage.amount = 0;
 	gMultiDamage.type = 0;
 }
 
+LINK_HOOK_VOID_CHAIN(ApplyMultiDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker), pevInflictor, pevAttacker)
+
 // Inflicts contents of global multi damage register on gMultiDamage.pEntity
-void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker)
+void EXT_FUNC __API_HOOK(ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker)
 {
 	if (!gMultiDamage.pEntity)
 		return;
@@ -92,7 +96,9 @@ void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker)
 
 }
 
-void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
+LINK_HOOK_VOID_CHAIN(AddMultiDamage, (entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType), pevInflictor, pEntity, flDamage, bitsDamageType)
+
+void EXT_FUNC __API_HOOK(AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	if (!pEntity)
 		return;
@@ -691,7 +697,9 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayerWeapon, KickBack, (float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change), up_base, lateral_base, up_modifier, lateral_modifier, up_max, lateral_max, direction_change)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(KickBack)(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
 {
 	real_t flKickUp;
 	float flKickLateral;
@@ -1279,7 +1287,9 @@ int CBasePlayerWeapon::UpdateClientData(CBasePlayer *pPlayer)
 	return 1;
 }
 
-void CBasePlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayerWeapon, SendWeaponAnim, (int iAnim, int skiplocal), iAnim, skiplocal)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(SendWeaponAnim)(int iAnim, int skiplocal)
 {
 	m_pPlayer->pev->weaponanim = iAnim;
 

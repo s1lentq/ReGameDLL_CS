@@ -310,6 +310,20 @@ GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
 
 GAMEHOOK_REGISTRY(FreeGameRules);
 GAMEHOOK_REGISTRY(PM_LadderMove);
+GAMEHOOK_REGISTRY(PM_CheckWaterJump);
+GAMEHOOK_REGISTRY(PM_Jump);
+GAMEHOOK_REGISTRY(PM_Duck);
+GAMEHOOK_REGISTRY(PM_UnDuck);
+GAMEHOOK_REGISTRY(ClearMultiDamage);
+GAMEHOOK_REGISTRY(AddMultiDamage);
+GAMEHOOK_REGISTRY(ApplyMultiDamage);
+GAMEHOOK_REGISTRY(CSGameRules_TeamFull);
+GAMEHOOK_REGISTRY(CSGameRules_TeamStacked);
+GAMEHOOK_REGISTRY(CSGameRules_PlayerGotWeapon);
+GAMEHOOK_REGISTRY(CBotManager_OnEvent);
+GAMEHOOK_REGISTRY(CBasePlayer_EntSelectSpawnPoint);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
+GAMEHOOK_REGISTRY(CBasePlayerWeapon_SendWeaponAnim);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

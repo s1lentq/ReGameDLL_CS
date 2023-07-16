@@ -365,7 +365,7 @@ void PM_CatagorizeTextureType()
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
 }
 
-LINK_HOOK_VOID_CHAIN2(PM_UpdateStepSound);
+LINK_HOOK_VOID_CHAIN2(PM_UpdateStepSound)
 
 void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 {
@@ -1274,7 +1274,7 @@ void PM_WaterMove()
 	PM_FlyMove();
 }
 
-LINK_HOOK_VOID_CHAIN(PM_AirMove, (int playerIndex = 0), pmove->player_index + 1);
+LINK_HOOK_VOID_CHAIN(PM_AirMove, (int playerIndex = 0), pmove->player_index + 1)
 
 void EXT_FUNC __API_HOOK(PM_AirMove)(int playerIndex)
 {
@@ -1793,7 +1793,9 @@ void PM_FixPlayerCrouchStuck(int direction)
 	VectorCopy(test, pmove->origin);
 }
 
-void PM_UnDuck()
+LINK_HOOK_VOID_CHAIN2(PM_UnDuck)
+
+void EXT_FUNC __API_HOOK(PM_UnDuck)()
 {
 #ifdef REGAMEDLL_ADD
 	if (unduck_method.value)
@@ -1863,7 +1865,9 @@ void PM_UnDuck()
 	}
 }
 
-void PM_Duck()
+LINK_HOOK_VOID_CHAIN2(PM_Duck)
+
+void EXT_FUNC __API_HOOK(PM_Duck)()
 {
 	int buttonsChanged = (pmove->oldbuttons ^ pmove->cmd.buttons);	// These buttons have changed this frame
 	int nButtonPressed =  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
@@ -1967,7 +1971,7 @@ void PM_Duck()
 	}
 }
 
-LINK_HOOK_VOID_CHAIN(PM_LadderMove, (physent_t *pLadder), pLadder);
+LINK_HOOK_VOID_CHAIN(PM_LadderMove, (physent_t *pLadder), pLadder)
 
 void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 {
@@ -2344,7 +2348,9 @@ void PM_PreventMegaBunnyJumping()
 	VectorScale(pmove->velocity, fraction, pmove->velocity);
 }
 
-void PM_Jump()
+LINK_HOOK_VOID_CHAIN2(PM_Jump)
+
+void EXT_FUNC __API_HOOK(PM_Jump)()
 {
 	if (pmove->dead)
 	{
@@ -2516,7 +2522,9 @@ void PM_Jump()
 	pmove->oldbuttons |= IN_JUMP;
 }
 
-void PM_CheckWaterJump()
+LINK_HOOK_VOID_CHAIN2(PM_CheckWaterJump)
+
+void EXT_FUNC __API_HOOK(PM_CheckWaterJump)()
 {
 	vec3_t vecStart, vecEnd;
 	vec3_t flatforward;
@@ -3209,7 +3217,7 @@ void PM_CreateStuckTable()
 	}
 }
 
-LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove, server);
+LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove, server)
 
 // This module implements the shared player physics code between any particular game and
 // the engine. The same PM_Move routine is built into the game .dll and the client .dll and is
@@ -3254,7 +3262,7 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 	return -1;
 }
 
-LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove);
+LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove)
 
 void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 {

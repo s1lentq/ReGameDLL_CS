@@ -444,6 +444,7 @@ public:
 	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
 	void DeathSound_OrigFunc();
 	void JoiningThink_OrigFunc();
+	edict_t *EntSelectSpawnPoint_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
