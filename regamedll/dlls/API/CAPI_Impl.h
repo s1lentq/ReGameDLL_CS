@@ -1003,10 +1003,13 @@ public:
 
 	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules();
 	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove();
+	virtual IReGameHookRegistry_PM_WaterJump *PM_WaterJump();
 	virtual IReGameHookRegistry_PM_CheckWaterJump *PM_CheckWaterJump();
 	virtual IReGameHookRegistry_PM_Jump *PM_Jump();
 	virtual IReGameHookRegistry_PM_Duck *PM_Duck();
 	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck();
+	virtual IReGameHookRegistry_PM_PlayStepSound *PM_PlayStepSound();
+	virtual IReGameHookRegistry_PM_AirAccelerate *PM_AirAccelerate();
 	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage();
 	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage();
 	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage();
