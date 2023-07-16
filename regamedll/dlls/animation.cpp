@@ -246,6 +246,21 @@ void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *p
 	*pflGroundSpeed = *pflGroundSpeed * pseqdesc->fps / (pseqdesc->numframes - 1);
 }
 
+float GetSequenceDuration(void *pmodel, entvars_t *pev)
+{
+	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
+	if (!pstudiohdr)
+		return 0;  // model ptr is not valid
+
+	if (pev->sequence < 0 || pev->sequence >= pstudiohdr->numseq)
+		return 0;  // sequence is not valid
+
+	// get current sequence time
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
+
+	return pseqdesc->numframes / pseqdesc->fps;
+}
+
 int GetSequenceFlags(void *pmodel, entvars_t *pev)
 {
 	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
