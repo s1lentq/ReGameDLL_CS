@@ -814,44 +814,48 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
+#ifdef REGAMEDLL_API
+	if (CSPlayerWeapon()->m_iStateSecondaryAttack != CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_NONE)
+	{
+		switch (CSPlayerWeapon()->m_iStateSecondaryAttack)
+		{
+			case CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_SET:
+				return true;
+			case CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_BLOCK:
+				return false;
+			default:
+				break;
+		}
+	}
+#endif
+
 	if (m_pPlayer && m_pPlayer->HasShield())
 	{
 		return true;
 	}
 
-#ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_bHasSecondaryAttack)
-	{
-		return true;
-	}
-	if (CSPlayerWeapon()->m_bBlockSecondaryAttack)
-	{
-		return false;
-	}
-#endif
-
 	switch (m_iId)
 	{
-	case WEAPON_AK47:
-	case WEAPON_XM1014:
-	case WEAPON_MAC10:
-	case WEAPON_ELITE:
-	case WEAPON_FIVESEVEN:
-	case WEAPON_MP5N:
+		case WEAPON_AK47:
+		case WEAPON_XM1014:
+		case WEAPON_MAC10:
+		case WEAPON_ELITE:
+		case WEAPON_FIVESEVEN:
+		case WEAPON_MP5N:
 #ifdef BUILD_LATEST_FIXES
-	case WEAPON_UMP45:
+		case WEAPON_UMP45:
 #endif
-	case WEAPON_M249:
-	case WEAPON_M3:
-	case WEAPON_TMP:
-	case WEAPON_DEAGLE:
-	case WEAPON_P228:
-	case WEAPON_P90:
-	case WEAPON_C4:
-	case WEAPON_GALIL:
-		return false;
-	default:
-		break;
+		case WEAPON_M249:
+		case WEAPON_M3:
+		case WEAPON_TMP:
+		case WEAPON_DEAGLE:
+		case WEAPON_P228:
+		case WEAPON_P90:
+		case WEAPON_C4:
+		case WEAPON_GALIL:
+			return false;
+		default:
+			break;
 	}
 
 	return true;
@@ -1199,10 +1203,6 @@ void CBasePlayerWeapon::Spawn()
 	if (GetItemInfo(&info)) {
 		CSPlayerItem()->SetItemInfo(&info);
 	}
-
-	bool secondaryAble = HasSecondaryAttack();
-	CSPlayerWeapon()->m_bHasSecondaryAttack = secondaryAble;
-	CSPlayerWeapon()->m_bBlockSecondaryAttack = !secondaryAble; // this could be only one member *sigh*
 #endif
 }
 

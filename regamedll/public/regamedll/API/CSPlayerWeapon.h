@@ -33,8 +33,7 @@ class CCSPlayerWeapon: public CCSPlayerItem
 {
 public:
 	CCSPlayerWeapon() :
-		m_bHasSecondaryAttack(false),
-		m_bBlockSecondaryAttack(false)
+		m_iStateSecondaryAttack(WEAPON_SECONDARY_ATTACK_NONE)
 	{
 	}
 
@@ -47,9 +46,16 @@ public:
 	CBasePlayerWeapon *BasePlayerWeapon() const;
 
 public:
-	bool m_bHasSecondaryAttack;
+	enum SecondaryAtkState : uint8_t 
+	{
+		WEAPON_SECONDARY_ATTACK_NONE = 0,
+		WEAPON_SECONDARY_ATTACK_SET,
+		WEAPON_SECONDARY_ATTACK_BLOCK
+	};
+
+public:
+	SecondaryAtkState m_iStateSecondaryAttack;
 	float m_flBaseDamage;
-	bool m_bBlockSecondaryAttack;
 };
 
 // Inlines
@@ -57,3 +63,4 @@ inline CBasePlayerWeapon *CCSPlayerWeapon::BasePlayerWeapon() const
 {
 	return reinterpret_cast<CBasePlayerWeapon *>(this->m_pContainingEntity);
 }
+
