@@ -1899,9 +1899,18 @@ void PM_Duck()
 		return;
 	}
 
-	pmove->cmd.forwardmove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.sidemove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.upmove *= PLAYER_DUCKING_MULTIPLIER;
+	float mult = PLAYER_DUCKING_MULTIPLIER;
+
+#ifdef REGAMEDLL_API
+	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+
+	if (player->m_flDuckSpeedMultiplier > 0.0)
+		mult = player->m_flDuckSpeedMultiplier;
+#endif
+
+	pmove->cmd.forwardmove *= mult;
+	pmove->cmd.sidemove *= mult;
+	pmove->cmd.upmove *= mult;
 
 	if (pmove->cmd.buttons & IN_DUCK)
 	{
@@ -2015,7 +2024,16 @@ void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 
 		if (pmove->flags & FL_DUCKING)
 		{
-			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+			float mult = PLAYER_DUCKING_MULTIPLIER;
+
+#ifdef REGAMEDLL_API
+			const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+
+			if (player->m_flDuckSpeedMultiplier > 0.0)
+				mult = player->m_flDuckSpeedMultiplier;
+#endif
+
+			flSpeed *= mult;
 		}
 
 		if (pmove->cmd.buttons & IN_BACK)
@@ -2465,6 +2483,24 @@ void PM_Jump()
 	{
 		PM_PlayStepSound(PM_MapTextureTypeStepType(pmove->chtexturetype), fvol);
 	}
+	
+#ifdef REGAMEDLL_API
+	auto PM_JumpHeight = [&player](bool longjump)
+#else 
+	auto PM_JumpHeight = [&](bool longjump)
+#endif
+	{
+#ifdef REGAMEDLL_API
+		if (longjump)
+		{
+			if(player->m_flLongJumpHeight > 0.0)
+				return player->m_flLongJumpHeight;
+		}
+		else if (player->m_flJumpHeight > 0.0)
+			return player->m_flJumpHeight;
+#endif
+		return Q_sqrt(2.0 * 800.0f * (longjump ? 56.0f : 45.0f));
+	};
 
 #ifdef REGAMEDLL_ADD
 	// See if user can super long jump?
@@ -2480,23 +2516,34 @@ void PM_Jump()
 		{
 			pmove->punchangle[0] = -5.0f;
 
-			for (int i  = 0; i < 2; i++)
+#ifdef REGAMEDLL_API
+			if (player->m_flLongJumpForce > 0.0)
 			{
-				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
+				fvel = player->m_flLongJumpForce;
+			}
+			else
+#endif
+			{
+				fvel = PLAYER_LONGJUMP_SPEED * 1.6f;
 			}
 
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 56.0f);
+			for (int i = 0; i < 2; i++)
+			{
+				pmove->velocity[i] = pmove->forward[i] * fvel;
+			}
+
+			pmove->velocity[2] = PM_JumpHeight(true);
 		}
 		else
 		{
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 45.0f);
+			pmove->velocity[2] = PM_JumpHeight(false);
 		}
 	}
 	else
 #endif
 	{
 		// NOTE: don't do it in .f (float)
-		pmove->velocity[2] = Q_sqrt(2.0 * 800.0f * 45.0f);
+		pmove->velocity[2] = PM_JumpHeight(false);
 	}
 
 	if (pmove->fuser2 > 0.0f)

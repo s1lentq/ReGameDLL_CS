@@ -50,7 +50,11 @@ public:
 		m_bAutoBunnyHopping(false),
 		m_bMegaBunnyJumping(false),
 		m_bPlantC4Anywhere(false),
-		m_bSpawnProtectionEffects(false)
+		m_bSpawnProtectionEffects(false),
+		m_flJumpHeight(0),
+		m_flLongJumpHeight(0),
+		m_flLongJumpForce(0),
+		m_flDuckSpeedMultiplier(0)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -136,6 +140,10 @@ public:
 	bool m_bMegaBunnyJumping;
 	bool m_bPlantC4Anywhere;
 	bool m_bSpawnProtectionEffects;
+	double m_flJumpHeight; 
+	double m_flLongJumpHeight; 
+	double m_flLongJumpForce;
+	float m_flDuckSpeedMultiplier;
 };
 
 // Inlines
