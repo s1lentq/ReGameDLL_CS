@@ -226,6 +226,7 @@ set(GAMEDLL_SRCS
 	"dlls/API/CSEntity.cpp"
 	"dlls/API/CSPlayer.cpp"
 	"dlls/API/CSPlayerItem.cpp"
+	"dlls/API/CSPlayerWeapon.cpp"
 	"dlls/addons/item_airbox.cpp"
 	"dlls/addons/point_command.cpp"
 	"dlls/addons/trigger_random.cpp"

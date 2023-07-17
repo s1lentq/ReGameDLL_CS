@@ -540,6 +540,9 @@
     <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
       <Filter>dlls\API</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
     <ClCompile Include="..\regamedll\public_amalgamation.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
