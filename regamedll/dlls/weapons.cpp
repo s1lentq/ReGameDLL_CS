@@ -824,6 +824,10 @@ bool CBasePlayerWeapon::HasSecondaryAttack()
 	{
 		return true;
 	}
+	if (CSPlayerWeapon()->m_bBlockSecondaryAttack)
+	{
+		return false;
+	}
 #endif
 
 	switch (m_iId)
@@ -1196,7 +1200,9 @@ void CBasePlayerWeapon::Spawn()
 		CSPlayerItem()->SetItemInfo(&info);
 	}
 
-	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
+	bool secondaryAble = HasSecondaryAttack();
+	CSPlayerWeapon()->m_bHasSecondaryAttack = secondaryAble;
+	CSPlayerWeapon()->m_bBlockSecondaryAttack = !secondaryAble; // this could be only one member *sigh*
 #endif
 }
 
