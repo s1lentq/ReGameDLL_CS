@@ -2485,9 +2485,9 @@ void PM_Jump()
 	}
 	
 #ifdef REGAMEDLL_API
-	real_t PM_JumpHeight = [&player](bool longjump)
+	auto PM_JumpHeight = [&player](bool longjump) -> real_t
 #else 
-	real_t PM_JumpHeight = [&](bool longjump)
+	auto PM_JumpHeight = [&](bool longjump) -> real_t
 #endif
 	{
 #ifdef REGAMEDLL_API
