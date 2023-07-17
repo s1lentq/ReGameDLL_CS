@@ -42,6 +42,7 @@ int LookupActivity(void *pmodel, entvars_t *pev, int activity);
 int LookupActivityHeaviest(void *pmodel, entvars_t *pev, int activity);
 int LookupSequence(void *pmodel, const char *label);
 void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *pflGroundSpeed);
+float GetSequenceDuration(void *pmodel, entvars_t *pev);
 int GetSequenceFlags(void *pmodel, entvars_t *pev);
 float SetController(void *pmodel, entvars_t *pev, int iController, float flValue);
 float SetBlending(void *pmodel, entvars_t *pev, int iBlender, float flValue);

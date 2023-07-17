@@ -455,6 +455,7 @@ public:
 	static CBasePlayer *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
 	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
 
+	float GetDyingAnimationDuration() const;
 	void SpawnClientSideCorpse();
 	void Observer_FindNextPlayer(bool bReverse, const char *name = nullptr);
 	CBasePlayer *Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);

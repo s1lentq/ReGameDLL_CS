@@ -2399,7 +2399,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(Think)()
 		MESSAGE_BEGIN(MSG_ALL, gmsgForceCam);
 			WRITE_BYTE(forcecamera.value != 0);
 			WRITE_BYTE(forcechasecam.value != 0);
-			WRITE_BYTE(fadetoblack.value != 0);
+			WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
 		MESSAGE_END();
 
 		m_flForceCameraValue = forcecamera.value;
@@ -3462,7 +3462,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 	MESSAGE_BEGIN(MSG_ONE, gmsgForceCam, nullptr, pl->edict());
 		WRITE_BYTE(forcecamera.value != 0);
 		WRITE_BYTE(forcechasecam.value != 0);
-		WRITE_BYTE(fadetoblack.value != 0);
+		WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
 	MESSAGE_END();
 
 	if (m_bGameOver)
@@ -3880,7 +3880,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FPlayerCanRespawn)(CBasePlayer *pPl
 				{
 					// If this player just connected and fadetoblack is on, then maybe
 					// the server admin doesn't want him peeking around.
-					if (fadetoblack.value != 0.0f)
+					if (fadetoblack.value == FADETOBLACK_STAY)
 					{
 						UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 					}
