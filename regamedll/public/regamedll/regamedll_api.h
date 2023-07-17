@@ -568,6 +568,14 @@ typedef IHookChainRegistry<void, entvars_t *, CBaseEntity *, float, int> IReGame
 typedef IHookChain<void, entvars_t *, entvars_t *> IReGameHook_ApplyMultiDamage;
 typedef IHookChainRegistry<void, entvars_t *, entvars_t *> IReGameHookRegistry_ApplyMultiDamage;
 
+// BuyItem hook
+typedef IHookChain<void, CBasePlayer *, int> IReGameHook_BuyItem;
+typedef IHookChainRegistry<void, CBasePlayer *, int> IReGameHookRegistry_BuyItem;
+
+// CHalfLifeMultiplay::Think hook
+typedef IHookChain<void> IReGameHook_CSGameRules_Think;
+typedef IHookChainRegistry<void> IReGameHookRegistry_CSGameRules_Think;
+
 // CHalfLifeMultiplay::TeamFull hook
 typedef IHookChain<BOOL, int> IReGameHook_CSGameRules_TeamFull;
 typedef IHookChainRegistry<BOOL, int> IReGameHookRegistry_CSGameRules_TeamFull;
@@ -750,6 +758,8 @@ public:
 	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage() = 0;
 	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage() = 0;
 	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage() = 0;
+	virtual IReGameHookRegistry_BuyItem *BuyItem() = 0;
+	virtual IReGameHookRegistry_CSGameRules_Think *CSGameRules_Think() = 0;	
 	virtual IReGameHookRegistry_CSGameRules_TeamFull *CSGameRules_TeamFull() = 0;
 	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked() = 0;
 	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon() = 0;

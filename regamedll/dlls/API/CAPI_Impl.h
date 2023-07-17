@@ -689,6 +689,14 @@ typedef IHookChainRegistryImpl<void, entvars_t *, CBaseEntity *, float, int> CRe
 typedef IHookChainImpl<void, entvars_t *, entvars_t *> CReGameHook_ApplyMultiDamage;
 typedef IHookChainRegistryImpl<void, entvars_t *, entvars_t *> CReGameHookRegistry_ApplyMultiDamage;
 
+// BuyItem hook
+typedef IHookChainImpl<void, CBasePlayer *, int> CReGameHook_BuyItem;
+typedef IHookChainRegistryImpl<void, CBasePlayer *, int> CReGameHookRegistry_BuyItem;
+
+// CHalfLifeMultiplay::Think hook
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_Think;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_Think;
+
 // CHalfLifeMultiplay::TeamFull hook
 typedef IHookChainClassImpl<BOOL, class CHalfLifeMultiplay, int> CReGameHook_CSGameRules_TeamFull;
 typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, int> CReGameHookRegistry_CSGameRules_TeamFull;
@@ -870,6 +878,8 @@ public:
 	CReGameHookRegistry_ClearMultiDamage m_ClearMultiDamage;
 	CReGameHookRegistry_AddMultiDamage m_AddMultiDamage;
 	CReGameHookRegistry_ApplyMultiDamage m_ApplyMultiDamage;
+	CReGameHookRegistry_BuyItem m_BuyItem;
+	CReGameHookRegistry_CSGameRules_Think m_CSGameRules_Think;
 	CReGameHookRegistry_CSGameRules_TeamFull m_CSGameRules_TeamFull;
 	CReGameHookRegistry_CSGameRules_TeamStacked m_CSGameRules_TeamStacked;
 	CReGameHookRegistry_CSGameRules_PlayerGotWeapon m_CSGameRules_PlayerGotWeapon;
@@ -1023,6 +1033,8 @@ public:
 	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage();
 	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage();
 	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage();
+	virtual IReGameHookRegistry_BuyItem *BuyItem();
+	virtual IReGameHookRegistry_CSGameRules_Think *CSGameRules_Think();
 	virtual IReGameHookRegistry_CSGameRules_TeamFull *CSGameRules_TeamFull();
 	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked();
 	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon();

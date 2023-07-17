@@ -2374,7 +2374,9 @@ void CHalfLifeMultiplay::PickNextVIP()
 	}
 }
 
-void CHalfLifeMultiplay::Think()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, Think)
+
+void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(Think)()
 {
 	MonitorTutorStatus();
 	m_VoiceGameMgr.Update(gpGlobals->frametime);
@@ -4894,7 +4896,7 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *pPlayer, int iVote)
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ChangeLevel);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ChangeLevel)
 
 // Server is changing to a new level, check mapcycle.txt for map name and setup info
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()
