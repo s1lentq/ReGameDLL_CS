@@ -1899,7 +1899,7 @@ void PM_Duck()
 		return;
 	}
 
-	float mult = PLAYER_DUCKING_MULTIPLIER;
+	real_t mult = PLAYER_DUCKING_MULTIPLIER;
 
 #ifdef REGAMEDLL_API
 	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
@@ -2024,7 +2024,7 @@ void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 
 		if (pmove->flags & FL_DUCKING)
 		{
-			float mult = PLAYER_DUCKING_MULTIPLIER;
+			real_t mult = PLAYER_DUCKING_MULTIPLIER;
 
 #ifdef REGAMEDLL_API
 			const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
