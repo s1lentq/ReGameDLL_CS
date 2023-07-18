@@ -143,7 +143,7 @@ public:
 	double m_flJumpHeight; 
 	double m_flLongJumpHeight; 
 	double m_flLongJumpForce;
-	float m_flDuckSpeedMultiplier;
+	double m_flDuckSpeedMultiplier;
 };
 
 // Inlines
