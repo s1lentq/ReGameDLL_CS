@@ -4,7 +4,7 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 {
 	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
 
-	if (!fadetoblack.value)
+	if (fadetoblack.value != FADETOBLACK_STAY)
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{

@@ -369,6 +369,7 @@ public:
 	float SetBoneController(int iController, float flValue = 0.0f);
 	void InitBoneControllers();
 
+	float GetSequenceDuration() const;
 	float SetBlending(int iBlender, float flValue);
 	void GetBonePosition(int iBone, Vector &origin, Vector &angles);
 	void GetAutomovement(Vector &origin, Vector &angles, float flInterval = 0.1f);

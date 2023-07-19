@@ -1914,7 +1914,7 @@ BOOL EXT_FUNC __API_HOOK(HandleMenu_ChooseTeam)(CBasePlayer *pPlayer, int slot)
 			MESSAGE_END();
 #endif
 			// do we have fadetoblack on? (need to fade their screen back in)
-			if (fadetoblack.value)
+			if (fadetoblack.value == FADETOBLACK_STAY)
 			{
 				UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 			}

@@ -236,6 +236,10 @@ typedef IHookChainRegistry<void, struct playermove_s *, int> IReGameHookRegistry
 typedef IHookChain<void, int> IReGameHook_PM_AirMove;
 typedef IHookChainRegistry<void, int> IReGameHookRegistry_PM_AirMove;
 
+// PM_LadderMove hook
+typedef IHookChain<void, struct physent_s *> IReGameHook_PM_LadderMove;
+typedef IHookChainRegistry<void, struct physent_s *> IReGameHookRegistry_PM_LadderMove;
+
 // HandleMenu_ChooseAppearance hook
 typedef IHookChain<void, class CBasePlayer *, int> IReGameHook_HandleMenu_ChooseAppearance;
 typedef IHookChainRegistry<void, class CBasePlayer *, int> IReGameHookRegistry_HandleMenu_ChooseAppearance;
@@ -659,6 +663,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_JoiningThink *CBasePlayer_JoiningThink() = 0;
 
 	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules() = 0;
+	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove() = 0;
 };
 
 struct ReGameFuncs_t {

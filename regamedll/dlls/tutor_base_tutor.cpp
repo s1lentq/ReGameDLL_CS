@@ -104,7 +104,7 @@ char *TutorMessageEvent::GetNextParameter(char *buf, int buflen)
 	Q_strncpy(buf, param->m_data, buflen);
 
 #ifdef REGAMEDLL_FIXES
-	buf[buflen] = '\0';
+	buf[buflen - 1] = '\0';
 #endif
 
 	delete param;
