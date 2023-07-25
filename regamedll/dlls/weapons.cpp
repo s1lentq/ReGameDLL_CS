@@ -214,10 +214,16 @@ struct {
 #endif
 
 // Precaches the ammo and queues the ammo info for sending to clients
-void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
+int AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
+	// string validation
+	if (!szAmmoname || !szAmmoname[0])
+	{
+		return -1;
+	}
+
 	// make sure it's not already in the registry
-	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
+	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
 		if (!CBasePlayerItem::m_AmmoInfoArray[i].pszName)
 			continue;
@@ -225,7 +231,7 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 		if (!Q_stricmp(CBasePlayerItem::m_AmmoInfoArray[i].pszName, szAmmoname))
 		{
 			// ammo already in registry, just quite
-			return;
+			return i;
 		}
 	}
 
@@ -233,7 +239,7 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	assert(giAmmoIndex < MAX_AMMO_SLOTS);
 
 	if (giAmmoIndex >= MAX_AMMO_SLOTS)
-		giAmmoIndex = 0;
+		giAmmoIndex = 1;
 
 #ifdef REGAMEDLL_ADD
 	for (auto& ammo : ammoIndex)
@@ -252,6 +258,8 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 
 	// Yes, this info is redundant
 	CBasePlayerItem::m_AmmoInfoArray[giAmmoIndex].iId = giAmmoIndex;
+
+	return giAmmoIndex;
 }
 
 // Precaches the weapon and queues the weapon info for sending to clients
@@ -275,15 +283,8 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 		{
 			CBasePlayerItem::m_ItemInfoArray[info.iId] = info;
 
-			if (info.pszAmmo1 && info.pszAmmo1[0] != '\0')
-			{
-				AddAmmoNameToAmmoRegistry(info.pszAmmo1);
-			}
-
-			if (info.pszAmmo2 && info.pszAmmo2[0] != '\0')
-			{
-				AddAmmoNameToAmmoRegistry(info.pszAmmo2);
-			}
+			AddAmmoNameToAmmoRegistry(info.pszAmmo1);
+			AddAmmoNameToAmmoRegistry(info.pszAmmo2);
 		}
 	}
 
@@ -2650,3 +2651,4 @@ int CBasePlayerItem::iFlags() const
 {
 	return m_ItemInfoEx.iFlags;
 }
+

@@ -111,9 +111,9 @@ void EXT_FUNC UTIL_Remove_api(CBaseEntity *pEntity)
 	UTIL_Remove(pEntity);
 }
 
-void EXT_FUNC AddAmmoNameToAmmoRegistry_api(const char *szAmmoname)
+int EXT_FUNC AddAmmoNameToAmmoRegistry_api(const char *szAmmoname)
 {
-	AddAmmoNameToAmmoRegistry(szAmmoname);
+	return AddAmmoNameToAmmoRegistry(szAmmoname);
 }
 
 void EXT_FUNC TextureTypePlaySound_api(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType)

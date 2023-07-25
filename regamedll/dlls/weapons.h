@@ -2165,7 +2165,7 @@ int DamageDecal(CBaseEntity *pEntity, int bitsDamageType);
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex);
 void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
-void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
+int AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 float GetBaseAccuracy(WeaponIdType id);
