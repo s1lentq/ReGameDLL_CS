@@ -7858,6 +7858,22 @@ void CBasePlayer::UpdateStatusBar()
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
 			bool isVisiblePlayer = ((TheBots == nullptr || !TheBots->IsLineBlockedBySmoke(&pev->origin, &pEntity->pev->origin)) && pEntity->Classify() == CLASS_PLAYER);
 
+#ifdef REGAMEDLL_FIXES
+			if (g_FogParameters.density > 0)
+			{
+				// Estimation of the max distance to which an entity is visible,
+				// taking into account the fog density and the visibility factor
+				const float flVisibilityFogFactor = 2.0f;
+				float flDistance                  = (pev->origin - pEntity->pev->origin).Length();
+				float flMaxVisibleDistance        = flVisibilityFogFactor / g_FogParameters.density;
+
+				// Check if the distance between the player's position and the entity
+				// exceeds the max visible distance. If so, the entity is not visible
+				if (flDistance > flMaxVisibleDistance)
+					isVisiblePlayer = false;
+			}
+#endif
+
 			if (gpGlobals->time >= m_blindUntilTime && isVisiblePlayer)
 			{
 				CBasePlayer *pTarget = (CBasePlayer *)pEntity;

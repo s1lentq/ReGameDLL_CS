@@ -279,6 +279,7 @@ void CWorld::Precache()
 	g_pLastSpawn = nullptr;
 	g_pLastCTSpawn = nullptr;
 	g_pLastTerroristSpawn = nullptr;
+	g_FogParameters.Clear();
 
 	CVAR_SET_STRING("sv_gravity", "800");
 	CVAR_SET_STRING("sv_maxspeed", "900");

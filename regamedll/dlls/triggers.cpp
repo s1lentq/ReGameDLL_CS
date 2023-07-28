@@ -2469,6 +2469,8 @@ void CWeather::Spawn()
 	InitTrigger();
 }
 
+FogParameters g_FogParameters;
+
 void CClientFog::KeyValue(KeyValueData *pkvd)
 {
 #if 0
@@ -2505,6 +2507,28 @@ void CClientFog::Spawn()
 	pev->solid = SOLID_NOT;				// Remove model & collisions
 	pev->renderamt = 0;				// The engine won't draw this model if this is set to 0 and blending is on
 	pev->rendermode = kRenderTransTexture;
+
+	g_FogParameters.density = m_fDensity;
+	g_FogParameters.r       = clamp(int(pev->rendercolor[0]), 0, 255);
+	g_FogParameters.g       = clamp(int(pev->rendercolor[1]), 0, 255);
+	g_FogParameters.b       = clamp(int(pev->rendercolor[2]), 0, 255);
+}
+
+void CClientFog::OnDestroy()
+{
+	g_FogParameters.density = 0;
+
+#ifdef REGAMEDLL_FIXES
+	if (!g_bServerActive)
+		return; // server isn't active or changes map
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgFog);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0);
+		WRITE_LONG(0); // a fog density of 0 suggests fog is disabled
+	MESSAGE_END();
+#endif
 }
 
 LINK_ENTITY_TO_CLASS(env_fog, CClientFog, CCSClientFog)

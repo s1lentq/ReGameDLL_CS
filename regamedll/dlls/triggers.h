@@ -538,12 +538,32 @@ class CClientFog: public CBaseEntity
 public:
 	virtual void Spawn();
 	virtual void KeyValue(KeyValueData *pkvd);
+	virtual void OnDestroy();
 
 public:
 	int m_iStartDist;
 	int m_iEndDist;
 	float m_fDensity;
 };
+
+struct FogParameters
+{
+	FogParameters() :
+		r(0), g(0), b(0), density(0)
+	{
+	}
+
+	void Clear()
+	{
+		r = g = b = 0;
+		density   = 0;
+	}
+
+	int r, g, b;
+	float density;
+};
+
+extern FogParameters g_FogParameters;
 
 void PlayCDTrack(edict_t *pClient, int iTrack);
 int BuildChangeList(LEVELLIST *pLevelList, int maxList);
