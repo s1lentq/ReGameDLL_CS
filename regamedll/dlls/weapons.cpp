@@ -815,13 +815,13 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
 #ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_iStateSecondaryAttack != CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_NONE)
+	if (CSPlayerWeapon()->m_iStateSecondaryAttack != WEAPON_SECONDARY_ATTACK_NONE)
 	{
 		switch (CSPlayerWeapon()->m_iStateSecondaryAttack)
 		{
-			case CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_SET:
+			case WEAPON_SECONDARY_ATTACK_SET:
 				return true;
-			case CCSPlayerWeapon::WEAPON_SECONDARY_ATTACK_BLOCK:
+			case WEAPON_SECONDARY_ATTACK_BLOCK:
 				return false;
 			default:
 				break;

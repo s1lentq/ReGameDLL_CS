@@ -28,6 +28,13 @@
 
 #pragma once
 
+enum SecondaryAtkState : uint8_t 
+{
+	WEAPON_SECONDARY_ATTACK_NONE = 0,
+	WEAPON_SECONDARY_ATTACK_SET,
+	WEAPON_SECONDARY_ATTACK_BLOCK
+};
+
 class CBasePlayerWeapon;
 class CCSPlayerWeapon: public CCSPlayerItem
 {
@@ -44,14 +51,6 @@ public:
 	virtual void SendWeaponAnim(int iAnim, int skiplocal = 0);
 
 	CBasePlayerWeapon *BasePlayerWeapon() const;
-
-public:
-	enum SecondaryAtkState : uint8_t 
-	{
-		WEAPON_SECONDARY_ATTACK_NONE = 0,
-		WEAPON_SECONDARY_ATTACK_SET,
-		WEAPON_SECONDARY_ATTACK_BLOCK
-	};
 
 public:
 	SecondaryAtkState m_iStateSecondaryAttack;
