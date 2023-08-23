@@ -814,17 +814,25 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
+#ifdef REGAMEDLL_API
+	if (CSPlayerWeapon()->m_iStateSecondaryAttack != WEAPON_SECONDARY_ATTACK_NONE)
+	{
+		switch (CSPlayerWeapon()->m_iStateSecondaryAttack)
+		{
+			case WEAPON_SECONDARY_ATTACK_SET:
+				return true;
+			case WEAPON_SECONDARY_ATTACK_BLOCK:
+				return false;
+			default:
+				break;
+		}
+	}
+#endif
+
 	if (m_pPlayer && m_pPlayer->HasShield())
 	{
 		return true;
 	}
-
-#ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_bHasSecondaryAttack)
-	{
-		return true;
-	}
-#endif
 
 	switch (m_iId)
 	{
@@ -1195,8 +1203,6 @@ void CBasePlayerWeapon::Spawn()
 	if (GetItemInfo(&info)) {
 		CSPlayerItem()->SetItemInfo(&info);
 	}
-
-	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
 #endif
 }
 

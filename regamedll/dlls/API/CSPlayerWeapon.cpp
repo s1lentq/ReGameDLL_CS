@@ -26,40 +26,29 @@
 *
 */
 
-#pragma once
+#include "precompiled.h"
 
-enum SecondaryAtkState : uint8_t 
+EXT_FUNC BOOL CCSPlayerWeapon::DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
 {
-	WEAPON_SECONDARY_ATTACK_NONE = 0,
-	WEAPON_SECONDARY_ATTACK_SET,
-	WEAPON_SECONDARY_ATTACK_BLOCK
-};
-
-class CBasePlayerWeapon;
-class CCSPlayerWeapon: public CCSPlayerItem
-{
-public:
-	CCSPlayerWeapon() :
-		m_iStateSecondaryAttack(WEAPON_SECONDARY_ATTACK_NONE)
-	{
-	}
-
-	virtual BOOL DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal = 0);
-	virtual int DefaultReload(int iClipSize, int iAnim, float fDelay);
-	virtual bool DefaultShotgunReload(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1 = nullptr, const char *pszReloadSound2 = nullptr);
-	virtual void KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
-	virtual void SendWeaponAnim(int iAnim, int skiplocal = 0);
-
-	CBasePlayerWeapon *BasePlayerWeapon() const;
-
-public:
-	SecondaryAtkState m_iStateSecondaryAttack;
-	float m_flBaseDamage;
-};
-
-// Inlines
-inline CBasePlayerWeapon *CCSPlayerWeapon::BasePlayerWeapon() const
-{
-	return reinterpret_cast<CBasePlayerWeapon *>(this->m_pContainingEntity);
+	return BasePlayerWeapon()->DefaultDeploy(szViewModel, szWeaponModel, iAnim, szAnimExt, skiplocal);
 }
 
+EXT_FUNC int CCSPlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
+{
+	return BasePlayerWeapon()->DefaultReload(iClipSize, iAnim, fDelay);
+}
+
+EXT_FUNC bool CCSPlayerWeapon::DefaultShotgunReload(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2)
+{
+	return BasePlayerWeapon()->DefaultShotgunReload(iAnim, iStartAnim, fDelay, fStartDelay, pszReloadSound1, pszReloadSound2);
+}
+
+EXT_FUNC void CCSPlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+{
+	BasePlayerWeapon()->KickBack(up_base, lateral_base, up_modifier, lateral_modifier, up_max, lateral_max, direction_change);
+}
+
+EXT_FUNC void CCSPlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
+{
+	BasePlayerWeapon()->SendWeaponAnim(iAnim, skiplocal);
+}
