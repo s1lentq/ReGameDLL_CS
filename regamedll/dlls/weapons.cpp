@@ -112,7 +112,7 @@ void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamag
 
 void SpawnBlood(Vector vecSpot, int bloodColor, float flDamage)
 {
-	UTIL_BloodDrips(vecSpot, g_vecAttackDir, bloodColor, int(flDamage));
+	UTIL_BloodDrips(vecSpot, bloodColor, int(flDamage));
 }
 
 NOXREF int DamageDecal(CBaseEntity *pEntity, int bitsDamageType)
@@ -761,8 +761,9 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	if (bIsGlock)
 	{
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
+#ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_9mm;
-
+#endif
 		PLAYBACK_EVENT_FULL(flag, m_pPlayer->edict(), m_usFireGlock18, 0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y,
 			int(m_pPlayer->pev->punchangle.x * 10000), int(m_pPlayer->pev->punchangle.y * 10000), m_iClip == 0, FALSE);
 	}
@@ -770,7 +771,9 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	{
 
 		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
+#ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_556nato;
+#endif
 
 #ifdef REGAMEDLL_ADD
 		// HACKHACK: client-side weapon prediction fix
@@ -811,17 +814,25 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
+#ifdef REGAMEDLL_API
+	if (CSPlayerWeapon()->m_iStateSecondaryAttack != WEAPON_SECONDARY_ATTACK_NONE)
+	{
+		switch (CSPlayerWeapon()->m_iStateSecondaryAttack)
+		{
+			case WEAPON_SECONDARY_ATTACK_SET:
+				return true;
+			case WEAPON_SECONDARY_ATTACK_BLOCK:
+				return false;
+			default:
+				break;
+		}
+	}
+#endif
+
 	if (m_pPlayer && m_pPlayer->HasShield())
 	{
 		return true;
 	}
-
-#ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_bHasSecondaryAttack)
-	{
-		return true;
-	}
-#endif
 
 	switch (m_iId)
 	{
@@ -1192,8 +1203,6 @@ void CBasePlayerWeapon::Spawn()
 	if (GetItemInfo(&info)) {
 		CSPlayerItem()->SetItemInfo(&info);
 	}
-
-	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
 #endif
 }
 

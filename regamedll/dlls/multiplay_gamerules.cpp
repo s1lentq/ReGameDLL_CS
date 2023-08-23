@@ -2393,7 +2393,7 @@ void CHalfLifeMultiplay::Think()
 		MESSAGE_BEGIN(MSG_ALL, gmsgForceCam);
 			WRITE_BYTE(forcecamera.value != 0);
 			WRITE_BYTE(forcechasecam.value != 0);
-			WRITE_BYTE(fadetoblack.value != 0);
+			WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
 		MESSAGE_END();
 
 		m_flForceCameraValue = forcecamera.value;
@@ -3456,7 +3456,7 @@ void CHalfLifeMultiplay::InitHUD(CBasePlayer *pl)
 	MESSAGE_BEGIN(MSG_ONE, gmsgForceCam, nullptr, pl->edict());
 		WRITE_BYTE(forcecamera.value != 0);
 		WRITE_BYTE(forcechasecam.value != 0);
-		WRITE_BYTE(fadetoblack.value != 0);
+		WRITE_BYTE(fadetoblack.value == FADETOBLACK_STAY);
 	MESSAGE_END();
 
 	if (m_bGameOver)
@@ -3874,7 +3874,7 @@ BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(FPlayerCanRespawn)(CBasePlayer *pPl
 				{
 					// If this player just connected and fadetoblack is on, then maybe
 					// the server admin doesn't want him peeking around.
-					if (fadetoblack.value != 0.0f)
+					if (fadetoblack.value == FADETOBLACK_STAY)
 					{
 						UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 					}
@@ -4332,11 +4332,29 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(int, CHalfLifeMultiplay, CSGameRules, DeadPlayerWea
 
 int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPlayer)
 {
-	return GR_PLR_DROP_GUN_ACTIVE;
+#ifdef REGAMEDLL_ADD
+	switch ((int)weapondrop.value)
+	{
+		case 3:
+			return GR_PLR_DROP_GUN_ALL;
+		case 2: 
+			break;
+		case 1:
+			return GR_PLR_DROP_GUN_BEST;
+		default: 
+			return GR_PLR_DROP_GUN_NO;
+	}
+#endif
+	return GR_PLR_DROP_GUN_ACTIVE; // keep original value in return
 }
 
 int CHalfLifeMultiplay::DeadPlayerAmmo(CBasePlayer *pPlayer)
 {
+#ifdef REGAMEDLL_ADD
+	if (ammodrop.value == 0.0f)
+		return GR_PLR_DROP_AMMO_NO;
+#endif
+
 	return GR_PLR_DROP_AMMO_ACTIVE;
 }
 

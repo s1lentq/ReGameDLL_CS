@@ -1056,7 +1056,7 @@ void UTIL_BloodStream(const Vector &origin, const Vector &direction, int color, 
 	MESSAGE_END();
 }
 
-void UTIL_BloodDrips(const Vector &origin, const Vector &direction, int color, int amount)
+void UTIL_BloodDrips(const Vector &origin, int color, int amount)
 {
 	if (!UTIL_ShouldShowBlood(color))
 		return;

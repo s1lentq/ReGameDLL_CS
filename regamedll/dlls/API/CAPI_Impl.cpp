@@ -209,6 +209,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
 GAMEHOOK_REGISTRY(CBasePlayer_JoiningThink);
 
 GAMEHOOK_REGISTRY(FreeGameRules);
+GAMEHOOK_REGISTRY(PM_LadderMove);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

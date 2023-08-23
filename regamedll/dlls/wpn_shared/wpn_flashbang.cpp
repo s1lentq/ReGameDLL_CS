@@ -142,7 +142,7 @@ bool CFlashbang::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 void CFlashbang::SecondaryAttack()
 {
-	ShieldSecondaryFire(SHIELDGUN_DRAW, SHIELDGUN_DRAWN_IDLE);
+	ShieldSecondaryFire(SHIELDGREN_UP, SHIELDGREN_DOWN);
 }
 
 void CFlashbang::SetPlayerShieldAnim()
@@ -236,7 +236,7 @@ void CFlashbang::WeaponIdle()
 
 			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 			{
-				SendWeaponAnim(SHIELDREN_IDLE, UseDecrement() != FALSE);
+				SendWeaponAnim(SHIELDGREN_IDLE, UseDecrement() != FALSE);
 			}
 		}
 		else
