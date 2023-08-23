@@ -7358,6 +7358,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			{
 				damageOrigin = pEntity->Center();
 			}
+
+#ifdef REGAMEDLL_FIXES
+			pev->dmg_inflictor = nullptr;
+#endif
 		}
 
 		// only send down damage type that have hud art
