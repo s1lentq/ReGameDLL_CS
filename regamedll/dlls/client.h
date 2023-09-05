@@ -112,6 +112,7 @@ extern unsigned short g_iShadowSprite;
 void HandleMenu_ChooseAppearance_OrigFunc(CBasePlayer *pPlayer, int slot);
 BOOL HandleMenu_ChooseTeam_OrigFunc(CBasePlayer *pPlayer, int slot);
 bool BuyGunAmmo_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *weapon, bool bBlinkMoney);
+void BuyItem_OrigFunc(CBasePlayer *pPlayer, int iSlot);
 CBaseEntity *BuyWeaponByWeaponID_OrigFunc(CBasePlayer *pPlayer, WeaponIdType weaponID);
 void ShowMenu_OrigFunc(CBasePlayer *pPlayer, int bitsValidSlots, int nDisplayTime, BOOL fNeedMore, char *pszText);
 void ShowVGUIMenu_OrigFunc(CBasePlayer *pPlayer, int MenuType, int BitMask, char *szOldMenu);

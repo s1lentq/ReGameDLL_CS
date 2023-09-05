@@ -2122,7 +2122,9 @@ BOOL CHalfLifeMultiplay::IsThereABomb()
 	return FALSE;
 }
 
-BOOL CHalfLifeMultiplay::TeamFull(int team_id)
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, TeamFull, (int team_id), team_id)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(TeamFull)(int team_id)
 {
 	switch (team_id)
 	{
@@ -2136,8 +2138,10 @@ BOOL CHalfLifeMultiplay::TeamFull(int team_id)
 	return FALSE;
 }
 
+LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, TeamStacked, (int newTeam_id, int curTeam_id), newTeam_id, curTeam_id)
+
 // checks to see if the desired team is stacked, returns true if it is
-BOOL CHalfLifeMultiplay::TeamStacked(int newTeam_id, int curTeam_id)
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(TeamStacked)(int newTeam_id, int curTeam_id)
 {
 	// players are allowed to change to their own team
 	if (newTeam_id == curTeam_id)
@@ -2370,7 +2374,9 @@ void CHalfLifeMultiplay::PickNextVIP()
 	}
 }
 
-void CHalfLifeMultiplay::Think()
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, Think)
+
+void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(Think)()
 {
 	MonitorTutorStatus();
 	m_VoiceGameMgr.Update(gpGlobals->frametime);
@@ -4201,8 +4207,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	MESSAGE_END();
 }
 
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerGotWeapon, (CBasePlayer *pPlayer, CBasePlayerItem *pWeapon), pPlayer, pWeapon)
+
 // Player has grabbed a weapon that was sitting in the world
-void CHalfLifeMultiplay::PlayerGotWeapon(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
+void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerGotWeapon)(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon)
 {
 	;
 }
@@ -4888,7 +4896,7 @@ void CHalfLifeMultiplay::ProcessMapVote(CBasePlayer *pPlayer, int iVote)
 	}
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ChangeLevel);
+LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, ChangeLevel)
 
 // Server is changing to a new level, check mapcycle.txt for map name and setup info
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(ChangeLevel)()

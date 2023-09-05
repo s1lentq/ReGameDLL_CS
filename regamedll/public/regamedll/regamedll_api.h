@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 22
+#define REGAMEDLL_API_VERSION_MINOR 23
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -235,10 +235,6 @@ typedef IHookChainRegistry<void, struct playermove_s *, int> IReGameHookRegistry
 // PM_AirMove hook
 typedef IHookChain<void, int> IReGameHook_PM_AirMove;
 typedef IHookChainRegistry<void, int> IReGameHookRegistry_PM_AirMove;
-
-// PM_LadderMove hook
-typedef IHookChain<void, struct physent_s *> IReGameHook_PM_LadderMove;
-typedef IHookChainRegistry<void, struct physent_s *> IReGameHookRegistry_PM_LadderMove;
 
 // HandleMenu_ChooseAppearance hook
 typedef IHookChain<void, class CBasePlayer *, int> IReGameHook_HandleMenu_ChooseAppearance;
@@ -528,6 +524,94 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChain<void, class CGameRules **> IReGameHook_FreeGameRules;
 typedef IHookChainRegistry<void, class CGameRules **> IReGameHookRegistry_FreeGameRules;
 
+// PM_LadderMove hook
+typedef IHookChain<void, struct physent_s *> IReGameHook_PM_LadderMove;
+typedef IHookChainRegistry<void, struct physent_s *> IReGameHookRegistry_PM_LadderMove;
+
+// PM_WaterJump hook
+typedef IHookChain<void> IReGameHook_PM_WaterJump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_WaterJump;
+
+// PM_CheckWaterJump hook
+typedef IHookChain<void> IReGameHook_PM_CheckWaterJump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_CheckWaterJump;
+
+// PM_Jump hook
+typedef IHookChain<void> IReGameHook_PM_Jump;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Jump;
+
+// PM_Duck hook
+typedef IHookChain<void> IReGameHook_PM_Duck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_Duck;
+
+// PM_UnDuck hook
+typedef IHookChain<void> IReGameHook_PM_UnDuck;
+typedef IHookChainRegistry<void> IReGameHookRegistry_PM_UnDuck;
+
+// PM_PlayStepSound hook
+typedef IHookChain<void, int, float> IReGameHook_PM_PlayStepSound;
+typedef IHookChainRegistry<void, int, float> IReGameHookRegistry_PM_PlayStepSound;
+
+// PM_AirAccelerate hook
+typedef IHookChain<void, vec_t *, float, float> IReGameHook_PM_AirAccelerate;
+typedef IHookChainRegistry<void, vec_t *, float, float> IReGameHookRegistry_PM_AirAccelerate;
+
+// ClearMultiDamage hook
+typedef IHookChain<void> IReGameHook_ClearMultiDamage;
+typedef IHookChainRegistry<void> IReGameHookRegistry_ClearMultiDamage;
+
+// AddMultiDamage hook
+typedef IHookChain<void, entvars_t *, CBaseEntity *, float, int> IReGameHook_AddMultiDamage;
+typedef IHookChainRegistry<void, entvars_t *, CBaseEntity *, float, int> IReGameHookRegistry_AddMultiDamage;
+
+// ApplyMultiDamage hook
+typedef IHookChain<void, entvars_t *, entvars_t *> IReGameHook_ApplyMultiDamage;
+typedef IHookChainRegistry<void, entvars_t *, entvars_t *> IReGameHookRegistry_ApplyMultiDamage;
+
+// BuyItem hook
+typedef IHookChain<void, CBasePlayer *, int> IReGameHook_BuyItem;
+typedef IHookChainRegistry<void, CBasePlayer *, int> IReGameHookRegistry_BuyItem;
+
+// CHalfLifeMultiplay::Think hook
+typedef IHookChain<void> IReGameHook_CSGameRules_Think;
+typedef IHookChainRegistry<void> IReGameHookRegistry_CSGameRules_Think;
+
+// CHalfLifeMultiplay::TeamFull hook
+typedef IHookChain<BOOL, int> IReGameHook_CSGameRules_TeamFull;
+typedef IHookChainRegistry<BOOL, int> IReGameHookRegistry_CSGameRules_TeamFull;
+
+// CHalfLifeMultiplay::TeamStacked hook
+typedef IHookChain<BOOL, int, int> IReGameHook_CSGameRules_TeamStacked;
+typedef IHookChainRegistry<BOOL, int, int> IReGameHookRegistry_CSGameRules_TeamStacked;
+
+// CHalfLifeMultiplay::PlayerGotWeapon hook
+typedef IHookChain<void, CBasePlayer *, CBasePlayerItem *> IReGameHook_CSGameRules_PlayerGotWeapon;
+typedef IHookChainRegistry<void, CBasePlayer *, CBasePlayerItem *> IReGameHookRegistry_CSGameRules_PlayerGotWeapon;
+
+// CBotManager::OnEvent hook
+typedef IHookChain<void, GameEventType, CBaseEntity *, CBaseEntity *> IReGameHook_CBotManager_OnEvent;
+typedef IHookChainRegistry<void, GameEventType, CBaseEntity*, CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
+
+// CBasePlayer::CheckTimeBasedDamage hook
+typedef IHookChainClass<void, CBasePlayer> IReGameHook_CBasePlayer_CheckTimeBasedDamage;
+typedef IHookChainRegistryClass<void, CBasePlayer> IReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage;
+
+// CBasePlayer::EntSelectSpawnPoint hook
+typedef IHookChainClass<edict_t *, CBasePlayer> IReGameHook_CBasePlayer_EntSelectSpawnPoint;
+typedef IHookChainRegistryClass<edict_t *, CBasePlayer> IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint;
+
+// CBasePlayerWeapon::ItemPostFrame hook
+typedef IHookChainClass<void, CBasePlayerWeapon> IReGameHook_CBasePlayerWeapon_ItemPostFrame;
+typedef IHookChainRegistryClass<void, CBasePlayerWeapon> IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame;
+
+// CBasePlayerWeapon::KickBack hook
+typedef IHookChainClass<void, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHook_CBasePlayerWeapon_KickBack;
+typedef IHookChainRegistryClass<void, CBasePlayerWeapon, float, float, float, float, float, float, int> IReGameHookRegistry_CBasePlayerWeapon_KickBack;
+
+// CBasePlayerWeapon::SendWeaponAnim hook
+typedef IHookChainClass<void, CBasePlayerWeapon, int, int> IReGameHook_CBasePlayerWeapon_SendWeaponAnim;
+typedef IHookChainRegistryClass<void, CBasePlayerWeapon, int, int> IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -664,6 +748,27 @@ public:
 
 	virtual IReGameHookRegistry_FreeGameRules *FreeGameRules() = 0;
 	virtual IReGameHookRegistry_PM_LadderMove *PM_LadderMove() = 0;
+	virtual IReGameHookRegistry_PM_WaterJump *PM_WaterJump() = 0;
+	virtual IReGameHookRegistry_PM_CheckWaterJump *PM_CheckWaterJump() = 0;
+	virtual IReGameHookRegistry_PM_Jump *PM_Jump() = 0;
+	virtual IReGameHookRegistry_PM_Duck *PM_Duck() = 0;
+	virtual IReGameHookRegistry_PM_UnDuck *PM_UnDuck() = 0;
+	virtual IReGameHookRegistry_PM_PlayStepSound *PM_PlayStepSound() = 0;
+	virtual IReGameHookRegistry_PM_AirAccelerate *PM_AirAccelerate() = 0;
+	virtual IReGameHookRegistry_ClearMultiDamage *ClearMultiDamage() = 0;
+	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage() = 0;
+	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage() = 0;
+	virtual IReGameHookRegistry_BuyItem *BuyItem() = 0;
+	virtual IReGameHookRegistry_CSGameRules_Think *CSGameRules_Think() = 0;	
+	virtual IReGameHookRegistry_CSGameRules_TeamFull *CSGameRules_TeamFull() = 0;
+	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked() = 0;
+	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon() = 0;
+	virtual IReGameHookRegistry_CBotManager_OnEvent *CBotManager_OnEvent() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_CheckTimeBasedDamage *CBasePlayer_CheckTimeBasedDamage() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_EntSelectSpawnPoint *CBasePlayer_EntSelectSpawnPoint() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame *CBasePlayerWeapon_ItemPostFrame() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
+	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim() = 0;
 };
 
 struct ReGameFuncs_t {
@@ -684,6 +789,12 @@ struct ReGameFuncs_t {
 	void (*UTIL_RestartOther)(const char *szClassname);
 	void (*UTIL_ResetEntities)();
 	void (*UTIL_RemoveOther)(const char *szClassname, int nCount);
+	void (*UTIL_DecalTrace)(TraceResult *pTrace, int decalNumber);
+	void (*UTIL_Remove)(CBaseEntity *pEntity);
+	int (*AddAmmoNameToAmmoRegistry)(const char *szAmmoname);
+	void (*TextureTypePlaySound)(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType);
+	class CWeaponBox *(*CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+	class CGrenade *(*SpawnGrenade)(WeaponIdType weaponId, entvars_t *pevOwner, Vector &vecSrc, Vector &vecThrow, float time, int iTeam, unsigned short usEvent);
 };
 
 class IReGameApi {

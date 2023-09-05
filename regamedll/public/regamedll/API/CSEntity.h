@@ -47,8 +47,9 @@ public:
 
 private:
 #if defined(_MSC_VER)
-#pragma region reserve_vfuncs_Region
+#pragma region reserve_data_Region
 #endif
+	int CCSEntity_Reserve[0x1000];
 	virtual void func_reserve1() {};
 	virtual void func_reserve2() {};
 	virtual void func_reserve3() {};
@@ -88,24 +89,32 @@ class CCSDelay: public CCSEntity
 {
 public:
 
+private:
+	int CCSDelay_Reserve[0x100];
 };
 
 class CCSAnimating: public CCSDelay
 {
 public:
 
+private:
+	int CCSAnimating_Reserve[0x100];
 };
 
 class CCSToggle: public CCSAnimating
 {
 public:
 
+private:
+	int CCSToggle_Reserve[0x100];
 };
 
 class CCSMonster: public CCSToggle
 {
 public:
 
+private:
+	int CCSMonster_Reserve[0x100];
 };
 
-#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION002"
+#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION003"

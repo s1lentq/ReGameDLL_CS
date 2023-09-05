@@ -776,7 +776,11 @@ void CBaseButton::ButtonBackHome()
 		SUB_UseTargets(m_hActivator, USE_TOGGLE, 0);
 	}
 
-	if (!FStringNull(pev->target))
+	if (!FStringNull(pev->target)
+#ifdef REGAMEDLL_FIXES
+		&& m_hActivator
+#endif
+)
 	{
 		edict_t *pentTarget = nullptr;
 		while ((pentTarget = FIND_ENTITY_BY_TARGETNAME(pentTarget, STRING(pev->target))))

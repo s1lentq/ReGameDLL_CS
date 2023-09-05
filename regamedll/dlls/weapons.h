@@ -403,6 +403,9 @@ public:
 	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
 	BOOL DefaultReload_OrigFunc(int iClipSize, int iAnim, float fDelay);
 	bool DefaultShotgunReload_OrigFunc(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2);
+	void KickBack_OrigFunc(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
+	void SendWeaponAnim_OrigFunc(int iAnim, int skiplocal);
+	void ItemPostFrame_OrigFunc();
 
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif
@@ -2162,7 +2165,13 @@ int DamageDecal(CBaseEntity *pEntity, int bitsDamageType);
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex);
 void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
-void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
+int AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 float GetBaseAccuracy(WeaponIdType id);
+
+#ifdef REGAMEDLL_API
+void ClearMultiDamage_OrigFunc();
+void ApplyMultiDamage_OrigFunc(entvars_t *pevInflictor, entvars_t *pevAttacker);
+void AddMultiDamage_OrigFunc(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
+#endif
