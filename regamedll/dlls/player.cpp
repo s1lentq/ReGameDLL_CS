@@ -1153,9 +1153,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		}
 	}
 
-	// keep track of amount of damage last sustained
-	m_lastDamageAmount = flDamage;
-
 	// Armor
 	// armor doesn't protect against fall or drown damage!
 	if (pev->armorvalue != 0.0f && !(bitsDamageType & (DMG_DROWN | DMG_FALL)) && IsArmored(m_LastHitGroup))
@@ -1194,7 +1191,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	{
 		Pain(m_LastHitGroup, false);
 	}
-
+	
+	// keep track of amount of damage last sustained
+	m_lastDamageAmount = flDamage;
+	
 	LogAttack(pAttack, this, bTeamAttack, flDamage, armorHit, pev->health - flDamage, pev->armorvalue, GetWeaponName(pevInflictor, pevAttacker));
 
 	// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
