@@ -1194,7 +1194,9 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	BuyWeaponByWeaponID(pPlayer, WEAPON_M249);
 }
 
-void BuyItem(CBasePlayer *pPlayer, int iSlot)
+LINK_HOOK_VOID_CHAIN(BuyItem, (CBasePlayer *pPlayer, int iSlot), pPlayer, iSlot)
+
+void EXT_FUNC __API_HOOK(BuyItem)(CBasePlayer *pPlayer, int iSlot)
 {
 	int iItemPrice = 0;
 	const char *pszItem = nullptr;
