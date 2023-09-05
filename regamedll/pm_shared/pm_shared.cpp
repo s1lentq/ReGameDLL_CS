@@ -12,6 +12,10 @@ char pm_grgchTextureType[MAX_TEXTURES];
 playermove_t *pmove = nullptr;
 BOOL g_onladder = FALSE;
 
+#ifdef REGAMEDLL_API
+static CCSPlayer *pmoveplayer = nullptr;
+#endif
+
 #ifdef CLIENT_DLL
 	int iJumpSpectator;
 	float vJumpOrigin[3];
@@ -1907,9 +1911,16 @@ void EXT_FUNC __API_HOOK(PM_Duck)()
 		return;
 	}
 
-	pmove->cmd.forwardmove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.sidemove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.upmove *= PLAYER_DUCKING_MULTIPLIER;
+	real_t mult = PLAYER_DUCKING_MULTIPLIER;
+
+#ifdef REGAMEDLL_API
+	if (pmoveplayer->m_flDuckSpeedMultiplier > 0.0)
+		mult = pmoveplayer->m_flDuckSpeedMultiplier;
+#endif
+
+	pmove->cmd.forwardmove *= mult;
+	pmove->cmd.sidemove *= mult;
+	pmove->cmd.upmove *= mult;
 
 	if (pmove->cmd.buttons & IN_DUCK)
 	{
@@ -2023,7 +2034,16 @@ void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 
 		if (pmove->flags & FL_DUCKING)
 		{
-			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+#ifdef REGAMEDLL_API
+			if (pmoveplayer->m_flDuckSpeedMultiplier > 0.0)
+			{
+				flSpeed *= pmoveplayer->m_flDuckSpeedMultiplier;
+			}
+			else
+#endif
+			{
+				flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+			}
 		}
 
 		if (pmove->cmd.buttons & IN_BACK)
@@ -2354,6 +2374,20 @@ void PM_PreventMegaBunnyJumping()
 	VectorScale(pmove->velocity, fraction, pmove->velocity);
 }
 
+inline real_t PM_JumpHeight(bool longjump)
+{
+#ifdef REGAMEDLL_API
+	if (longjump)
+	{
+		if(pmoveplayer->m_flLongJumpHeight > 0.0)
+			return pmoveplayer->m_flLongJumpHeight;
+	}
+	else if (pmoveplayer->m_flJumpHeight > 0.0)
+		return pmoveplayer->m_flJumpHeight;
+#endif
+	return Q_sqrt(2.0 * 800.0f * (longjump ? 56.0f : 45.0f));
+}
+
 LINK_HOOK_VOID_CHAIN2(PM_Jump)
 
 void EXT_FUNC __API_HOOK(PM_Jump)()
@@ -2432,16 +2466,12 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 		return;
 	}
 
-#ifdef REGAMEDLL_API
-	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
-#endif
-
 	// don't pogo stick
 	if (pmove->oldbuttons & IN_JUMP
 #ifdef REGAMEDLL_ADD
 		&& sv_autobunnyhopping.value <= 0.0
 #ifdef REGAMEDLL_API
-		&& !player->m_bAutoBunnyHopping
+		&& !pmoveplayer->m_bAutoBunnyHopping
 #endif
 #endif
 		)
@@ -2462,7 +2492,7 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 #ifdef REGAMEDLL_ADD
 	if (sv_enablebunnyhopping.value <= 0.0
 #ifdef REGAMEDLL_API
-		&& !player->m_bMegaBunnyJumping
+		&& !pmoveplayer->m_bMegaBunnyJumping
 #endif
 		)
 #endif
@@ -2492,23 +2522,34 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 		{
 			pmove->punchangle[0] = -5.0f;
 
-			for (int i  = 0; i < 2; i++)
+#ifdef REGAMEDLL_API
+			if (pmoveplayer->m_flLongJumpForce > 0.0)
 			{
-				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
+				fvel = pmoveplayer->m_flLongJumpForce;
+			}
+			else
+#endif
+			{
+				fvel = PLAYER_LONGJUMP_SPEED * 1.6f;
 			}
 
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 56.0f);
+			for (int i = 0; i < 2; i++)
+			{
+				pmove->velocity[i] = pmove->forward[i] * fvel;
+			}
+
+			pmove->velocity[2] = PM_JumpHeight(true);
 		}
 		else
 		{
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 45.0f);
+			pmove->velocity[2] = PM_JumpHeight(false);
 		}
 	}
 	else
 #endif
 	{
 		// NOTE: don't do it in .f (float)
-		pmove->velocity[2] = Q_sqrt(2.0 * 800.0f * 45.0f);
+		pmove->velocity[2] = PM_JumpHeight(false);
 	}
 
 	if (pmove->fuser2 > 0.0f)
@@ -3234,6 +3275,10 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	assert(pm_shared_initialized);
 
 	pmove = ppmove;
+	
+#ifdef REGAMEDLL_API
+	pmoveplayer = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+#endif
 
 	PM_PlayerMove((server != 0) ? TRUE : FALSE);
 
