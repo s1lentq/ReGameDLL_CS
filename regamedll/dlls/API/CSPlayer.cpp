@@ -153,15 +153,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 			if (!pPlayer->m_bHasDefuser)
 				return false;
 
-			pPlayer->m_bHasDefuser = false;
-			pPlayer->pev->body = 0;
-
-			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
-				WRITE_BYTE(STATUSICON_HIDE);
-				WRITE_STRING("defuser");
-			MESSAGE_END();
-
-			pPlayer->SendItemStatus();
+			pPlayer->RemoveDefuser();
 		}
 		// item_longjump
 		else if (FStrEq(pszItemName, "longjump"))

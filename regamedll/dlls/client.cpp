@@ -621,6 +621,9 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	pPlayer->m_bHasDefuser = false;
+#endif
 	pPlayer->m_bNotKilled = true;
 	pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
 	pPlayer->m_iTeamKills = 0;
