@@ -111,6 +111,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_hostages_rescued_ratio          | 1.0     | 0.0 | 1.0          | Ratio of hostages rescued to win the round. |
 | mp_legacy_vehicle_block            | 1       | 0   | 1            | Legacy func_vehicle behavior when blocked by another entity.<br/>`0` New behavior <br/>`1` Legacy behavior |
 | mp_dying_time                      | 3.0     | 0.0 | -            | Time for switch to free observing after death.<br/>`0` - disable spectating around death.<br/>`>0.00001` - time delay to start spectate.<br/>`NOTE`: The countdown starts when the player’s death animation is finished.|
+| sv_legacy_movement                 | 0       | 0   | 1            | Legacy movement. The new one fixes FPS based jump and movement.<br/>`0` Legacy behaviour <br/>`1` New behaviour |
 </details>
 
 ## How to install zBot for CS 1.6?
