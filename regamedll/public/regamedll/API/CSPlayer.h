@@ -30,6 +30,7 @@
 
 #include <API/CSPlayerItem.h>
 #include <API/CSPlayerWeapon.h>
+#include <utlarray.h>
 
 enum WeaponInfiniteAmmoMode
 {
@@ -54,7 +55,8 @@ public:
 		m_flJumpHeight(0),
 		m_flLongJumpHeight(0),
 		m_flLongJumpForce(0),
-		m_flDuckSpeedMultiplier(0)
+		m_flDuckSpeedMultiplier(0),
+		m_iUserID(-1)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -112,7 +114,7 @@ public:
 
 	void OnSpawn();
 	void OnKilled();
-
+	void OnConnect();
 	CBasePlayer *BasePlayer() const;
 
 public:
@@ -140,10 +142,22 @@ public:
 	bool m_bMegaBunnyJumping;
 	bool m_bPlantC4Anywhere;
 	bool m_bSpawnProtectionEffects;
-	double m_flJumpHeight; 
-	double m_flLongJumpHeight; 
+	double m_flJumpHeight;
+	double m_flLongJumpHeight;
 	double m_flLongJumpForce;
 	double m_flDuckSpeedMultiplier;
+
+	int m_iUserID;
+	struct CDamageRecord_t
+	{
+		float flDamage            = 0.0f;
+		float flFlashDurationTime = 0.0f;
+		int userId                = -1;
+	};
+	using DamageList_t = CUtlArray<CDamageRecord_t, MAX_CLIENTS>;
+	DamageList_t m_DamageList; // A unified array of recorded damage that includes giver and taker in each entry
+	DamageList_t &GetDamageList() { return m_DamageList; }
+	void RecordDamage(CBasePlayer *pAttacker, float flDamage, float flFlashDurationTime = -1);
 };
 
 // Inlines

@@ -16,12 +16,29 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 		}
 	}
 
-	pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
+	float flDurationTime = fadeTime * 0.33;
+	pPlayer->Blind(flDurationTime, fadeHold, fadeTime, alpha);
 
 	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
 	}
+
+#if defined(REGAMEDLL_API) && defined(REGAMEDLL_ADD)
+	float flAdjustedDamage;
+	if (alpha > 200)
+	{
+		flAdjustedDamage = fadeTime / 3;
+		flAdjustedDamage = fadeHold * 1.5;
+	}
+	else
+	{
+		flAdjustedDamage = fadeTime / 1.75;
+		flAdjustedDamage = fadeHold * 3.5;
+	}
+
+	pPlayer->CSPlayer()->RecordDamage(CBasePlayer::Instance(pevAttacker), flAdjustedDamage * 16.0f, flDurationTime);
+#endif
 }
 
 void RadiusFlash_TraceLine_hook(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAttacker, Vector &vecSrc, Vector &vecSpot, TraceResult *tr)
@@ -101,7 +118,7 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 				if (pPlayer->pev == pevAttacker || g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
 					continue;
 				break;
-			}		
+			}
 #endif
 			if (tr.fStartSolid)
 			{
@@ -110,7 +127,6 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 			}
 
 			flAdjustedDamage = flDamage - (vecSrc - tr.vecEndPos).Length() * falloff;
-
 			if (flAdjustedDamage < 0)
 				flAdjustedDamage = 0;
 
@@ -303,6 +319,8 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 
 					if (tr.flFraction != 1.0f)
 						flAdjustedDamage = 0.0f;
+					else
+						pEntity->SetDmgPenetrationLevel(1);
 				}
 #endif
 			}

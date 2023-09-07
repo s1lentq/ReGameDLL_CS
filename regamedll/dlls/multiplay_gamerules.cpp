@@ -2035,7 +2035,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 #endif
 
 			pPlayer->RoundRespawn();
-			
+
 #ifdef REGAMEDLL_ADD
 			FireTargets("game_entity_restart", pPlayer, nullptr, USE_TOGGLE, 0.0);
 #endif
@@ -3922,7 +3922,7 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, PlayerKilled,
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor)
 {
 	DeathNotice(pVictim, pKiller, pInflictor);
-#ifdef REGAMEDLL_FIXES 
+#ifdef REGAMEDLL_FIXES
 	pVictim->pev->flags &= ~FL_FROZEN;
 #endif
 	pVictim->m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
@@ -4083,7 +4083,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 {
 	// by default, the player is killed by the world
 	const char *killer_weapon_name = "world";
-	int killer_index = 0;
+	CBasePlayer *pAttacker = nullptr;
 
 #ifndef REGAMEDLL_FIXES
 	// Hack to fix name change
@@ -4094,14 +4094,13 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	// Is the killer a client?
 	if (pKiller->flags & FL_CLIENT)
 	{
-		killer_index = ENTINDEX(ENT(pKiller));
+		pAttacker = CBasePlayer::Instance(pKiller);
 
 		if (pevInflictor)
 		{
 			if (pevInflictor == pKiller)
 			{
 				// If the inflictor is the killer, then it must be their current weapon doing the damage
-				CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
 				if (pAttacker && pAttacker->IsPlayer())
 				{
 					if (pAttacker->m_pActiveItem)
@@ -4142,12 +4141,28 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 
 	if (!TheTutor)
 	{
-		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
-			WRITE_BYTE(killer_index);				// the killer
-			WRITE_BYTE(ENTINDEX(pVictim->edict()));	// the victim
-			WRITE_BYTE(pVictim->m_bHeadshotKilled);	// is killed headshot
-			WRITE_STRING(killer_weapon_name);		// what they were killed by (should this be a string?)
-		MESSAGE_END();
+		int iAllowDeathMessageFlags = (int)deathmsg_flags.value; // allow bitsums for extra information
+		int iDeathMessageFlags = PLAYERDEATH_POSITION; // set bitsum default
+		int iRarityOfKill = 0;
+
+		CBasePlayer *pAssister = nullptr;
+		CBasePlayer *pFlasher = nullptr;
+
+		if (pAttacker && pAttacker->IsPlayer())
+		{
+			// Sets the flag PLAYERDEATH_ASSISTANT indicating the presence of a teammate who assisted in the kill
+			bool bAssistWithFlashbang;
+			if ((pAssister = CheckAssistsToKill(pVictim, pAttacker, bAssistWithFlashbang)))
+				iDeathMessageFlags |= PLAYERDEATH_ASSISTANT;
+
+			iRarityOfKill = GetRarityOfKill(pAttacker, pVictim, pAssister, killer_weapon_name, bAssistWithFlashbang);
+			if (iRarityOfKill != 0)
+				iDeathMessageFlags |= PLAYERDEATH_KILLRARITY; // Attacker killed the victim in a rare way
+		}
+
+		// Apply allowed death message flags to iDeathMessageFlags
+		iDeathMessageFlags &= iAllowDeathMessageFlags;
+		SendDeathMessage(pAttacker, pVictim, pAssister, killer_weapon_name, iDeathMessageFlags, iRarityOfKill);
 	}
 
 	// This weapons from HL isn't it?
@@ -4169,8 +4184,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	}
 	else if (pKiller->flags & FL_CLIENT)
 	{
-		CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
-
 		const char *VictimTeam = GetTeam(pVictim->m_iTeam);
 		const char *KillerTeam = (pAttacker && pAttacker->IsPlayer()) ? GetTeam(pAttacker->m_iTeam) : "";
 
@@ -4345,11 +4358,11 @@ int EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeadPlayerWeapons)(CBasePlayer *pPla
 	{
 		case 3:
 			return GR_PLR_DROP_GUN_ALL;
-		case 2: 
+		case 2:
 			break;
 		case 1:
 			return GR_PLR_DROP_GUN_BEST;
-		default: 
+		default:
 			return GR_PLR_DROP_GUN_NO;
 	}
 #endif
@@ -5203,4 +5216,178 @@ bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer) const
 	}
 
 	return true;
+}
+
+//
+// Checks for assists in a kill situation
+//
+// This function analyzes damage records and player actions to determine the player who contributed the most to a kill,
+// considering factors such as damage dealt and the use of flashbang grenades
+//
+// pVictim              - The victim player
+// pKiller              - The killer player
+// bAssistWithFlashbang - A flag indicating whether a flashbang was used in the assist
+// Returns              - A pointer to the player who gave the most assistance, or NULL if appropriate assistant is not found
+//
+CBasePlayer *CHalfLifeMultiplay::CheckAssistsToKill(CBasePlayer *pVictim, CBasePlayer *pKiller, bool &bAssistWithFlashbang)
+{
+	CCSPlayer::DamageList_t &victimDamageTakenList = pVictim->CSPlayer()->GetDamageList();
+
+	float maxDamage = 0.0f;
+	int   maxDamageIndex = -1;
+	CBasePlayer *maxDamagePlayer = nullptr;
+	bAssistWithFlashbang = false;
+
+	// Find the best assistant
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		const CCSPlayer::CDamageRecord_t &record = victimDamageTakenList[i - 1];
+		if (record.flDamage == 0)
+			continue; // dealt no damage
+
+		CBasePlayer *pAttackerPlayer = UTIL_PlayerByIndex(i);
+		if (!pAttackerPlayer || pAttackerPlayer->IsDormant())
+			continue; // ignore idle clients
+
+		CCSPlayer *pCSAttackerPlayer = pAttackerPlayer->CSPlayer();
+		if (record.userId != pCSAttackerPlayer->m_iUserID)
+			continue; // another client?
+
+		if (pAttackerPlayer == pKiller || pAttackerPlayer == pVictim)
+			continue; // ignore involved as killer or victim
+
+		if (record.flDamage > maxDamage)
+		{
+			// If the assistant used a flash grenade to aid in the kill,
+			// make sure that the victim was blinded, and that the duration of the flash effect is still preserved
+			if (record.flFlashDurationTime > 0 && (!pVictim->IsBlind() || record.flFlashDurationTime <= gpGlobals->time))
+				continue;
+
+			maxDamage        = record.flDamage;
+			maxDamagePlayer  = pAttackerPlayer;
+			maxDamageIndex   = i;
+		}
+	}
+
+	// Note: Only the highest damaging player can be an assistant
+	// The condition checks if the damage dealt by the player exceeds a certain percentage of the victim's max health
+	// Default threshold is 40%, meaning the assistant must deal at least 40% of the victim's max health as damage
+	if (maxDamagePlayer && maxDamage > (assist_damage_threshold.value / 100.0f) * pVictim->pev->max_health)
+	{
+		bAssistWithFlashbang = victimDamageTakenList[maxDamageIndex - 1].flFlashDurationTime > 0; // if performed the flash assist
+		return maxDamagePlayer;
+	}
+
+	return nullptr;
+}
+
+//
+// Check the rarity estimation for a kill
+//
+// Estimation to represent the rarity of a kill based on various factors, including assists with flashbang grenades,
+// headshot kills, kills through walls, the killer's blindness, no-scope sniper rifle kills, and kills through smoke
+//
+// pKiller              - The player who performed the kill
+// pVictim              - The player who was killed
+// pAssister            - The assisting player (if any)
+// killerWeaponName     - The name of the weapon used by the killer
+// bAssistWithFlashbang - A flag indicating whether an assist was made with a flashbang
+// Returns an integer estimation representing the rarity of the kill
+// Use with PLAYERDEATH_KILLRARITY flag to indicate a rare kill in death messages
+//
+int CHalfLifeMultiplay::GetRarityOfKill(CBasePlayer *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bAssistWithFlashbang)
+{
+	int iRarity = 0;
+
+	// The killer player kills the victim with an assistant flashbang grenade
+	if (pAssister && bAssistWithFlashbang)
+		iRarity |= KILLRARITY_ASSIST_FLASH;
+
+	// The killer player kills the victim with a headshot
+	if (pVictim->m_bHeadshotKilled)
+		iRarity |= KILLRARITY_HEADSHOT;
+
+	// The killer player kills the victim through the walls
+	if (pVictim->GetDmgPenetrationLevel() > 0)
+		iRarity |= KILLRARITY_PENETRATED;
+
+	// The killer player was blind
+	if (pKiller->IsBlind())
+		iRarity |= KILLRARITY_KILLER_BLIND;
+
+	// The killer player kills the victim with a sniper rifle with no scope
+	WeaponClassType weaponClass = AliasToWeaponClass(killerWeaponName);
+	if (weaponClass == WEAPONCLASS_SNIPERRIFLE && pKiller->m_iClientFOV == DEFAULT_FOV)
+		iRarity |= KILLRARITY_NOSCOPE;
+
+	// The killer player kills the victim through smoke
+	const Vector inEyePos = pKiller->EyePosition();
+	if (TheCSBots()->IsLineBlockedBySmoke(&inEyePos, &pVictim->pev->origin))
+		iRarity |= KILLRARITY_THROUGH_SMOKE;
+
+	return iRarity;
+}
+
+//
+// Sends death messages to all players, including info about the killer, victim, weapon used,
+// extra death flags, death position, assistant, and kill rarity
+//
+//
+// pAttacker          - The player who performed the kill
+// pVictim            - The player who was killed
+// pAssister          - The assisting player (if any)
+// killerWeaponName   - The name of the weapon used by the killer
+// iDeathMessageFlags - Flags indicating extra death message info
+// iRarityOfKill      - An bitsums representing the rarity classification of the kill
+//
+void CHalfLifeMultiplay::SendDeathMessage(CBasePlayer *pAttacker, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill)
+{
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer || FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (pPlayer->IsBot() || pPlayer->IsDormant())
+			continue;
+
+		int iDeathExtraFlags = iDeathMessageFlags;
+
+		// Send the victim's death position only
+		// if the attacker or victim is a teammate of the recipient player
+		if (pPlayer == pVictim || (
+			PlayerRelationship(pVictim,   pPlayer) != GR_TEAMMATE &&
+			PlayerRelationship(pAttacker, pPlayer) != GR_TEAMMATE))
+		{
+			iDeathExtraFlags &= ~PLAYERDEATH_POSITION;
+		}
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgDeathMsg, nullptr, pPlayer->pev);
+		WRITE_BYTE(pAttacker ? pAttacker->entindex() : 0);	// the killer
+		WRITE_BYTE(pVictim->entindex());					// the victim
+		WRITE_BYTE(pVictim->m_bHeadshotKilled);				// is killed headshot
+		WRITE_STRING(killerWeaponName);						// what they were killed by (should this be a string?)
+
+		if (iDeathExtraFlags > 0)
+			WRITE_LONG(iDeathExtraFlags);
+
+		// Writes the coordinates of the place where the victim died
+		// The victim has just been killed, so this usefully display 'X' dead icon on the HUD radar
+		if (iDeathExtraFlags & PLAYERDEATH_POSITION)
+		{
+			WRITE_COORD(pVictim->pev->origin.x);
+			WRITE_COORD(pVictim->pev->origin.y);
+			WRITE_COORD(pVictim->pev->origin.z);
+		}
+
+		// Writes the index of the teammate who assisted in the kill
+		if (iDeathExtraFlags & PLAYERDEATH_ASSISTANT)
+			WRITE_BYTE(pAssister->entindex());
+
+		// Writes the rarity classification of the kill
+		if (iDeathExtraFlags & PLAYERDEATH_KILLRARITY)
+			WRITE_LONG(iRarityOfKill);
+
+		MESSAGE_END();
+	}
 }

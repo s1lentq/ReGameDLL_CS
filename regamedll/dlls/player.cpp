@@ -973,6 +973,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 					TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 				}
 			}
+
+#ifdef REGAMEDLL_API
+			CSPlayer()->RecordDamage(pAttack, flDamage);
+#endif
 		}
 
 		{
@@ -1216,6 +1220,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 				TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 			}
 		}
+
+#ifdef REGAMEDLL_API
+		CSPlayer()->RecordDamage(pAttack, flDamage);
+#endif
 	}
 
 	{
