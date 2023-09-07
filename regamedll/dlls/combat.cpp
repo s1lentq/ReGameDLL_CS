@@ -27,15 +27,9 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 #if defined(REGAMEDLL_API) && defined(REGAMEDLL_ADD)
 	float flAdjustedDamage;
 	if (alpha > 200)
-	{
 		flAdjustedDamage = fadeTime / 3;
-		flAdjustedDamage = fadeHold * 1.5;
-	}
 	else
-	{
 		flAdjustedDamage = fadeTime / 1.75;
-		flAdjustedDamage = fadeHold * 3.5;
-	}
 
 	pPlayer->CSPlayer()->RecordDamage(CBasePlayer::Instance(pevAttacker), flAdjustedDamage * 16.0f, flDurationTime);
 #endif

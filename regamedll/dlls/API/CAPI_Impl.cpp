@@ -61,37 +61,37 @@ void EXT_FUNC AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, 
 	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
 }
 
-int EXT_FUNC Cmd_Argc_api() 
+int EXT_FUNC Cmd_Argc_api()
 {
 	return CMD_ARGC_();
 }
 
-const char *EXT_FUNC Cmd_Argv_api(int i) 
+const char *EXT_FUNC Cmd_Argv_api(int i)
 {
 	return CMD_ARGV_(i);
 }
 
-CGrenade *EXT_FUNC PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity) 
+CGrenade *EXT_FUNC PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity)
 {
 	return CGrenade::ShootSatchelCharge(pevOwner, vecStart, vecVelocity);
 }
 
-CGib *EXT_FUNC SpawnHeadGib_api(entvars_t *pevVictim) 
+CGib *EXT_FUNC SpawnHeadGib_api(entvars_t *pevVictim)
 {
 	return CGib::SpawnHeadGib(pevVictim);
 }
 
-void EXT_FUNC SpawnRandomGibs_api(entvars_t *pevVictim, int cGibs, int human) 
+void EXT_FUNC SpawnRandomGibs_api(entvars_t *pevVictim, int cGibs, int human)
 {
 	CGib::SpawnRandomGibs(pevVictim, cGibs, human);
 }
 
-void EXT_FUNC UTIL_RestartOther_api(const char *szClassname) 
+void EXT_FUNC UTIL_RestartOther_api(const char *szClassname)
 {
 	UTIL_RestartOther(szClassname);
 }
 
-void EXT_FUNC UTIL_ResetEntities_api() 
+void EXT_FUNC UTIL_ResetEntities_api()
 {
 	UTIL_ResetEntities();
 }
@@ -130,11 +130,11 @@ CGrenade *EXT_FUNC SpawnGrenade_api(WeaponIdType weaponId, entvars_t *pevOwner, 
 {
 	switch (weaponId)
 	{
-		case WEAPON_HEGRENADE:    
+		case WEAPON_HEGRENADE:
 			return CGrenade::ShootTimed2(pevOwner, vecSrc, vecThrow, time, iTeam, usEvent);
-		case WEAPON_FLASHBANG:    
+		case WEAPON_FLASHBANG:
 			return CGrenade::ShootTimed(pevOwner, vecSrc, vecThrow, time);
-		case WEAPON_SMOKEGRENADE: 
+		case WEAPON_SMOKEGRENADE:
 			return CGrenade::ShootSmokeGrenade(pevOwner, vecSrc, vecThrow, time, usEvent);
 		case WEAPON_C4:
 			return CGrenade::ShootSatchelCharge(pevOwner, vecSrc, vecThrow);
@@ -331,6 +331,7 @@ GAMEHOOK_REGISTRY(CBasePlayer_EntSelectSpawnPoint);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_ItemPostFrame);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_SendWeaponAnim);
+GAMEHOOK_REGISTRY(CSGameRules_SendDeathMessage);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;

@@ -46,7 +46,7 @@
     <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
       </ExcludedFromBuild>
-    </ClCompile>    
+    </ClCompile>
     <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
       </ExcludedFromBuild>
@@ -787,6 +787,7 @@
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\tier0\dbg.h" />
     <ClInclude Include="..\public\tier0\platform.h" />
+    <ClInclude Include="..\public\utlarray.h" />
     <ClInclude Include="..\public\utlmemory.h" />
     <ClInclude Include="..\public\utlrbtree.h" />
     <ClInclude Include="..\public\utlsymbol.h" />

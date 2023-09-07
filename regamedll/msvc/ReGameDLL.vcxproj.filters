@@ -1052,5 +1052,8 @@
     <ClInclude Include="..\dlls\addons\point_command.h">
       <Filter>dlls\addons</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\utlarray.h">
+      <Filter>public</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

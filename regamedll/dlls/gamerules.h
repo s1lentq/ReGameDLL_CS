@@ -602,6 +602,7 @@ public:
 	BOOL TeamFull_OrigFunc(int team_id);
 	BOOL TeamStacked_OrigFunc(int newTeam_id, int curTeam_id);
 	void PlayerGotWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	void SendDeathMessage_OrigFunc(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
 #endif
 
 public:
@@ -726,9 +727,9 @@ public:
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
 
-	void SendDeathMessage(CBasePlayer *pAttacker, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
-	int GetRarityOfKill(CBasePlayer *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bAssistWithFlashbang);
-	CBasePlayer *CheckAssistsToKill(CBasePlayer *pVictim, CBasePlayer *pKiller, bool &bAssistWithFlashbang);
+	void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
+	int GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bFlashAssist);
+	CBasePlayer *CheckAssistsToKill(CBaseEntity *pKiller, CBasePlayer *pVictim, bool &bFlashAssist);
 
 private:
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
