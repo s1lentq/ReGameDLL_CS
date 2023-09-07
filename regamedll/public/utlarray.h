@@ -71,8 +71,6 @@ public:
 
 	bool HasElement(const T &src) const;
 
-	void Sort(int(__cdecl *pfnCompare)(const T *, const T *));
-
 protected:
 	T m_Memory[MAX_SIZE];
 };
@@ -180,17 +178,6 @@ template <typename T, size_t MAX_SIZE>
 inline int CUtlArray<T, MAX_SIZE>::InvalidIndex()
 {
 	return -1;
-}
-
-// Sorts the vector
-template <typename T, size_t MAX_SIZE>
-void CUtlArray<T, MAX_SIZE>::Sort(int(__cdecl *pfnCompare)(const T *, const T *))
-{
-	typedef int(__cdecl *QSortCompareFunc_t)(const void *, const void *);
-	if (Count() <= 1)
-		return;
-
-	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
 }
 
 template <typename T, size_t MAX_SIZE>

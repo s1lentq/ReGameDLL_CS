@@ -4141,6 +4141,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 
 	if (!TheTutor)
 	{
+#ifdef REGAMEDLL_ADD
 		int iAllowDeathMessageFlags = (int)deathmsg_flags.value; // allow bitsums for extra information
 		int iDeathMessageFlags = PLAYERDEATH_POSITION; // set bitsum default
 		int iRarityOfKill = 0;
@@ -4163,6 +4164,14 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 		// Apply allowed death message flags to iDeathMessageFlags
 		iDeathMessageFlags &= iAllowDeathMessageFlags;
 		SendDeathMessage(pAttacker, pVictim, pAssister, killer_weapon_name, iDeathMessageFlags, iRarityOfKill);
+#else
+		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
+			WRITE_BYTE(pAttacker ? pAttacker->entindex() : 0);				// the killer
+			WRITE_BYTE(ENTINDEX(pVictim->edict()));	// the victim
+			WRITE_BYTE(pVictim->m_bHeadshotKilled);	// is killed headshot
+			WRITE_STRING(killer_weapon_name);		// what they were killed by (should this be a string?)
+		MESSAGE_END();
+#endif
 	}
 
 	// This weapons from HL isn't it?
@@ -5231,6 +5240,7 @@ bool CHalfLifeMultiplay::CanPlayerBuy(CBasePlayer *pPlayer) const
 //
 CBasePlayer *CHalfLifeMultiplay::CheckAssistsToKill(CBasePlayer *pVictim, CBasePlayer *pKiller, bool &bAssistWithFlashbang)
 {
+#ifdef REGAMEDLL_ADD
 	CCSPlayer::DamageList_t &victimDamageTakenList = pVictim->CSPlayer()->GetDamageList();
 
 	float maxDamage = 0.0f;
@@ -5277,6 +5287,7 @@ CBasePlayer *CHalfLifeMultiplay::CheckAssistsToKill(CBasePlayer *pVictim, CBaseP
 		bAssistWithFlashbang = victimDamageTakenList[maxDamageIndex - 1].flFlashDurationTime > 0; // if performed the flash assist
 		return maxDamagePlayer;
 	}
+#endif
 
 	return nullptr;
 }
