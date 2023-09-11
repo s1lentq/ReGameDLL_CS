@@ -529,7 +529,6 @@ WeaponInfoStruct *GetWeaponInfo(const char *weaponName)
 	return nullptr;
 }
 
-
 WeaponInfoStruct *GetDefaultWeaponInfo(int weaponID)
 {
 	for (auto& info : g_weaponInfo_default) {
