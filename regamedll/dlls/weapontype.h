@@ -445,6 +445,8 @@ void WeaponInfoReset();
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
 
+WeaponInfoStruct *GetDefaultWeaponInfo(int weaponID);
+
 AmmoInfoStruct *GetAmmoInfo(AmmoType ammoID);
 AmmoInfoStruct *GetAmmoInfo(const char *ammoName);
 

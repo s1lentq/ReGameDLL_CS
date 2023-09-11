@@ -4826,10 +4826,10 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 #ifdef REGAMEDLL_FIXES 
 					if (pPlayerItem == pPlayer->m_pActiveItem && weapon->m_iClip == II.iMaxClip)
 					{
-						int defMaxClip = g_weaponInfo_default[II.iId].gunClipSize;
+						const WeaponInfoStruct *wpnInfo = GetDefaultWeaponInfo(II.iId);
 
-						if (defMaxClip != II.iMaxClip)
-							item->m_iClip = defMaxClip;
+						if (wpnInfo->gunClipSize != II.iMaxClip)
+							item->m_iClip = wpnInfo->gunClipSize;
 					}
 #endif
 				}
