@@ -30,8 +30,7 @@
 
 const float updateTimesliceDuration = 0.5f;
 
-int _navAreaCount = 0;
-int _currentIndex = 0;
+unsigned int _generationIndex = 0; // used for iterating nav areas during generation process
 
 inline CNavNode *LadderEndSearch(CBaseEntity *pEntity, const Vector *pos, NavDirType mountDir)
 {
@@ -385,11 +384,8 @@ void CCSBot::UpdateLearnProcess()
 
 void CCSBot::StartAnalyzeAlphaProcess()
 {
-	m_processMode = PROCESS_ANALYZE_ALPHA;
-	m_analyzeIter = TheNavAreaList.begin();
-
-	_navAreaCount = TheNavAreaList.size();
-	_currentIndex = 0;
+	m_processMode    = PROCESS_ANALYZE_ALPHA;
+	_generationIndex = 0;
 
 	ApproachAreaAnalysisPrep();
 	DestroyHidingSpots();
@@ -400,15 +396,18 @@ void CCSBot::StartAnalyzeAlphaProcess()
 
 bool CCSBot::AnalyzeAlphaStep()
 {
-	_currentIndex++;
-	if (m_analyzeIter == TheNavAreaList.end())
+	_generationIndex++;
+
+	if (_generationIndex < 0 || _generationIndex >= TheNavAreaList.size())
 		return false;
 
-	CNavArea *area = (*m_analyzeIter);
+	// TODO: Pretty ugly and very slow way to access element by index
+	// There is no reason not to use a vector instead of a linked list
+	const NavAreaList::const_iterator &iter = std::next(TheNavAreaList.begin(), _generationIndex - 1);
+
+	CNavArea *area = (*iter);
 	area->ComputeHidingSpots();
 	area->ComputeApproachAreas();
-	m_analyzeIter++;
-
 	return true;
 }
 
@@ -426,29 +425,30 @@ void CCSBot::UpdateAnalyzeAlphaProcess()
 		}
 	}
 
-	float progress = (double(_currentIndex) / double(_navAreaCount)) * 0.5f;
+	float progress = (double(_generationIndex) / double(TheNavAreaList.size())) * 0.5f;
 	drawProgressMeter(progress, "#CZero_AnalyzingHidingSpots");
 }
 
 void CCSBot::StartAnalyzeBetaProcess()
 {
-	m_processMode = PROCESS_ANALYZE_BETA;
-	m_analyzeIter = TheNavAreaList.begin();
-
-	_navAreaCount = TheNavAreaList.size();
-	_currentIndex = 0;
+	m_processMode    = PROCESS_ANALYZE_BETA;
+	_generationIndex = 0;
 }
 
 bool CCSBot::AnalyzeBetaStep()
 {
-	_currentIndex++;
-	if (m_analyzeIter == TheNavAreaList.end())
+	_generationIndex++;
+
+	if (_generationIndex < 0 || _generationIndex >= TheNavAreaList.size())
 		return false;
 
-	CNavArea *area = (*m_analyzeIter);
+	// TODO: Pretty ugly and very slow way to access element by index
+	// There is no reason not to use a vector instead of a linked list
+	const NavAreaList::const_iterator &iter = std::next(TheNavAreaList.begin(), _generationIndex - 1);
+
+	CNavArea *area = (*iter);
 	area->ComputeSpotEncounters();
 	area->ComputeSniperSpots();
-	m_analyzeIter++;
 
 	return true;
 }
@@ -466,7 +466,7 @@ void CCSBot::UpdateAnalyzeBetaProcess()
 		}
 	}
 
-	float progress = (double(_currentIndex) / double(_navAreaCount) + 1.0f) * 0.5f;
+	float progress = (double(_generationIndex) / double(TheNavAreaList.size()) + 1.0f) * 0.5f;
 	drawProgressMeter(progress, "#CZero_AnalyzingApproachPoints");
 }
 

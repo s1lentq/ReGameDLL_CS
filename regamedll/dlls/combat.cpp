@@ -90,6 +90,19 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 		if (tr2.flFraction >= 1.0)
 		{
+#ifdef REGAMEDLL_ADD
+			switch ((int)teamflash.value)
+			{
+			case 0:
+				if (pPlayer->pev != pevAttacker && g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
+					continue;
+				break;
+			case -1:
+				if (pPlayer->pev == pevAttacker || g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
+					continue;
+				break;
+			}		
+#endif
 			if (tr.fStartSolid)
 			{
 				tr.vecEndPos = vecSrc;

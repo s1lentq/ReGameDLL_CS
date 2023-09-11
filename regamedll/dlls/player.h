@@ -444,6 +444,8 @@ public:
 	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
 	void DeathSound_OrigFunc();
 	void JoiningThink_OrigFunc();
+	void CheckTimeBasedDamage_OrigFunc();
+	edict_t *EntSelectSpawnPoint_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -908,6 +910,7 @@ public:
 
 CWeaponBox *CreateWeaponBox(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
 CWeaponBox *CreateWeaponBox_OrigFunc(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
+CItemThighPack *SpawnDefuser(const Vector &vecOrigin, edict_t *pentOwner);
 
 class CWShield: public CBaseEntity
 {

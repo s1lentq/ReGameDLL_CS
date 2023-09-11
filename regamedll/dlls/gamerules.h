@@ -570,6 +570,10 @@ public:
 	void ChangeLevel_OrigFunc();
 	void GoToIntermission_OrigFunc();
 	void BalanceTeams_OrigFunc();
+	void Think_OrigFunc();
+	BOOL TeamFull_OrigFunc(int team_id);
+	BOOL TeamStacked_OrigFunc(int newTeam_id, int curTeam_id);
+	void PlayerGotWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 #endif
 
 public:

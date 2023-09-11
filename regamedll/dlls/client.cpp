@@ -621,6 +621,9 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		return;
 	}
 
+#ifdef REGAMEDLL_FIXES
+	pPlayer->m_bHasDefuser = false;
+#endif
 	pPlayer->m_bNotKilled = true;
 	pPlayer->m_iIgnoreGlobalChat = IGNOREMSG_NONE;
 	pPlayer->m_iTeamKills = 0;
@@ -1194,7 +1197,9 @@ void BuyMachineGun(CBasePlayer *pPlayer, int iSlot)
 	BuyWeaponByWeaponID(pPlayer, WEAPON_M249);
 }
 
-void BuyItem(CBasePlayer *pPlayer, int iSlot)
+LINK_HOOK_VOID_CHAIN(BuyItem, (CBasePlayer *pPlayer, int iSlot), pPlayer, iSlot)
+
+void EXT_FUNC __API_HOOK(BuyItem)(CBasePlayer *pPlayer, int iSlot)
 {
 	int iItemPrice = 0;
 	const char *pszItem = nullptr;

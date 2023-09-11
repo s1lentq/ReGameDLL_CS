@@ -12,6 +12,10 @@ char pm_grgchTextureType[MAX_TEXTURES];
 playermove_t *pmove = nullptr;
 BOOL g_onladder = FALSE;
 
+#ifdef REGAMEDLL_API
+static CCSPlayer *pmoveplayer = nullptr;
+#endif
+
 #ifdef CLIENT_DLL
 	int iJumpSpectator;
 	float vJumpOrigin[3];
@@ -162,7 +166,9 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	return CHAR_TEX_CONCRETE;
 }
 
-void PM_PlayStepSound(int step, float fvol)
+LINK_HOOK_VOID_CHAIN(PM_PlayStepSound, (int step, float fvol), step, fvol)
+
+void EXT_FUNC __API_HOOK(PM_PlayStepSound)(int step, float fvol)
 {
 	static int iSkipStep = 0;
 	int irand;
@@ -365,7 +371,7 @@ void PM_CatagorizeTextureType()
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
 }
 
-LINK_HOOK_VOID_CHAIN2(PM_UpdateStepSound);
+LINK_HOOK_VOID_CHAIN2(PM_UpdateStepSound)
 
 void EXT_FUNC __API_HOOK(PM_UpdateStepSound)()
 {
@@ -1127,7 +1133,9 @@ void PM_Friction()
 	VectorCopy(newvel, pmove->velocity);
 }
 
-void PM_AirAccelerate(vec_t *wishdir, float wishspeed, float accel)
+LINK_HOOK_VOID_CHAIN(PM_AirAccelerate, (vec_t *wishdir, float wishspeed, float accel), wishdir, wishspeed, accel)
+
+void EXT_FUNC __API_HOOK(PM_AirAccelerate)(vec_t *wishdir, float wishspeed, float accel)
 {
 	int i;
 	float addspeed;
@@ -1274,7 +1282,7 @@ void PM_WaterMove()
 	PM_FlyMove();
 }
 
-LINK_HOOK_VOID_CHAIN(PM_AirMove, (int playerIndex = 0), pmove->player_index + 1);
+LINK_HOOK_VOID_CHAIN(PM_AirMove, (int playerIndex = 0), pmove->player_index + 1)
 
 void EXT_FUNC __API_HOOK(PM_AirMove)(int playerIndex)
 {
@@ -1793,7 +1801,9 @@ void PM_FixPlayerCrouchStuck(int direction)
 	VectorCopy(test, pmove->origin);
 }
 
-void PM_UnDuck()
+LINK_HOOK_VOID_CHAIN2(PM_UnDuck)
+
+void EXT_FUNC __API_HOOK(PM_UnDuck)()
 {
 #ifdef REGAMEDLL_ADD
 	if (unduck_method.value)
@@ -1863,7 +1873,9 @@ void PM_UnDuck()
 	}
 }
 
-void PM_Duck()
+LINK_HOOK_VOID_CHAIN2(PM_Duck)
+
+void EXT_FUNC __API_HOOK(PM_Duck)()
 {
 	int buttonsChanged = (pmove->oldbuttons ^ pmove->cmd.buttons);	// These buttons have changed this frame
 	int nButtonPressed =  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
@@ -1899,9 +1911,16 @@ void PM_Duck()
 		return;
 	}
 
-	pmove->cmd.forwardmove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.sidemove *= PLAYER_DUCKING_MULTIPLIER;
-	pmove->cmd.upmove *= PLAYER_DUCKING_MULTIPLIER;
+	real_t mult = PLAYER_DUCKING_MULTIPLIER;
+
+#ifdef REGAMEDLL_API
+	if (pmoveplayer->m_flDuckSpeedMultiplier > 0.0)
+		mult = pmoveplayer->m_flDuckSpeedMultiplier;
+#endif
+
+	pmove->cmd.forwardmove *= mult;
+	pmove->cmd.sidemove *= mult;
+	pmove->cmd.upmove *= mult;
 
 	if (pmove->cmd.buttons & IN_DUCK)
 	{
@@ -1967,7 +1986,7 @@ void PM_Duck()
 	}
 }
 
-LINK_HOOK_VOID_CHAIN(PM_LadderMove, (physent_t *pLadder), pLadder);
+LINK_HOOK_VOID_CHAIN(PM_LadderMove, (physent_t *pLadder), pLadder)
 
 void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 {
@@ -2015,7 +2034,16 @@ void EXT_FUNC __API_HOOK(PM_LadderMove)(physent_t *pLadder)
 
 		if (pmove->flags & FL_DUCKING)
 		{
-			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+#ifdef REGAMEDLL_API
+			if (pmoveplayer->m_flDuckSpeedMultiplier > 0.0)
+			{
+				flSpeed *= pmoveplayer->m_flDuckSpeedMultiplier;
+			}
+			else
+#endif
+			{
+				flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+			}
 		}
 
 		if (pmove->cmd.buttons & IN_BACK)
@@ -2119,7 +2147,9 @@ physent_t *PM_Ladder()
 	return nullptr;
 }
 
-void PM_WaterJump()
+LINK_HOOK_VOID_CHAIN2(PM_WaterJump)
+
+void EXT_FUNC __API_HOOK(PM_WaterJump)()
 {
 	if (pmove->waterjumptime > 10000)
 	{
@@ -2344,7 +2374,23 @@ void PM_PreventMegaBunnyJumping()
 	VectorScale(pmove->velocity, fraction, pmove->velocity);
 }
 
-void PM_Jump()
+inline real_t PM_JumpHeight(bool longjump)
+{
+#ifdef REGAMEDLL_API
+	if (longjump)
+	{
+		if(pmoveplayer->m_flLongJumpHeight > 0.0)
+			return pmoveplayer->m_flLongJumpHeight;
+	}
+	else if (pmoveplayer->m_flJumpHeight > 0.0)
+		return pmoveplayer->m_flJumpHeight;
+#endif
+	return Q_sqrt(2.0 * 800.0f * (longjump ? 56.0f : 45.0f));
+}
+
+LINK_HOOK_VOID_CHAIN2(PM_Jump)
+
+void EXT_FUNC __API_HOOK(PM_Jump)()
 {
 	if (pmove->dead)
 	{
@@ -2420,16 +2466,12 @@ void PM_Jump()
 		return;
 	}
 
-#ifdef REGAMEDLL_API
-	const CCSPlayer* player = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
-#endif
-
 	// don't pogo stick
 	if (pmove->oldbuttons & IN_JUMP
 #ifdef REGAMEDLL_ADD
 		&& sv_autobunnyhopping.value <= 0.0
 #ifdef REGAMEDLL_API
-		&& !player->m_bAutoBunnyHopping
+		&& !pmoveplayer->m_bAutoBunnyHopping
 #endif
 #endif
 		)
@@ -2450,7 +2492,7 @@ void PM_Jump()
 #ifdef REGAMEDLL_ADD
 	if (sv_enablebunnyhopping.value <= 0.0
 #ifdef REGAMEDLL_API
-		&& !player->m_bMegaBunnyJumping
+		&& !pmoveplayer->m_bMegaBunnyJumping
 #endif
 		)
 #endif
@@ -2480,23 +2522,34 @@ void PM_Jump()
 		{
 			pmove->punchangle[0] = -5.0f;
 
-			for (int i  = 0; i < 2; i++)
+#ifdef REGAMEDLL_API
+			if (pmoveplayer->m_flLongJumpForce > 0.0)
 			{
-				pmove->velocity[i] = pmove->forward[i] * PLAYER_LONGJUMP_SPEED * 1.6f;
+				fvel = pmoveplayer->m_flLongJumpForce;
+			}
+			else
+#endif
+			{
+				fvel = PLAYER_LONGJUMP_SPEED * 1.6f;
 			}
 
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 56.0f);
+			for (int i = 0; i < 2; i++)
+			{
+				pmove->velocity[i] = pmove->forward[i] * fvel;
+			}
+
+			pmove->velocity[2] = PM_JumpHeight(true);
 		}
 		else
 		{
-			pmove->velocity[2] = Q_sqrt(2 * 800 * 45.0f);
+			pmove->velocity[2] = PM_JumpHeight(false);
 		}
 	}
 	else
 #endif
 	{
 		// NOTE: don't do it in .f (float)
-		pmove->velocity[2] = Q_sqrt(2.0 * 800.0f * 45.0f);
+		pmove->velocity[2] = PM_JumpHeight(false);
 	}
 
 	if (pmove->fuser2 > 0.0f)
@@ -2516,7 +2569,9 @@ void PM_Jump()
 	pmove->oldbuttons |= IN_JUMP;
 }
 
-void PM_CheckWaterJump()
+LINK_HOOK_VOID_CHAIN2(PM_CheckWaterJump)
+
+void EXT_FUNC __API_HOOK(PM_CheckWaterJump)()
 {
 	vec3_t vecStart, vecEnd;
 	vec3_t flatforward;
@@ -3209,7 +3264,7 @@ void PM_CreateStuckTable()
 	}
 }
 
-LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove, server);
+LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove, server)
 
 // This module implements the shared player physics code between any particular game and
 // the engine. The same PM_Move routine is built into the game .dll and the client .dll and is
@@ -3220,6 +3275,10 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	assert(pm_shared_initialized);
 
 	pmove = ppmove;
+	
+#ifdef REGAMEDLL_API
+	pmoveplayer = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
+#endif
 
 	PM_PlayerMove((server != 0) ? TRUE : FALSE);
 
@@ -3254,7 +3313,7 @@ NOXREF int PM_GetPhysEntInfo(int ent)
 	return -1;
 }
 
-LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove);
+LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove)
 
 void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 {

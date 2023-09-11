@@ -46,6 +46,10 @@
     <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
       </ExcludedFromBuild>
+    </ClCompile>    
+    <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
+      </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\dlls\basemonster.cpp" />
     <ClCompile Include="..\dlls\bmodels.cpp" />
