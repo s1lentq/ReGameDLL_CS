@@ -310,14 +310,14 @@ EXT_FUNC void CCSPlayer::GiveShield(bool bDeploy)
 	BasePlayer()->GiveShield(bDeploy);
 }
 
-EXT_FUNC void CCSPlayer::DropShield(bool bDeploy)
+EXT_FUNC CBaseEntity *CCSPlayer::DropShield(bool bDeploy)
 {
-	BasePlayer()->DropShield(bDeploy);
+	return BasePlayer()->DropShield(bDeploy);
 }
 
-EXT_FUNC void CCSPlayer::DropPlayerItem(const char *pszItemName)
+EXT_FUNC CBaseEntity *CCSPlayer::DropPlayerItem(const char *pszItemName)
 {
-	BasePlayer()->DropPlayerItem(pszItemName);
+	return BasePlayer()->DropPlayerItem(pszItemName);
 }
 
 EXT_FUNC bool CCSPlayer::RemoveShield()
