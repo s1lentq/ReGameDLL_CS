@@ -43,8 +43,10 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->pev->deadflag = DEAD_DEAD;
 		pPlayer->pev->health = 0;
 
+		if (pPlayer->m_bHasC4)
+			pPlayer->DropPlayerItem("weapon_c4");
+
 		pPlayer->RemoveAllItems(TRUE);
-		pPlayer->m_bHasC4 = false;
 
 		pPlayer->m_iTeam = SPECTATOR;
 		pPlayer->m_iJoiningState = JOINED;
