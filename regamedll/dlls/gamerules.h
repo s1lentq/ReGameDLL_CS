@@ -250,8 +250,8 @@ enum KillRarity
 	KILLRARITY_PENETRATED    = 0x008, // The killer player kills the victim through walls
 	KILLRARITY_THROUGH_SMOKE = 0x010, // The killer player kills the victim through smoke
 	KILLRARITY_ASSIST_FLASH  = 0x020, // The killer player kills the victim with an assistant flashbang grenade
-	KILLRARITY_DOMINATION    = 0x040, // The killer player kills is dominating victim
-	KILLRARITY_REVENGE       = 0x080  // The killer player kills got revenge on victim
+	KILLRARITY_DOMINATION    = 0x040, // The killer player dominates the victim
+	KILLRARITY_REVENGE       = 0x080  // The killer player got revenge on the victim
 };
 
 class CItem;
