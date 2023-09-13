@@ -4082,7 +4082,7 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, DeathNotice, 
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, entvars_t *pevKiller, entvars_t *pevInflictor)
 {
 	// by default, the player is killed by the world
-	CBaseEntity *pKiller = (pevKiller->flags & FL_CLIENT) ? CBaseEntity::Instance(pevKiller) : nullptr;
+	CBasePlayer *pKiller = (pevKiller->flags & FL_CLIENT) ? CBasePlayer::Instance(pevKiller) : nullptr;
 	const char *killer_weapon_name = pVictim->GetKillerWeaponName(pevInflictor, pevKiller);
 
 	if (!TheTutor)
@@ -4108,6 +4108,16 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 		}
 
 		SendDeathMessage(pKiller, pVictim, pAssister, pevInflictor, killer_weapon_name, iDeathMessageFlags, iRarityOfKill);
+
+		// Updates the stats of who has killed whom
+		if (pKiller && pKiller->IsPlayer() && PlayerRelationship(pVictim, pKiller) != GR_TEAMMATE)
+		{
+			int iPlayerIndexKiller = pKiller->entindex();
+			int iPlayerIndexVictim = pVictim->entindex();
+
+			pKiller->CSPlayer()->m_iNumKilledByUnanswered[iPlayerIndexVictim - 1] = 0;
+			pVictim->CSPlayer()->m_iNumKilledByUnanswered[iPlayerIndexKiller - 1]++;
+		}
 #else
 		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 			WRITE_BYTE(pKiller ? pKiller->entindex() : 0);	// the killer
@@ -4129,7 +4139,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 	else if (pevKiller->flags & FL_CLIENT)
 	{
 		const char *VictimTeam = GetTeam(pVictim->m_iTeam);
-		const char *KillerTeam = (pKiller && pKiller->IsPlayer()) ? GetTeam(((CBasePlayer *)pKiller)->m_iTeam) : "";
+		const char *KillerTeam = (pKiller && pKiller->IsPlayer()) ? GetTeam(pKiller->m_iTeam) : "";
 
 		UTIL_LogPrintf("\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n", STRING(pevKiller->netname), GETPLAYERUSERID(ENT(pevKiller)), GETPLAYERAUTHID(ENT(pevKiller)),
 			KillerTeam, STRING(pVictim->pev->netname), GETPLAYERUSERID(pVictim->edict()), GETPLAYERAUTHID(pVictim->edict()), VictimTeam, killer_weapon_name);
@@ -5272,6 +5282,31 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 		const Vector inEyePos = pKillerPlayer->EyePosition();
 		if (TheCSBots()->IsLineBlockedBySmoke(&inEyePos, &pVictim->pev->origin))
 			iRarity |= KILLRARITY_THROUGH_SMOKE;
+
+		// Calculate # of unanswered kills between killer & victim
+		// This is plus 1 as this function gets called before the stat is updated
+		// That is done so that the domination and revenge will be calculated prior
+		// to the death message being sent to the clients
+		int iAttackerEntityIndex = pKillerPlayer->entindex();
+		assert(iAttackerEntityIndex >= 0 && iAttackerEntityIndex < MAX_CLIENTS);
+
+		int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[iAttackerEntityIndex - 1] + 1;
+		if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION || pKillerPlayer->CSPlayer()->IsPlayerDominated(pVictim->entindex() - 1))
+		{
+			// this is the Nth unanswered kill between killer and victim, killer is now dominating victim
+			iRarity |= KILLRARITY_DOMINATION;
+
+			// set victim to be dominated by killer
+			pKillerPlayer->CSPlayer()->SetPlayerDominated(pVictim, true);
+		}
+		else if (pVictim->CSPlayer()->IsPlayerDominated(pKillerPlayer->entindex() - 1))
+		{
+			// the killer killed someone who was dominating him, gains revenge
+			iRarity |= KILLRARITY_REVENGE;
+
+			// set victim to no longer be dominating the killer
+			pVictim->CSPlayer()->SetPlayerDominated(pKillerPlayer, false);
+		}
 	}
 
 	return iRarity;
@@ -5317,6 +5352,15 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 			PlayerRelationship(pKillerPlayer, pPlayer) != GR_TEAMMATE))
 		{
 			iSendDeathMessageFlags &= ~PLAYERDEATH_POSITION;
+		}
+
+		// An recipient a client is a victim that involved in this kill
+		if (pPlayer == pVictim && pVictim != pKillerPlayer)
+		{
+			// Sets a domination kill for recipient of the victim once until revenge
+			int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[pKillerPlayer->entindex() - 1];
+			if (iKillsUnanswered >= CS_KILLS_FOR_DOMINATION)
+				iRarityOfKill &= ~KILLRARITY_DOMINATION;
 		}
 
 		MESSAGE_BEGIN(MSG_ONE, gmsgDeathMsg, nullptr, pPlayer->pev);

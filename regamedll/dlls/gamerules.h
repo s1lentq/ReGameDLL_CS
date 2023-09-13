@@ -220,6 +220,10 @@ enum
 	GR_NEUTRAL,
 };
 
+// The number of times you must kill a given player to be dominating them
+// Should always be more than 1
+const int CS_KILLS_FOR_DOMINATION = 4;
+
 enum DeathMessageFlags
 {
 	// float[3]
@@ -245,7 +249,9 @@ enum KillRarity
 	KILLRARITY_NOSCOPE       = 0x004, // The killer player kills the victim with a sniper rifle with no scope
 	KILLRARITY_PENETRATED    = 0x008, // The killer player kills the victim through walls
 	KILLRARITY_THROUGH_SMOKE = 0x010, // The killer player kills the victim through smoke
-	KILLRARITY_ASSIST_FLASH  = 0x020  // The killer player kills the victim with an assistant flashbang grenade
+	KILLRARITY_ASSIST_FLASH  = 0x020, // The killer player kills the victim with an assistant flashbang grenade
+	KILLRARITY_DOMINATION    = 0x040, // The killer player kills is dominating victim
+	KILLRARITY_REVENGE       = 0x080  // The killer player kills got revenge on victim
 };
 
 class CItem;

@@ -59,6 +59,13 @@ public:
 		m_iUserID(-1)
 	{
 		m_szModel[0] = '\0';
+
+		// Resets the kill history for this player
+		for (int i = 0; i < MAX_CLIENTS; i++)
+		{
+			m_iNumKilledByUnanswered[i] = 0;
+			m_bPlayerDominated[i]       = false;
+		}
 	}
 
 	virtual bool IsConnected() const;
@@ -110,11 +117,16 @@ public:
 	virtual void OnSpawnEquip(bool addDefault = true, bool equipGame = true);
 	virtual void SetScoreboardAttributes(CBasePlayer *destination = nullptr);
 
+	bool IsPlayerDominated(int iPlayerIndex) const;
+	void SetPlayerDominated(CBasePlayer *pPlayer, bool bDominated);
+
 	void ResetVars();
+	void ResetAllStats();
 
 	void OnSpawn();
 	void OnKilled();
 	void OnConnect();
+
 	CBasePlayer *BasePlayer() const;
 
 public:
@@ -158,6 +170,8 @@ public:
 	DamageList_t m_DamageList; // A unified array of recorded damage that includes giver and taker in each entry
 	DamageList_t &GetDamageList() { return m_DamageList; }
 	void RecordDamage(CBasePlayer *pAttacker, float flDamage, float flFlashDurationTime = -1);
+	int m_iNumKilledByUnanswered[MAX_CLIENTS]; // [0-31] how many unanswered kills this player has been dealt by each other player
+	bool m_bPlayerDominated[MAX_CLIENTS]; // [0-31] array of state per other player whether player is dominating other players
 };
 
 // Inlines
@@ -178,4 +192,21 @@ inline CCSPlayer::EProtectionState CCSPlayer::GetProtectionState() const
 
 	// has expired
 	return ProtectionSt_Expired;
+}
+
+// Returns whether this player is dominating the specified other player
+inline bool CCSPlayer::IsPlayerDominated(int iPlayerIndex) const
+{
+	if (iPlayerIndex < 0 || iPlayerIndex >= MAX_CLIENTS)
+		return false;
+
+	return m_bPlayerDominated[iPlayerIndex];
+}
+
+// Sets whether this player is dominating the specified other player
+inline void CCSPlayer::SetPlayerDominated(CBasePlayer *pPlayer, bool bDominated)
+{
+	int iPlayerIndex = pPlayer->entindex();
+	assert(iPlayerIndex >= 0 && iPlayerIndex < MAX_CLIENTS);
+	m_bPlayerDominated[iPlayerIndex - 1] = bDominated;
 }

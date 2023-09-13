@@ -6008,6 +6008,8 @@ void CBasePlayer::Reset()
 	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
 		RemoveSpawnProtection();
 	}
+
+	CSPlayer()->ResetAllStats();
 #endif
 }
 

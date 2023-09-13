@@ -566,6 +566,17 @@ void CCSPlayer::ResetVars()
 	m_bSpawnProtectionEffects = false;
 }
 
+// Resets all stats
+void CCSPlayer::ResetAllStats()
+{
+	// Resets the kill history for this player
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		m_iNumKilledByUnanswered[i] = 0;
+		m_bPlayerDominated[i]       = false;
+	}
+}
+
 void CCSPlayer::OnSpawn()
 {
 	m_bGameForcingRespawn = false;
