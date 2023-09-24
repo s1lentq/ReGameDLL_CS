@@ -217,38 +217,20 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 					return true; // ammo was reduced, this will be considered a successful result
 			}
 
+			if (bRemoveAmmo) {
+				pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+			}
+
 			if (pItem == pPlayer->m_pActiveItem) {
 				((CBasePlayerWeapon *)pItem)->RetireWeapon();
-			}
-
-			if (bRemoveAmmo) {
-				pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
+				
+				if (pItem->CanHolster() && pItem != pPlayer->m_pActiveItem && !(pPlayer->pev->weapons &(1 << pItem->m_iId))) {
+					return true;
+				}
 			}
 		}
 
-		if (pPlayer->RemovePlayerItem(pItem))
-		{
-			if (FClassnameIs(pItem->pev, "weapon_c4")) {
-				pPlayer->m_bHasC4 = false;
-				pPlayer->pev->body = 0;
-				pPlayer->SetBombIcon(FALSE);
-				pPlayer->SetProgressBarTime(0);
-			}
-
-			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
-			// No more weapon
-			if ((pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
-				pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
-			}
-
-			pItem->Kill();
-
-			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
-				pPlayer->m_bHasPrimary = false;
-			}
-
-			return true;
-		}
+		return pItem->DestroyItem();
 	}
 
 	return false;
