@@ -1128,8 +1128,10 @@ void EXT_FUNC CBasePlayerWeapon::__API_HOOK(ItemPostFrame)()
 	}
 }
 
-void CBasePlayerItem::DestroyItem()
+bool CBasePlayerItem::DestroyItem()
 {
+	bool success = false;
+
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
@@ -1137,18 +1139,31 @@ void CBasePlayerItem::DestroyItem()
 		{
 
 #ifdef REGAMEDLL_FIXES
+			if (m_iId == WEAPON_C4) {
+				m_pPlayer->m_bHasC4 = false;
+				m_pPlayer->pev->body = 0;
+				m_pPlayer->SetBombIcon(FALSE);
+				m_pPlayer->SetProgressBarTime(0);
+			}
+
 			m_pPlayer->pev->weapons &= ~(1 << m_iId);
 
 			// No more weapon
 			if ((m_pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
 				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
 			}
-#endif
 
+			if (!m_pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+				m_pPlayer->m_bHasPrimary = false;
+			}
+#endif
+			success = true;
 		}
 	}
 
 	Kill();
+
+	return success;
 }
 
 int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)

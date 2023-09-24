@@ -296,7 +296,7 @@ public:
 	virtual int iItemSlot() { return 0; }									// return 0 to MAX_ITEMS_SLOTS, used in hud
 
 public:
-	void EXPORT DestroyItem();
+	bool EXPORT DestroyItem();
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
 	void EXPORT FallThink();
 	void EXPORT Materialize();
