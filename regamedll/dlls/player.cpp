@@ -8494,7 +8494,6 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 				if (slot == ALL_OTHER_ITEMS)
 				{
-					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_longjump");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_assaultsuit");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_kevlar");
