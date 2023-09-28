@@ -93,7 +93,7 @@ void EXT_FUNC __API_HOOK(ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *p
 		return;
 
 	gMultiDamage.pEntity->TakeDamage(pevInflictor, pevAttacker, gMultiDamage.amount, gMultiDamage.type);
-
+	gMultiDamage.pEntity->ResetDmgPenetrationLevel();
 }
 
 LINK_HOOK_VOID_CHAIN(AddMultiDamage, (entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType), pevInflictor, pEntity, flDamage, bitsDamageType)

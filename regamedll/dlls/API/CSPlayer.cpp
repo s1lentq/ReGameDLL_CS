@@ -550,10 +550,22 @@ void CCSPlayer::ResetVars()
 	m_bSpawnProtectionEffects = false;
 }
 
+// Resets all stats
+void CCSPlayer::ResetAllStats()
+{
+	// Resets the kill history for this player
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		m_iNumKilledByUnanswered[i] = 0;
+		m_bPlayerDominated[i]       = false;
+	}
+}
+
 void CCSPlayer::OnSpawn()
 {
 	m_bGameForcingRespawn = false;
 	m_flRespawnPending = 0.0f;
+	m_DamageList.Clear();
 }
 
 void CCSPlayer::OnKilled()
@@ -570,4 +582,34 @@ void CCSPlayer::OnKilled()
 		BasePlayer()->RemoveSpawnProtection();
 	}
 #endif
+}
+
+void CCSPlayer::OnConnect()
+{
+	ResetVars();
+	m_iUserID = GETPLAYERUSERID(BasePlayer()->edict());
+}
+
+// Remember this amount of damage that we dealt for stats
+void CCSPlayer::RecordDamage(CBasePlayer *pAttacker, float flDamage, float flFlashDurationTime)
+{
+	if (!pAttacker || !pAttacker->IsPlayer())
+		return;
+
+	int attackerIndex = pAttacker->entindex() - 1;
+	if (attackerIndex < 0 || attackerIndex >= MAX_CLIENTS)
+		return;
+
+	CCSPlayer *pCSAttacker = pAttacker->CSPlayer();
+
+	// Accumulate damage
+	CDamageRecord_t &record = m_DamageList[attackerIndex];
+	if (record.flDamage > 0 && record.userId != pCSAttacker->m_iUserID)
+		record.flDamage = 0; // reset damage if attacker became another client
+
+	record.flDamage += flDamage;
+	record.userId    = pCSAttacker->m_iUserID;
+
+	if (flFlashDurationTime > 0)
+		record.flFlashDurationTime = gpGlobals->time + flFlashDurationTime;
 }

@@ -220,6 +220,40 @@ enum
 	GR_NEUTRAL,
 };
 
+// The number of times you must kill a given player to be dominating them
+// Should always be more than 1
+const int CS_KILLS_FOR_DOMINATION = 4;
+
+enum DeathMessageFlags
+{
+	// float[3]
+	// Position where the victim died
+	PLAYERDEATH_POSITION          = 0x001,
+
+	// byte
+	// Index of the assistant who helped the attacker kill the victim
+	PLAYERDEATH_ASSISTANT         = 0x002,
+
+	// short
+	// Rarity classification bitsums
+	// 0x001 - Attacker was blind
+	// 0x002 - Attacker killed victim from sniper rifle without scope
+	// 0x004 - Attacker killed victim through walls
+	PLAYERDEATH_KILLRARITY        = 0x004
+};
+
+enum KillRarity
+{
+	KILLRARITY_HEADSHOT      = 0x001, // The killer player kills the victim with a headshot
+	KILLRARITY_KILLER_BLIND  = 0x002, // The killer player was blind
+	KILLRARITY_NOSCOPE       = 0x004, // The killer player kills the victim with a sniper rifle with no scope
+	KILLRARITY_PENETRATED    = 0x008, // The killer player kills the victim through walls
+	KILLRARITY_THROUGH_SMOKE = 0x010, // The killer player kills the victim through smoke
+	KILLRARITY_ASSIST_FLASH  = 0x020, // The killer player kills the victim with an assistant flashbang grenade
+	KILLRARITY_DOMINATION    = 0x040, // The killer player dominates the victim
+	KILLRARITY_REVENGE       = 0x080  // The killer player got revenge on the victim
+};
+
 class CItem;
 
 class CGameRules
@@ -574,6 +608,7 @@ public:
 	BOOL TeamFull_OrigFunc(int team_id);
 	BOOL TeamStacked_OrigFunc(int newTeam_id, int curTeam_id);
 	void PlayerGotWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
+	void SendDeathMessage_OrigFunc(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
 #endif
 
 public:
@@ -697,6 +732,10 @@ public:
 
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
+
+	void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
+	int GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bFlashAssist);
+	CBasePlayer *CheckAssistsToKill(CBaseEntity *pKiller, CBasePlayer *pVictim, bool &bFlashAssist);
 
 private:
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);

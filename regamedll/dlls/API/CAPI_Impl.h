@@ -709,6 +709,10 @@ typedef IHookChainRegistryClassEmptyImpl<BOOL, class CHalfLifeMultiplay, int, in
 typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHook_CSGameRules_PlayerGotWeapon;
 typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBasePlayer *, CBasePlayerItem *> CReGameHookRegistry_CSGameRules_PlayerGotWeapon;
 
+// CHalfLifeMultiplay::SendDeathMessage hook
+typedef IHookChainClassImpl<void, class CHalfLifeMultiplay, CBaseEntity *, CBasePlayer *, CBasePlayer *, entvars_t *, const char *, int, int> CReGameHook_CSGameRules_SendDeathMessage;
+typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay, CBaseEntity *, CBasePlayer *, CBasePlayer *, entvars_t *, const char *, int, int> CReGameHookRegistry_CSGameRules_SendDeathMessage;
+
 // CBotManager::OnEvent hook
 typedef IHookChainClassImpl<void, CBotManager, GameEventType, CBaseEntity *, CBaseEntity *> CReGameHook_CBotManager_OnEvent;
 typedef IHookChainRegistryClassEmptyImpl<void, CBotManager, GameEventType, CBaseEntity*, CBaseEntity*> CReGameHookRegistry_CBotManager_OnEvent;
@@ -865,7 +869,7 @@ public:
 	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
 	CReGameHookRegistry_CBasePlayer_JoiningThink m_CBasePlayer_JoiningThink;
-	
+
 	CReGameHookRegistry_FreeGameRules m_FreeGameRules;
 	CReGameHookRegistry_PM_LadderMove m_PM_LadderMove;
 	CReGameHookRegistry_PM_WaterJump m_PM_WaterJump;
@@ -889,6 +893,7 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame m_CBasePlayerWeapon_ItemPostFrame;
 	CReGameHookRegistry_CBasePlayerWeapon_KickBack m_CBasePlayerWeapon_KickBack;
 	CReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim m_CBasePlayerWeapon_SendWeaponAnim;
+	CReGameHookRegistry_CSGameRules_SendDeathMessage m_CSGameRules_SendDeathMessage;
 
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
@@ -1044,6 +1049,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame *CBasePlayerWeapon_ItemPostFrame();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim();
+	virtual IReGameHookRegistry_CSGameRules_SendDeathMessage *CSGameRules_SendDeathMessage();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

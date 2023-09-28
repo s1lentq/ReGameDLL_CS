@@ -637,6 +637,7 @@ public:
 	bool GetIntoGame();
 	bool ShouldToShowAccount(CBasePlayer *pReceiver) const;
 	bool ShouldToShowHealthInfo(CBasePlayer *pReceiver) const;
+	const char *GetKillerWeaponName(entvars_t *pevInflictor, entvars_t *pevKiller) const;
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
@@ -1000,7 +1001,6 @@ void SendItemStatus(CBasePlayer *pPlayer);
 const char *GetCSModelName(int item_id);
 Vector VecVelocityForDamage(float flDamage);
 int TrainSpeed(int iSpeed, int iMax);
-const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller);
 void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int healthHit, int armorHit, int newHealth, int newArmor, const char *killer_weapon_name);
 bool CanSeeUseable(CBasePlayer *me, CBaseEntity *pEntity);
 void FixPlayerCrouchStuck(edict_t *pPlayer);

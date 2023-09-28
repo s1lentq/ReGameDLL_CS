@@ -110,7 +110,9 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_give_c4_frags                   | 3       | -   | -            | How many bonuses (frags) will get the player who defused or exploded the bomb. |
 | mp_hostages_rescued_ratio          | 1.0     | 0.0 | 1.0          | Ratio of hostages rescued to win the round. |
 | mp_legacy_vehicle_block            | 1       | 0   | 1            | Legacy func_vehicle behavior when blocked by another entity.<br/>`0` New behavior <br/>`1` Legacy behavior |
-| mp_dying_time                      | 3.0     | 0.0 | -            | Time for switch to free observing after death.<br/>`0` - disable spectating around death.<br/>`>0.00001` - time delay to start spectate.<br/>`NOTE`: The countdown starts when the player’s death animation is finished.|
+| mp_dying_time                      | 3.0     | 0.0 | -            | Time for switch to free observing after death.<br/>`0` - disable spectating around death.<br/>`>0.00001` - time delay to start spectate.<br/>`NOTE`: The countdown starts when the player’s death animation is finished. |
+| mp_deathmsg_flags                  | 7       | 0   | 7            | Sets a bitsum for extra information in the player's death message.<br/>`0` disabled<br/>`1` position where the victim died<br/>`2` index of the assistant who helped the attacker kill the victim<br/>`4` rarity classification bits, e.g., `blinkill`, `noscope`, `penetrated`, etc. |
+| mp_assist_damage_threshold         | 40      | 0   | 100          | Sets the percentage of damage needed to score an assist. |
 </details>
 
 ## How to install zBot for CS 1.6?

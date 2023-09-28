@@ -242,6 +242,10 @@ public:
 	void SetBlocked(void (T::*pfn)(CBaseEntity *pOther));
 	void SetBlocked(std::nullptr_t);
 
+	void SetDmgPenetrationLevel(int iPenetrationLevel);
+	void ResetDmgPenetrationLevel();
+	int GetDmgPenetrationLevel() const;
+
 #ifdef REGAMEDLL_API
 	CCSEntity *m_pEntity;
 	CCSEntity *CSEntity() const;

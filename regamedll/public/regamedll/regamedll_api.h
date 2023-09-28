@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 23
+#define REGAMEDLL_API_VERSION_MINOR 24
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -588,6 +588,10 @@ typedef IHookChainRegistry<BOOL, int, int> IReGameHookRegistry_CSGameRules_TeamS
 typedef IHookChain<void, CBasePlayer *, CBasePlayerItem *> IReGameHook_CSGameRules_PlayerGotWeapon;
 typedef IHookChainRegistry<void, CBasePlayer *, CBasePlayerItem *> IReGameHookRegistry_CSGameRules_PlayerGotWeapon;
 
+// CHalfLifeMultiplay::SendDeathMessage hook
+typedef IHookChain<void, class CBaseEntity *, class CBasePlayer *, class CBasePlayer *, struct entvars_s *, const char *, int, int> IReGameHook_CSGameRules_SendDeathMessage;
+typedef IHookChainRegistry<void, class CBaseEntity *, class CBasePlayer *, class CBasePlayer *, struct entvars_s *, const char *, int, int> IReGameHookRegistry_CSGameRules_SendDeathMessage;
+
 // CBotManager::OnEvent hook
 typedef IHookChain<void, GameEventType, CBaseEntity *, CBaseEntity *> IReGameHook_CBotManager_OnEvent;
 typedef IHookChainRegistry<void, GameEventType, CBaseEntity*, CBaseEntity*> IReGameHookRegistry_CBotManager_OnEvent;
@@ -759,7 +763,7 @@ public:
 	virtual IReGameHookRegistry_AddMultiDamage *AddMultiDamage() = 0;
 	virtual IReGameHookRegistry_ApplyMultiDamage *ApplyMultiDamage() = 0;
 	virtual IReGameHookRegistry_BuyItem *BuyItem() = 0;
-	virtual IReGameHookRegistry_CSGameRules_Think *CSGameRules_Think() = 0;	
+	virtual IReGameHookRegistry_CSGameRules_Think *CSGameRules_Think() = 0;
 	virtual IReGameHookRegistry_CSGameRules_TeamFull *CSGameRules_TeamFull() = 0;
 	virtual IReGameHookRegistry_CSGameRules_TeamStacked *CSGameRules_TeamStacked() = 0;
 	virtual IReGameHookRegistry_CSGameRules_PlayerGotWeapon *CSGameRules_PlayerGotWeapon() = 0;
@@ -769,6 +773,7 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_ItemPostFrame *CBasePlayerWeapon_ItemPostFrame() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack() = 0;
 	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim() = 0;
+	virtual IReGameHookRegistry_CSGameRules_SendDeathMessage *CSGameRules_SendDeathMessage() = 0;
 };
 
 struct ReGameFuncs_t {
