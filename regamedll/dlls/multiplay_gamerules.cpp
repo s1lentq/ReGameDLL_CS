@@ -5355,7 +5355,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 		}
 
 		// An recipient a client is a victim that involved in this kill
-		if (pPlayer == pVictim && pVictim != pKillerPlayer)
+		if (pKillerPlayer && pPlayer == pVictim && pVictim != pKillerPlayer)
 		{
 			// Sets a domination kill for recipient of the victim once until revenge
 			int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[pKillerPlayer->entindex() - 1];
