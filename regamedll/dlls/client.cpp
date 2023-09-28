@@ -4822,6 +4822,16 @@ int EXT_FUNC GetWeaponData(edict_t *pEdict, struct weapon_data_s *info)
 					item->fuser2 = weapon->m_flStartThrow;
 					item->fuser3 = weapon->m_flReleaseThrow;
 					item->iuser1 = weapon->m_iSwing;
+
+#ifdef REGAMEDLL_FIXES
+					if (pPlayerItem == pPlayer->m_pActiveItem && !weapon->m_fInReload && weapon->m_iClip == II.iMaxClip)
+					{
+						const WeaponInfoStruct *wpnInfo = GetDefaultWeaponInfo(II.iId);
+
+						if (wpnInfo && wpnInfo->gunClipSize != II.iMaxClip)
+							item->m_iClip = wpnInfo->gunClipSize; 
+					}
+#endif
 				}
 			}
 
