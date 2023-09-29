@@ -1086,16 +1086,18 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 					pAttack->m_flLastAttackedTeammate = gpGlobals->time;
 				}
-			}
 
 #ifdef REGAMEDLL_ADD
-			// bullets hurt teammates less
-			flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
-				ff_damage_reduction_bullets.value :
-				ff_damage_reduction_other.value), 0.0f, 1.0f);
-#else
-			flDamage *= 0.35;
+				// bullets hurt teammates less
+				flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
+					ff_damage_reduction_bullets.value :
+					ff_damage_reduction_other.value), 0.0f, 1.0f);
 #endif // #ifdef REGAMEDLL_ADD
+			}
+
+#ifndef REGAMEDLL_ADD
+			flDamage *= 0.35;
+#endif
 		}
 
 		if (pAttack->m_pActiveItem)
