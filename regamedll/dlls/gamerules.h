@@ -224,10 +224,11 @@ enum
 // Should always be more than 1
 const int CS_KILLS_FOR_DOMINATION = 4;
 
+// Flags for specifying extra info about player death
 enum DeathMessageFlags
 {
 	// float[3]
-	// Position where the victim died
+	// Position where the victim was killed by the enemy
 	PLAYERDEATH_POSITION          = 0x001,
 
 	// byte
@@ -235,23 +236,23 @@ enum DeathMessageFlags
 	PLAYERDEATH_ASSISTANT         = 0x002,
 
 	// short
-	// Rarity classification bitsums
-	// 0x001 - Attacker was blind
-	// 0x002 - Attacker killed victim from sniper rifle without scope
-	// 0x004 - Attacker killed victim through walls
+	// Bitsum classification for the rarity of the kill
+	// See enum KillRarity for details
 	PLAYERDEATH_KILLRARITY        = 0x004
 };
 
+// Classifying various player kill methods in the game
 enum KillRarity
 {
-	KILLRARITY_HEADSHOT      = 0x001, // The killer player kills the victim with a headshot
-	KILLRARITY_KILLER_BLIND  = 0x002, // The killer player was blind
-	KILLRARITY_NOSCOPE       = 0x004, // The killer player kills the victim with a sniper rifle with no scope
-	KILLRARITY_PENETRATED    = 0x008, // The killer player kills the victim through walls
-	KILLRARITY_THROUGH_SMOKE = 0x010, // The killer player kills the victim through smoke
-	KILLRARITY_ASSIST_FLASH  = 0x020, // The killer player kills the victim with an assistant flashbang grenade
-	KILLRARITY_DOMINATION    = 0x040, // The killer player dominates the victim
-	KILLRARITY_REVENGE       = 0x080  // The killer player got revenge on the victim
+	KILLRARITY_HEADSHOT         = 0x001, // Headshot
+	KILLRARITY_KILLER_BLIND     = 0x002, // Killer was blind
+	KILLRARITY_NOSCOPE          = 0x004, // No-scope sniper rifle kill
+	KILLRARITY_PENETRATED       = 0x008, // Penetrated kill (through walls)
+	KILLRARITY_THRUSMOKE        = 0x010, // Smoke grenade penetration kill (bullets went through smoke)
+	KILLRARITY_ASSISTEDFLASH    = 0x020, // Assister helped with a flash
+	KILLRARITY_DOMINATION_BEGAN = 0x040, // Killer player began dominating the victim (NOTE: this flag is set once)
+	KILLRARITY_DOMINATION       = 0x080, // Continues domination by the killer
+	KILLRARITY_REVENGE          = 0x100  // Revenge by the killer
 };
 
 class CItem;

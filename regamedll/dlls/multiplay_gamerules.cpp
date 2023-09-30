@@ -4087,7 +4087,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 
 	if (!TheTutor)
 	{
-#ifdef REGAMEDLL_ADD
 		int iRarityOfKill = 0;
 		int iDeathMessageFlags = PLAYERDEATH_POSITION; // set default bit
 
@@ -4118,14 +4117,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 			pKiller->CSPlayer()->m_iNumKilledByUnanswered[iPlayerIndexVictim - 1] = 0;
 			pVictim->CSPlayer()->m_iNumKilledByUnanswered[iPlayerIndexKiller - 1]++;
 		}
-#else
-		MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
-			WRITE_BYTE(pKiller ? pKiller->entindex() : 0);	// the killer
-			WRITE_BYTE(ENTINDEX(pVictim->edict()));			// the victim
-			WRITE_BYTE(pVictim->m_bHeadshotKilled);			// is killed headshot
-			WRITE_STRING(killer_weapon_name);				// what they were killed by (should this be a string?)
-		MESSAGE_END();
-#endif
 	}
 
 	// Did he kill himself?
@@ -5256,7 +5247,7 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 
 	// The killer player kills the victim with an assistant flashbang grenade
 	if (pAssister && bFlashAssist)
-		iRarity |= KILLRARITY_ASSIST_FLASH;
+		iRarity |= KILLRARITY_ASSISTEDFLASH;
 
 	// The killer player kills the victim with a headshot
 	if (pVictim->m_bHeadshotKilled)
@@ -5281,7 +5272,7 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 		// The killer player kills the victim through smoke
 		const Vector inEyePos = pKillerPlayer->EyePosition();
 		if (TheCSBots()->IsLineBlockedBySmoke(&inEyePos, &pVictim->pev->origin))
-			iRarity |= KILLRARITY_THROUGH_SMOKE;
+			iRarity |= KILLRARITY_THRUSMOKE;
 
 		// Calculate # of unanswered kills between killer & victim
 		// This is plus 1 as this function gets called before the stat is updated
@@ -5328,69 +5319,54 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, SendDeathMess
 //
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill)
 {
-#ifdef REGAMEDLL_ADD
-	iDeathMessageFlags &= (int)deathmsg_flags.value; // leave only allowed bitsums for extra info
-#endif
-
 	CBasePlayer *pKillerPlayer = (pKiller && pKiller->IsPlayer()) ? static_cast<CBasePlayer *>(pKiller) : nullptr;
 
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	// Only the player can dominate the victim
+	if ((iRarityOfKill & KILLRARITY_DOMINATION) && pKillerPlayer && pVictim != pKillerPlayer)
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer || FNullEnt(pPlayer->edict()))
-			continue;
-
-		if (pPlayer->IsBot() || pPlayer->IsDormant())
-			continue;
-
-		int iSendDeathMessageFlags = iDeathMessageFlags;
-
-		// Send the victim's death position only
-		// if the attacker or victim is a teammate of the recipient player
-		if (pPlayer == pVictim || (
-			PlayerRelationship(pVictim,       pPlayer) != GR_TEAMMATE &&
-			PlayerRelationship(pKillerPlayer, pPlayer) != GR_TEAMMATE))
-		{
-			iSendDeathMessageFlags &= ~PLAYERDEATH_POSITION;
-		}
-
-		// An recipient a client is a victim that involved in this kill
-		if (pKillerPlayer && pPlayer == pVictim && pVictim != pKillerPlayer)
-		{
-			// Sets a domination kill for recipient of the victim once until revenge
-			int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[pKillerPlayer->entindex() - 1];
-			if (iKillsUnanswered >= CS_KILLS_FOR_DOMINATION)
-				iRarityOfKill &= ~KILLRARITY_DOMINATION;
-		}
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgDeathMsg, nullptr, pPlayer->pev);
-			WRITE_BYTE((pKiller && pKiller->IsPlayer()) ? pKiller->entindex() : 0);	// the killer
-			WRITE_BYTE(pVictim->entindex());					// the victim
-			WRITE_BYTE(pVictim->m_bHeadshotKilled);				// is killed headshot
-			WRITE_STRING(killerWeaponName);						// what they were killed by (should this be a string?)
-
-		if (iSendDeathMessageFlags > 0)
-		{
-			WRITE_LONG(iSendDeathMessageFlags);
-
-			// Writes the coordinates of the place where the victim died
-			// The victim has just been killed, so this usefully display 'X' dead icon on the HUD radar
-			if (iSendDeathMessageFlags & PLAYERDEATH_POSITION)
-			{
-				WRITE_COORD(pVictim->pev->origin.x);
-				WRITE_COORD(pVictim->pev->origin.y);
-				WRITE_COORD(pVictim->pev->origin.z);
-			}
-
-			// Writes the index of the teammate who assisted in the kill
-			if (iSendDeathMessageFlags & PLAYERDEATH_ASSISTANT)
-				WRITE_BYTE(pAssister->entindex());
-
-			// Writes the rarity classification of the kill
-			if (iSendDeathMessageFlags & PLAYERDEATH_KILLRARITY)
-				WRITE_LONG(iRarityOfKill);
-		}
-
-		MESSAGE_END();
+		// Sets the beginning of domination over the victim until he takes revenge
+		int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[pKillerPlayer->entindex() - 1] + 1;
+		if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION)
+			iRarityOfKill |= KILLRARITY_DOMINATION_BEGAN;
 	}
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
+		WRITE_BYTE((pKiller && pKiller->IsPlayer()) ? pKiller->entindex() : 0);	// the killer
+		WRITE_BYTE(pVictim->entindex());		// the victim
+		WRITE_BYTE(pVictim->m_bHeadshotKilled);	// is killed headshot
+		WRITE_STRING(killerWeaponName);			// what they were killed by (should this be a string?)
+
+#ifdef REGAMEDLL_ADD
+	iDeathMessageFlags &= (int)deathmsg_flags.value; // leave only allowed bitsums for extra info
+
+	// Send the victim's death position only
+	// 1. if it is not a free for all mode
+	// 2. if the attacker is a player and they are not teammates
+	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) != GR_TEAMMATE)
+		iDeathMessageFlags &= ~PLAYERDEATH_POSITION;
+
+	if (iDeathMessageFlags > 0)
+	{
+		WRITE_LONG(iDeathMessageFlags);
+
+		// Writes the coordinates of the place where the victim died
+		// The victim has just been killed, so this usefully display 'X' dead icon on the HUD radar
+		if (iDeathMessageFlags & PLAYERDEATH_POSITION)
+		{
+			WRITE_COORD(pVictim->pev->origin.x);
+			WRITE_COORD(pVictim->pev->origin.y);
+			WRITE_COORD(pVictim->pev->origin.z);
+		}
+
+		// Writes the index of the teammate who assisted in the kill
+		if (iDeathMessageFlags & PLAYERDEATH_ASSISTANT)
+			WRITE_BYTE(pAssister->entindex());
+
+		// Writes the rarity classification of the kill
+		if (iDeathMessageFlags & PLAYERDEATH_KILLRARITY)
+			WRITE_LONG(iRarityOfKill);
+	}
+#endif
+
+	MESSAGE_END();
 }
