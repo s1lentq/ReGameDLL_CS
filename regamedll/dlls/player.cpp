@@ -1044,7 +1044,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 	pAttacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
 
-	if (pAttacker->IsPlayer())
+	if (pAttacker->IsPlayer() && !(pAttacker == this && (bitsDamageType & DMG_FALL)))
 	{
 		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
@@ -7372,7 +7372,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 			if (pEntity)
 			{
-				damageOrigin = pEntity->Center();
+				if (pEntity == this && (m_bitsDamageType & DMG_FALL))
+					damageOrigin = Vector(0, 0, 0); // do not show direction of damage caused by fall
+				else
+					damageOrigin = pEntity->Center();
 			}
 		}
 
