@@ -382,7 +382,7 @@ CHalfLifeMultiplay::CHalfLifeMultiplay()
 	m_iNumTerrorist = 0;
 	m_iNumSpawnableCT = 0;
 	m_iNumSpawnableTerrorist = 0;
-	m_bMapHasCameras = FALSE;
+	m_bMapHasCameras = -1;
 
 	m_iLoserBonus = m_rgRewardAccountRules[RR_LOSER_BONUS_DEFAULT];
 	m_iNumConsecutiveCTLoses = 0;
@@ -3084,17 +3084,8 @@ void CHalfLifeMultiplay::CheckLevelInitialized()
 	{
 		// Count the number of spawn points for each team
 		// This determines the maximum number of players allowed on each
-		CBaseEntity *pEnt = nullptr;
-
-		m_iSpawnPointCount_Terrorist = 0;
-		m_iSpawnPointCount_CT = 0;
-
-		while ((pEnt = UTIL_FindEntityByClassname(pEnt, "info_player_deathmatch")))
-			m_iSpawnPointCount_Terrorist++;
-
-		while ((pEnt = UTIL_FindEntityByClassname(pEnt, "info_player_start")))
-			m_iSpawnPointCount_CT++;
-
+		m_iSpawnPointCount_Terrorist = UTIL_CountEntities("info_player_deathmatch");
+		m_iSpawnPointCount_CT = UTIL_CountEntities("info_player_start");
 		m_bLevelInitialized = true;
 	}
 }

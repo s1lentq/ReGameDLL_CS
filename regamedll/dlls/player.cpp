@@ -3673,7 +3673,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 		}
 	}
 
-	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime)
+	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime
+#ifdef REGAMEDLL_FIXES 
+		&& m_fIntroCamTime > 0.0 // update only if cameras are available
+#endif
+		)
 	{
 		// find the next another camera
 		m_pIntroCamera = UTIL_FindEntityByClassname(m_pIntroCamera, "trigger_camera");
