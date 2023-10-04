@@ -676,7 +676,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
 #ifdef REGAMEDLL_FIXES 
-		if (CSGameRules()->m_bMapHasCameras < 0)
+		if (CSGameRules()->m_bMapHasCameras < 0) // cache once
 			CSGameRules()->m_bMapHasCameras = UTIL_CountEntities("trigger_camera");
 #else
 		CSGameRules()->m_bMapHasCameras = (pPlayer->m_pIntroCamera != nullptr);
@@ -702,7 +702,7 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		pPlayer->m_fIntroCamTime = 
 #ifdef REGAMEDLL_FIXES 
 			(CSGameRules()->m_bMapHasCameras <= 1) ? 0.0 : // no need to refresh cameras if map has only one
-#else 
+#endif
 			gpGlobals->time + 6;
 
 		pPlayer->pev->view_ofs = g_vecZero;
