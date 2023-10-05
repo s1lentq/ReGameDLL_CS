@@ -5342,8 +5342,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 	// Send the victim's death position only
 	// 1. if it is not a free for all mode
 	// 2. if the attacker is a player and they are not teammates
-	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) != GR_TEAMMATE)
-		iDeathMessageFlags &= ~PLAYERDEATH_POSITION;
+	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) == GR_TEAMMATE)
+		iDeathMessageFlags &= ~PLAYERDEATH_POSITION; // do not send a position
 
 	if (iDeathMessageFlags > 0)
 	{
