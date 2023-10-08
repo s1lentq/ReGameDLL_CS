@@ -578,7 +578,7 @@ public:
 	// check if the scenario has been won/lost
 	virtual void CheckWinConditions();
 	virtual void RemoveGuns();
-	virtual void GiveC4();
+	virtual CBasePlayer *GiveC4();
 	virtual void ChangeLevel();
 	virtual void GoToIntermission();
 
@@ -601,7 +601,7 @@ public:
 	void RestartRound_OrigFunc();
 	void CheckWinConditions_OrigFunc();
 	void RemoveGuns_OrigFunc();
-	void GiveC4_OrigFunc();
+	CBasePlayer *GiveC4_OrigFunc();
 	void ChangeLevel_OrigFunc();
 	void GoToIntermission_OrigFunc();
 	void BalanceTeams_OrigFunc();

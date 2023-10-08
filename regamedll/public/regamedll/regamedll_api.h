@@ -38,7 +38,7 @@
 #include <API/CSInterfaces.h>
 
 #define REGAMEDLL_API_VERSION_MAJOR 5
-#define REGAMEDLL_API_VERSION_MINOR 24
+#define REGAMEDLL_API_VERSION_MINOR 25
 
 // CBasePlayer::Spawn hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Spawn;
@@ -337,8 +337,8 @@ typedef IHookChain<void> IReGameHook_CSGameRules_RemoveGuns;
 typedef IHookChainRegistry<void> IReGameHookRegistry_CSGameRules_RemoveGuns;
 
 // CHalfLifeMultiplay::GiveC4 hook
-typedef IHookChain<void> IReGameHook_CSGameRules_GiveC4;
-typedef IHookChainRegistry<void> IReGameHookRegistry_CSGameRules_GiveC4;
+typedef IHookChain<CBasePlayer *> IReGameHook_CSGameRules_GiveC4;
+typedef IHookChainRegistry<CBasePlayer *> IReGameHookRegistry_CSGameRules_GiveC4;
 
 // CHalfLifeMultiplay::ChangeLevel hook
 typedef IHookChain<void> IReGameHook_CSGameRules_ChangeLevel;

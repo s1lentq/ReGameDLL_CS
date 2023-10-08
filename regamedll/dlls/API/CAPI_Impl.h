@@ -458,8 +458,8 @@ typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRu
 typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_RemoveGuns;
 
 // CHalfLifeMultiplay::GiveC4 hook
-typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_GiveC4;
-typedef IHookChainRegistryClassEmptyImpl<void, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GiveC4;
+typedef IHookChainClassImpl<CBasePlayer *, class CHalfLifeMultiplay> CReGameHook_CSGameRules_GiveC4;
+typedef IHookChainRegistryClassEmptyImpl<CBasePlayer *, class CHalfLifeMultiplay> CReGameHookRegistry_CSGameRules_GiveC4;
 
 // CHalfLifeMultiplay::ChangeLevel hook
 typedef IHookChainClassImpl<void, class CHalfLifeMultiplay> CReGameHook_CSGameRules_ChangeLevel;

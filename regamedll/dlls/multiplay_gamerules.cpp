@@ -681,9 +681,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4)
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(CBasePlayer *, CHalfLifeMultiplay, CSGameRules, GiveC4)
 
-void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
+CBasePlayer *EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 {
 	int iTeamCount;
 	int iTemp = 0;
@@ -744,7 +744,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 			{
 #ifdef REGAMEDLL_FIXES
 				// we already have bomber
-				return;
+				return pPlayer;
 #endif
 			}
 		}
@@ -772,10 +772,12 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 			if (pPlayer->pev->deadflag != DEAD_NO || pPlayer->m_iTeam != TERRORIST)
 				continue;
 
-			pPlayer->MakeBomber();
-			return;
+			if (pPlayer->MakeBomber())
+				return pPlayer;
 		}
 	}
+
+	return nullptr;
 }
 
 void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
