@@ -10137,6 +10137,26 @@ void CBasePlayer::RemoveBomb()
 	}
 }
 
+void CBasePlayer::GiveDefuser()
+{
+	m_bHasDefuser = true;
+	pev->body = 1;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		WRITE_BYTE(STATUSICON_SHOW);
+		WRITE_STRING("defuser");
+		WRITE_BYTE(0);
+		WRITE_BYTE(160);
+		WRITE_BYTE(0);
+	MESSAGE_END();
+
+	SendItemStatus();
+
+#if defined(REGAMEDLL_FIXES) || defined(BUILD_LATEST)
+	SetScoreboardAttributes();
+#endif
+}
+
 void CBasePlayer::RemoveDefuser()
 {
 	m_bHasDefuser = false;

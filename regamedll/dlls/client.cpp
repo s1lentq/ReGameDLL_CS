@@ -1440,28 +1440,13 @@ void EXT_FUNC __API_HOOK(BuyItem)(CBasePlayer *pPlayer, int iSlot)
 			if (pPlayer->m_iAccount >= DEFUSEKIT_PRICE)
 			{
 				bEnoughMoney = true;
-				pPlayer->m_bHasDefuser = true;
-
-				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
-					WRITE_BYTE(STATUSICON_SHOW);
-					WRITE_STRING("defuser");
-					WRITE_BYTE(0);
-					WRITE_BYTE(160);
-					WRITE_BYTE(0);
-				MESSAGE_END();
-
-				pPlayer->pev->body = 1;
+				pPlayer->GiveDefuser();
 				pPlayer->AddAccount(-DEFUSEKIT_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
 
 #ifdef REGAMEDLL_FIXES
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 #else
 				EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
-#endif
-				pPlayer->SendItemStatus();
-
-#ifdef BUILD_LATEST
-				pPlayer->SetScoreboardAttributes();
 #endif
 			}
 			break;
@@ -1479,7 +1464,6 @@ void EXT_FUNC __API_HOOK(BuyItem)(CBasePlayer *pPlayer, int iSlot)
 			if (pPlayer->m_iAccount >= SHIELDGUN_PRICE)
 			{
 				bEnoughMoney = true;
-
 				pPlayer->DropPrimary();
 				pPlayer->GiveShield();
 				pPlayer->AddAccount(-SHIELDGUN_PRICE, RT_PLAYER_BOUGHT_SOMETHING);
