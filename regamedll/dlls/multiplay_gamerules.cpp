@@ -3588,14 +3588,15 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 			{
 				pPlayer->DropPlayerItem("weapon_c4");
 			}
-
-#ifndef REGAMEDLL_FIXES
-			// Why ? DropPlayerItem didn't handle item_thighpack
+	
 			if (pPlayer->m_bHasDefuser)
 			{
-				pPlayer->DropPlayerItem("item_thighpack");
-			}
+#ifdef REGAMEDLL_FIXES
+				SpawnDefuser(pPlayer->pev->origin, nullptr);
+#else
+				pPlayer->DropPlayerItem("item_thighpack"); // DropPlayerItem didn't handle item_thighpack
 #endif
+			}
 
 			if (pPlayer->m_bIsVIP)
 			{
