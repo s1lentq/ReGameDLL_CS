@@ -8056,8 +8056,10 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		UTIL_MakeVectors(pev->angles);
 
+#ifndef REGAMEDLL_FIXES
 		if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
-			m_bHasPrimary = false;
+			m_bHasPrimary = false; // I may have more than just 1 primary weapon :)
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -8126,6 +8128,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		{
 			return nullptr;
 		}
+
+#ifdef REGAMEDLL_FIXES
+		if (!m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+			m_bHasPrimary = false; // ensure value assignation on successful weapon removal
+		}
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
