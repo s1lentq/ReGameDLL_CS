@@ -754,6 +754,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		return;
 
 	pPlayer->m_flLastTalk = gpGlobals->time;
+#ifdef REGAMEDLL_ADD
+	pPlayer->m_fLastMovement = gpGlobals->time;
+#endif
 
 	if (pPlayer->pev->deadflag != DEAD_NO)
 		bSenderDead = true;
