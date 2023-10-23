@@ -2251,7 +2251,7 @@ bool EXT_FUNC __API_HOOK(BuyGunAmmo)(CBasePlayer *pPlayer, CBasePlayerItem *weap
 	if (pPlayer->m_iAccount >= info->clipCost)
 	{
 #ifdef REGAMEDLL_FIXES
-		if (pPlayer->GiveAmmo(info->buyClipSize, weapon->pszAmmo1, weapon->iMaxAmmo1()) == -1)
+		if (pPlayer->GiveAmmo(info->buyClipSize, weapon->pszAmmo1(), weapon->iMaxAmmo1()) == -1)
 			return false;
 
 		EMIT_SOUND(ENT(weapon->pev), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
