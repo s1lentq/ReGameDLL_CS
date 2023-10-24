@@ -6387,6 +6387,11 @@ void CBasePlayer::ForceClientDllUpdate()
 #ifdef REGAMEDLL_FIXES
 	// fix for https://github.com/ValveSoftware/halflife/issues/1567
 	m_iClientHideHUD = -1;
+	m_flNextSBarUpdateTime = -1;
+	InitStatusBar();
+#ifdef BUILD_LATEST
+	m_tmNextAccountHealthUpdate = -1;
+#endif
 #endif
 
 	m_iClientHealth = -1;
@@ -6399,6 +6404,84 @@ void CBasePlayer::ForceClientDllUpdate()
 	// Now force all the necessary messages to be sent.
 	UpdateClientData();
 	HandleSignals();
+
+#ifdef REGAMEDLL_FIXES
+	// Update HUD backpack ammo
+	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
+		m_rgAmmoLast[i] = -1;
+
+	// Force update server name
+	MESSAGE_BEGIN(MSG_ONE, gmsgServerName, nullptr, pev);
+		WRITE_STRING(CVAR_GET_STRING("hostname"));
+	MESSAGE_END();
+
+	MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pev);
+		WRITE_SHORT(int(CVAR_GET_FLOAT("room_type")));
+	MESSAGE_END();
+
+	SendItemStatus();
+
+	// Loop through all active players and update their info to the client who started recording the demo
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer || FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (pPlayer->IsDormant())
+			continue;
+
+		if (pev->deadflag == DEAD_NO)
+		{
+			// NOTE: Don't use here PlayerRelationShip,
+			// because we have to send a radar message about the players in the team anyway,
+			// even if they are not teammates
+			bool sameTeam = pPlayer->m_iTeam == m_iTeam;
+			if (sameTeam)
+			{
+				const Vector &vecOrigin = CSGameRules()->IsFreeForAll() ?
+					g_vecZero : pPlayer->pev->origin;
+
+				MESSAGE_BEGIN(MSG_ONE, gmsgRadar, nullptr, pev);
+					WRITE_BYTE(pPlayer->entindex());
+					WRITE_COORD(vecOrigin.x);
+					WRITE_COORD(vecOrigin.y);
+					WRITE_COORD(vecOrigin.z);
+				MESSAGE_END();
+			}
+
+			// Update last location of players
+			if (sameTeam || pPlayer->m_iTeam == SPECTATOR)
+			{
+				if (pPlayer->m_lastLocation[0])
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pev);
+						WRITE_BYTE(pPlayer->entindex());
+						WRITE_STRING(pPlayer->m_lastLocation);
+					MESSAGE_END();
+				}
+			}
+		}
+
+		// Update team info
+		MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, nullptr, pev);
+			WRITE_BYTE(pPlayer->entindex());
+			WRITE_STRING(GetTeamName(pPlayer->m_iTeam));
+		MESSAGE_END();
+
+		// Update score info Frags, Deaths, etc
+		MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, nullptr, pev);
+			WRITE_BYTE(pPlayer->entindex());
+			WRITE_SHORT(int(pPlayer->pev->frags));
+			WRITE_SHORT(pPlayer->m_iDeaths);
+			WRITE_SHORT(0);
+			WRITE_SHORT(pPlayer->m_iTeam);
+		MESSAGE_END();
+
+		// Update player attributes DEAD, BOMB, VIP etc
+		pPlayer->SetScoreAttrib(this);
+	}
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ImpulseCommands)
