@@ -737,6 +737,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayerWeapon, float, float, float
 typedef IHookChainClassImpl<void, CBasePlayerWeapon, int, int> CReGameHook_CBasePlayerWeapon_SendWeaponAnim;
 typedef IHookChainRegistryClassImpl<void, CBasePlayerWeapon, int, int> CReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim;
 
+// CBasePlayer::PlayerDeathThink hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_PlayerDeathThink;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_PlayerDeathThink;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -895,6 +899,8 @@ public:
 	CReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim m_CBasePlayerWeapon_SendWeaponAnim;
 	CReGameHookRegistry_CSGameRules_SendDeathMessage m_CSGameRules_SendDeathMessage;
 
+	CReGameHookRegistry_CBasePlayer_PlayerDeathThink m_CBasePlayer_PlayerDeathThink;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -1050,6 +1056,8 @@ public:
 	virtual IReGameHookRegistry_CBasePlayerWeapon_KickBack *CBasePlayerWeapon_KickBack();
 	virtual IReGameHookRegistry_CBasePlayerWeapon_SendWeaponAnim *CBasePlayerWeapon_SendWeaponAnim();
 	virtual IReGameHookRegistry_CSGameRules_SendDeathMessage *CSGameRules_SendDeathMessage();
+
+	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink();
 };
 
 extern CReGameHookchains g_ReGameHookchains;

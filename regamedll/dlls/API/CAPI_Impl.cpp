@@ -333,6 +333,8 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_KickBack);
 GAMEHOOK_REGISTRY(CBasePlayerWeapon_SendWeaponAnim);
 GAMEHOOK_REGISTRY(CSGameRules_SendDeathMessage);
 
+GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }

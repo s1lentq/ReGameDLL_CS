@@ -3784,7 +3784,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	pev->angles.z = 0;
 }
 
-void CBasePlayer::PlayerDeathThink()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PlayerDeathThink)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(PlayerDeathThink)()
 {
 	if (m_iJoiningState != JOINED)
 		return;
