@@ -197,6 +197,8 @@ extern cvar_t legacy_vehicle_block;
 extern cvar_t dying_time;
 extern cvar_t deathmsg_flags;
 extern cvar_t assist_damage_threshold;
+extern cvar_t prevent_duck_during_freezetime;
+extern cvar_t prevent_jump_during_freezetime;
 
 #endif
 

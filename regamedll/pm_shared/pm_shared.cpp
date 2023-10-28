@@ -1893,8 +1893,8 @@ void EXT_FUNC __API_HOOK(PM_Duck)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	// Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
-	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK)
+	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK           // Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
+	|| prevent_duck_during_freezetime.value && g_pGameRules->IsFreezePeriod()) // Prevent ducking during freezetime if the prevent_duck_during_freezetime cvar is set
 	{
 		// Try to unduck
 		if (pmove->flags & FL_DUCKING)
@@ -2449,8 +2449,8 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	// Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
-	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP)
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP           // Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	|| prevent_jump_during_freezetime.value && g_pGameRules->IsFreezePeriod()) // Prevent jumping during freezetime if the prevent_jump_during_freezetime cvar is set
 	{
 		return;
 	}
