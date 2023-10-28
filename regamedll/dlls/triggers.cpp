@@ -468,7 +468,10 @@ void CBaseTrigger::InitTrigger()
 	pev->movetype = MOVETYPE_NONE;
 
 	// set size and link into world
-	SET_MODEL(ENT(pev), STRING(pev->model));
+	if (FStringNull(pev->model))
+		UTIL_SetOrigin(pev, pev->origin); // link into the list
+	else
+		SET_MODEL(ENT(pev), STRING(pev->model));
 
 	if (CVAR_GET_FLOAT("showtriggers") == 0)
 	{
