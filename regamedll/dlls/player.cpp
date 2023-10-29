@@ -8060,8 +8060,10 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		UTIL_MakeVectors(pev->angles);
 
+#ifndef REGAMEDLL_FIXES
 		if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
-			m_bHasPrimary = false;
+			m_bHasPrimary = false; // I may have more than just 1 primary weapon :)
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -8130,6 +8132,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		{
 			return nullptr;
 		}
+
+#ifdef REGAMEDLL_FIXES
+		if (!m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+			m_bHasPrimary = false; // ensure value assignation on successful weapon removal
+		}
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -10139,6 +10147,26 @@ void CBasePlayer::RemoveBomb()
 
 		pBomb->Kill();
 	}
+}
+
+void CBasePlayer::GiveDefuser()
+{
+	m_bHasDefuser = true;
+	pev->body = 1;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		WRITE_BYTE(STATUSICON_SHOW);
+		WRITE_STRING("defuser");
+		WRITE_BYTE(0);
+		WRITE_BYTE(160);
+		WRITE_BYTE(0);
+	MESSAGE_END();
+
+	SendItemStatus();
+
+#if defined(REGAMEDLL_FIXES) || defined(BUILD_LATEST)
+	SetScoreboardAttributes();
+#endif
 }
 
 void CBasePlayer::RemoveDefuser()

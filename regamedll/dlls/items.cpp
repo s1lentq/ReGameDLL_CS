@@ -481,21 +481,8 @@ BOOL CItemThighPack::MyTouch(CBasePlayer *pPlayer)
 		return FALSE;
 #endif
 
-	pPlayer->m_bHasDefuser = true;
-	pPlayer->pev->body = 1;
-
+	pPlayer->GiveDefuser();
 	ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Got_defuser");
-
-	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
-		WRITE_BYTE(STATUSICON_SHOW);
-		WRITE_STRING("defuser");
-		WRITE_BYTE(0);
-		WRITE_BYTE(160);
-		WRITE_BYTE(0);
-	MESSAGE_END();
-
-	pPlayer->SendItemStatus();
-	pPlayer->SetScoreboardAttributes();
 
 	EMIT_SOUND(pPlayer->edict(), CHAN_VOICE, "items/kevlar.wav", VOL_NORM, ATTN_NORM);
 

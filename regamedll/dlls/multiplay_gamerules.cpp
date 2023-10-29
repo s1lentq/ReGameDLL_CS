@@ -681,9 +681,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	PLAYBACK_EVENT((FEV_GLOBAL | FEV_RELIABLE), 0, m_usResetDecals);
 }
 
-LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN2(CHalfLifeMultiplay, CSGameRules, GiveC4)
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(CBasePlayer *, CHalfLifeMultiplay, CSGameRules, GiveC4)
 
-void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
+CBasePlayer *EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 {
 	int iTeamCount;
 	int iTemp = 0;
@@ -744,7 +744,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 			{
 #ifdef REGAMEDLL_FIXES
 				// we already have bomber
-				return;
+				return pPlayer;
 #endif
 			}
 		}
@@ -772,10 +772,12 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GiveC4)()
 			if (pPlayer->pev->deadflag != DEAD_NO || pPlayer->m_iTeam != TERRORIST)
 				continue;
 
-			pPlayer->MakeBomber();
-			return;
+			if (pPlayer->MakeBomber())
+				return pPlayer;
 		}
 	}
+
+	return nullptr;
 }
 
 void CHalfLifeMultiplay::QueueCareerRoundEndMenu(float tmDelay, int iWinStatus)
@@ -3577,14 +3579,15 @@ void CHalfLifeMultiplay::ClientDisconnected(edict_t *pClient)
 			{
 				pPlayer->DropPlayerItem("weapon_c4");
 			}
-
-#ifndef REGAMEDLL_FIXES
-			// Why ? DropPlayerItem didn't handle item_thighpack
+	
 			if (pPlayer->m_bHasDefuser)
 			{
-				pPlayer->DropPlayerItem("item_thighpack");
-			}
+#ifdef REGAMEDLL_FIXES
+				SpawnDefuser(pPlayer->pev->origin, nullptr);
+#else
+				pPlayer->DropPlayerItem("item_thighpack"); // DropPlayerItem didn't handle item_thighpack
 #endif
+			}
 
 			if (pPlayer->m_bIsVIP)
 			{
@@ -5333,8 +5336,8 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 	// Send the victim's death position only
 	// 1. if it is not a free for all mode
 	// 2. if the attacker is a player and they are not teammates
-	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) != GR_TEAMMATE)
-		iDeathMessageFlags &= ~PLAYERDEATH_POSITION;
+	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) == GR_TEAMMATE)
+		iDeathMessageFlags &= ~PLAYERDEATH_POSITION; // do not send a position
 
 	if (iDeathMessageFlags > 0)
 	{
