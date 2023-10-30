@@ -113,8 +113,8 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_dying_time                      | 3.0     | 0.0 | -            | Time for switch to free observing after death.<br/>`0` - disable spectating around death.<br/>`>0.00001` - time delay to start spectate.<br/>`NOTE`: The countdown starts when the player’s death animation is finished. |
 | mp_deathmsg_flags                  | 7       | 0   | 7            | Sets a bitsum for extra information in the player's death message.<br/>`0` disabled<br/>`1` position where the victim died<br/>`2` index of the assistant who helped the attacker kill the victim<br/>`4` rarity classification bits, e.g., `blinkill`, `noscope`, `penetrated`, etc. |
 | mp_assist_damage_threshold         | 40      | 0   | 100          | Sets the percentage of damage needed to score an assist. |
-| mp_prevent_duck_during_freezetime  | 0       | 0   | 1            | When set, players can't duck during freezetime.<br/> `0` disabled<br/>`1` enabled |
-| mp_prevent_jump_during_freezetime  | 0       | 0   | 1            | When set, players can't jump during freezetime.<br/> `0` disabled<br/>`1` enabled |
+| mp_freezetime_duck                 | 1       | 0   | 1            | When set, players can duck during freezetime.<br/> `0` disabled<br/>`1` enabled |
+| mp_freezetime_jump                 | 1       | 0   | 1            | When set, players can jump during freezetime.<br/> `0` disabled<br/>`1` enabled |
 </details>
 
 ## How to install zBot for CS 1.6?

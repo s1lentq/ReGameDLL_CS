@@ -1893,8 +1893,8 @@ void EXT_FUNC __API_HOOK(PM_Duck)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK           // Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
-	|| prevent_duck_during_freezetime.value && CSGameRules()->IsFreezePeriod()) // Prevent ducking during freezetime if the prevent_duck_during_freezetime cvar is set
+	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK     // Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
+	|| freezetime_duck.value == 0.0f && CSGameRules()->IsFreezePeriod()) // Prevent ducking during freezetime if the freezetime_duck cvar is 0
 	{
 		// Try to unduck
 		if (pmove->flags & FL_DUCKING)
@@ -2449,8 +2449,8 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP           // Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
-	|| prevent_jump_during_freezetime.value && CSGameRules()->IsFreezePeriod()) // Prevent jumping during freezetime if the prevent_jump_during_freezetime cvar is set
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP     // Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	|| freezetime_jump.value == 0.0f && CSGameRules()->IsFreezePeriod()) // Prevent jumping during freezetime if the freezetime_jump cvar is 0
 	{
 		return;
 	}
