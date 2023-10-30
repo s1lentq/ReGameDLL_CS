@@ -872,11 +872,11 @@ BOOL CBaseEntity::IsInWorld()
 #endif
 
 	// speed
-	if (pev->velocity.x >= maxvel || pev->velocity.y >= maxvel || pev->velocity.z >= maxvel)
+	if (pev->velocity.x > maxvel || pev->velocity.y > maxvel || pev->velocity.z > maxvel)
 	{
 		return FALSE;
 	}
-	if (pev->velocity.x <= -maxvel || pev->velocity.y <= -maxvel || pev->velocity.z <= -maxvel)
+	if (pev->velocity.x < -maxvel || pev->velocity.y < -maxvel || pev->velocity.z < -maxvel)
 	{
 		return FALSE;
 	}
