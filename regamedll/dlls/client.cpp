@@ -673,15 +673,12 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	CBaseEntity *pTarget = nullptr;
 	pPlayer->m_pIntroCamera = UTIL_FindEntityByClassname(nullptr, "trigger_camera");
 
+#ifndef REGAMEDLL_FIXES 
 	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
-#ifdef REGAMEDLL_FIXES 
-		if (CSGameRules()->m_bMapHasCameras < 0) // cache once
-			CSGameRules()->m_bMapHasCameras = UTIL_CountEntities("trigger_camera");
-#else
 		CSGameRules()->m_bMapHasCameras = (pPlayer->m_pIntroCamera != nullptr);
-#endif
 	}
+#endif
 
 	if (pPlayer->m_pIntroCamera)
 	{

@@ -3088,6 +3088,9 @@ void CHalfLifeMultiplay::CheckLevelInitialized()
 		// This determines the maximum number of players allowed on each
 		m_iSpawnPointCount_Terrorist = UTIL_CountEntities("info_player_deathmatch");
 		m_iSpawnPointCount_CT = UTIL_CountEntities("info_player_start");
+#ifdef REGAMEDLL_FIXES 
+		m_bMapHasCameras = UTIL_CountEntities("trigger_camera");
+#endif
 		m_bLevelInitialized = true;
 	}
 }
