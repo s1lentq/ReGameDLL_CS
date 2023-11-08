@@ -5340,7 +5340,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 		WRITE_STRING(killerWeaponName);			// what they were killed by (should this be a string?)
 
 #ifdef REGAMEDLL_ADD
-	iDeathMessageFlags &= (int)deathmsg_flags.value; // leave only allowed bitsums for extra info
+	iDeathMessageFlags &= UTIL_ReadFlags(deathmsg_flags.string); // leave only allowed bitsums for extra info
 
 	// Send the victim's death position only
 	// 1. if it is not a free for all mode
