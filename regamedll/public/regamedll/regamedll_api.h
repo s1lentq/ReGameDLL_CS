@@ -508,10 +508,6 @@ typedef IHookChainRegistryClass<void, class CBasePlayer, int> IReGameHookRegistr
 typedef IHookChainClass<void, class CBasePlayer, bool, const char *> IReGameHook_CBasePlayer_Observer_FindNextPlayer;
 typedef IHookChainRegistryClass<void, class CBasePlayer, bool, const char *> IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
 
-// CBasePlayer::Observer_Think hook
-typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Observer_Think;
-typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_Observer_Think;
-
 // CBasePlayer::Pain hook
 typedef IHookChainClass<void, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Pain;
 typedef IHookChainRegistryClass<void, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Pain;
@@ -623,6 +619,10 @@ typedef IHookChainRegistryClass<void, CBasePlayerWeapon, int, int> IReGameHookRe
 // CBasePlayer::PlayerDeathThink hook
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_PlayerDeathThink;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_PlayerDeathThink;
+
+// CBasePlayer::Observer_Think hook
+typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Observer_Think;
+typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_Observer_Think;
 
 class IReGameHookchains {
 public:
@@ -753,7 +753,6 @@ public:
 
 	virtual IReGameHookRegistry_CBasePlayer_Observer_SetMode *CBasePlayer_Observer_SetMode() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer() = 0;
-	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound() = 0;
@@ -785,6 +784,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_SendDeathMessage *CSGameRules_SendDeathMessage() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 };
 
 struct ReGameFuncs_t {
