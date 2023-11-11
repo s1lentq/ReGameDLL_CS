@@ -303,7 +303,6 @@ GAMEHOOK_REGISTRY(CBaseEntity_FireBullets3);
 
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_SetMode);
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_FindNextPlayer);
-GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 
 GAMEHOOK_REGISTRY(CBasePlayer_Pain);
 GAMEHOOK_REGISTRY(CBasePlayer_DeathSound);
@@ -335,6 +334,7 @@ GAMEHOOK_REGISTRY(CBasePlayerWeapon_SendWeaponAnim);
 GAMEHOOK_REGISTRY(CSGameRules_SendDeathMessage);
 
 GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
+GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
