@@ -441,6 +441,7 @@ public:
 	void DropIdlePlayer_OrigFunc(const char *reason);
 	void Observer_SetMode_OrigFunc(int iMode);
 	EXT_FUNC void Observer_FindNextPlayer_OrigFunc(bool bReverse, const char* name = nullptr);
+	void Observer_Think_OrigFunc();
 	void Pain_OrigFunc(int iLastHitGroup, bool bHasArmour);
 	void DeathSound_OrigFunc();
 	void JoiningThink_OrigFunc();

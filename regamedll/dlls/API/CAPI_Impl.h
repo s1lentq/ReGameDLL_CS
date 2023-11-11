@@ -629,6 +629,10 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer, int> CReGameHookRegistry_
 typedef IHookChainClassImpl<void, CBasePlayer, bool, const char *> CReGameHook_CBasePlayer_Observer_FindNextPlayer;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, bool, const char *> CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer;
 
+// CBasePlayer::Observer_Think hook
+typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Observer_Think;
+typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Observer_Think;
+
 // CBasePlayer::Pain hook
 typedef IHookChainClassImpl<void, CBasePlayer, int, bool> CReGameHook_CBasePlayer_Pain;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, int, bool> CReGameHookRegistry_CBasePlayer_Pain;
@@ -869,6 +873,7 @@ public:
 
 	CReGameHookRegistry_CBasePlayer_Observer_SetMode m_CBasePlayer_Observer_SetMode;
 	CReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer m_CBasePlayer_Observer_FindNextPlayer;
+	CReGameHookRegistry_CBasePlayer_Observer_Think m_CBasePlayer_Observer_Think;
 
 	CReGameHookRegistry_CBasePlayer_Pain m_CBasePlayer_Pain;
 	CReGameHookRegistry_CBasePlayer_DeathSound m_CBasePlayer_DeathSound;
@@ -1027,6 +1032,7 @@ public:
 
 	virtual IReGameHookRegistry_CBasePlayer_Observer_SetMode *CBasePlayer_Observer_SetMode();
 	virtual IReGameHookRegistry_CBasePlayer_Observer_FindNextPlayer *CBasePlayer_Observer_FindNextPlayer();
+	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think();
 
 	virtual IReGameHookRegistry_CBasePlayer_Pain *CBasePlayer_Pain();
 	virtual IReGameHookRegistry_CBasePlayer_DeathSound *CBasePlayer_DeathSound();

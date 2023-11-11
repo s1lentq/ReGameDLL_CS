@@ -541,7 +541,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 	m_bWasFollowing = false;
 }
 
-void CBasePlayer::Observer_Think()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Observer_Think)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Observer_Think)()
 {
 	Observer_HandleButtons();
 	Observer_CheckTarget();
