@@ -249,11 +249,13 @@ EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 
 	if (FStrEq(pszName, "weapon_c4")) {
 		pPlayer->m_bHasC4 = true;
-		pPlayer->SetBombIcon();
 
 		if (pPlayer->m_iTeam == TERRORIST) {
 			pPlayer->pev->body = 1;
 		}
+
+		pPlayer->SetBombIcon();
+
 	} else if (FStrEq(pszName, "weapon_shield")) {
 		pPlayer->DropPrimary();
 		pPlayer->DropPlayerItem("weapon_elite");
