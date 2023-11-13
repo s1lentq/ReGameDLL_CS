@@ -8390,21 +8390,20 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
+	}
 
-#ifndef REGAMEDLL_FIXES
-		// NOTE: unreachable code - Vaqtincha
-		for (int i = 0; i < MAX_ITEM_TYPES; i++)
-		{
-			m_pActiveItem = m_rgpPlayerItems[i];
-
-			if (m_pActiveItem && FClassnameIs(m_pActiveItem->pev, "item_thighpack"))
-			{
-				m_pActiveItem->Drop();
-				m_rgpPlayerItems[i] = nullptr;
-			}
+	if (m_bHasC4)
+	{
+		if (CSGameRules()->m_iNumTerrorist > 1 && CSPlayer()->RemovePlayerItem("weapon_c4")) {
+			m_bHasC4 = false;
+			pev->body = 0;
+			SetBombIcon(FALSE);
+			SetProgressBarTime(0);
+			CSGameRules()->GiveC4();
 		}
-#endif
-
+		else if (IsAlive()) {
+			DropPlayerItem("weapon_c4");
+		}
 	}
 
 	szOldTeam = GetTeam(oldTeam);
