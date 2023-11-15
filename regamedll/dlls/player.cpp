@@ -8428,10 +8428,6 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	if (m_bHasC4)
 	{
 		if (NumAliveTerrorist > 0 && CSPlayer()->RemovePlayerItemEx("weapon_c4", true)) {
-			m_bHasC4 = false;
-			pev->body = 0;
-			SetBombIcon(FALSE);
-			SetProgressBarTime(0);
 			CSGameRules()->GiveC4();
 		}
 		else {
