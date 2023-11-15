@@ -8392,20 +8392,6 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 		RemoveDefuser();
 	}
 
-	if (m_bHasC4)
-	{
-		if (CSGameRules()->m_iNumTerrorist > 1 && CSPlayer()->RemovePlayerItem("weapon_c4")) {
-			m_bHasC4 = false;
-			pev->body = 0;
-			SetBombIcon(FALSE);
-			SetProgressBarTime(0);
-			CSGameRules()->GiveC4();
-		}
-		else if (IsAlive()) {
-			DropPlayerItem("weapon_c4");
-		}
-	}
-
 	szOldTeam = GetTeam(oldTeam);
 	szNewTeam = GetTeam(m_iTeam);
 
@@ -8438,6 +8424,20 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	// Initialize the player counts now that a player has switched teams
 	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
 	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
+	if (m_bHasC4)
+	{
+		if (NumAliveTerrorist > 0 && CSPlayer()->RemovePlayerItemEx("weapon_c4", true)) {
+			m_bHasC4 = false;
+			pev->body = 0;
+			SetBombIcon(FALSE);
+			SetProgressBarTime(0);
+			CSGameRules()->GiveC4();
+		}
+		else {
+			DropPlayerItem("weapon_c4");
+		}
+	}
 #endif
 }
 
