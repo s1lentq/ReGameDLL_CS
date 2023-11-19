@@ -46,12 +46,13 @@ public:
 public:
 	CBaseEntity *m_pContainingEntity;
 	unsigned char m_ucDmgPenetrationLevel; // penetration level of the damage caused by the inflictor
+	entvars_t *m_pevLastInflictor;
 
 private:
 #if defined(_MSC_VER)
 #pragma region reserve_data_Region
 #endif
-	char CCSEntity_Reserve[0x3FFF];
+	char CCSEntity_Reserve[0x3FF7];
 
 	virtual void func_reserve1() {};
 	virtual void func_reserve2() {};
@@ -91,23 +92,49 @@ private:
 inline void CBaseEntity::SetDmgPenetrationLevel(int iPenetrationLevel)
 {
 #ifdef REGAMEDLL_API
-	m_pEntity->m_ucDmgPenetrationLevel = iPenetrationLevel;
+	CSEntity()->m_ucDmgPenetrationLevel = iPenetrationLevel;
 #endif
 }
 
 inline void CBaseEntity::ResetDmgPenetrationLevel()
 {
 #ifdef REGAMEDLL_API
-	m_pEntity->m_ucDmgPenetrationLevel = 0;
+	CSEntity()->m_ucDmgPenetrationLevel = 0;
 #endif
 }
 
 inline int CBaseEntity::GetDmgPenetrationLevel() const
 {
 #ifdef REGAMEDLL_API
-	return m_pEntity->m_ucDmgPenetrationLevel;
+	return CSEntity()->m_ucDmgPenetrationLevel;
 #else
 	return 0;
+#endif
+}
+
+inline void CBaseEntity::KilledInflicted(entvars_t* pevInflictor, entvars_t *pevAttacker, int iGib)
+{
+#ifdef REGAMEDLL_API
+	CSEntity()->m_pevLastInflictor = pevInflictor;
+#else
+	g_pevLastInflictor = pevInflictor;
+#endif
+
+	Killed(pevAttacker, iGib);
+
+#ifdef REGAMEDLL_API
+	CSEntity()->m_pevLastInflictor = nullptr;
+#else
+	g_pevLastInflictor = nullptr;
+#endif
+}
+
+inline entvars_t* CBaseEntity::GetLastInflictor()
+{
+#ifdef REGAMEDLL_API
+	return CSEntity()->m_pevLastInflictor;
+#else
+	return g_pevLastInflictor;
 #endif
 }
 

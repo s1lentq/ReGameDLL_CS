@@ -82,7 +82,9 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
+#ifndef REGAMEDLL_API
 entvars_t *g_pevLastInflictor;
+#endif
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
 
@@ -2130,7 +2132,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
 						wasBlind = true;
 
-					TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
 				}
 			}
 #endif
@@ -2161,7 +2163,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				{
 					if (TheCareerTasks)
 					{
-						TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
+						TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
 					}
 				}
 			}
@@ -2171,7 +2173,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if (!m_bKilledByBomb)
 	{
-		g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
+		g_pGameRules->PlayerKilled(this, pevAttacker, GetLastInflictor());
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pev);
