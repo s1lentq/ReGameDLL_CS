@@ -884,7 +884,14 @@ void PM_WalkMove()
 
 	if (pmove->fuser2 > 0.0)
 	{
-		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
+		real_t flRatio;
+
+#ifdef REGAMEDLL_ADD
+		if (player_movement_legacy.value == 0)
+			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0 * player_movement_penalty_jump.value * pmove->frametime) * 0.01;
+		else
+#endif
+			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
 
 		pmove->velocity[0] *= flRatio;
 		pmove->velocity[1] *= flRatio;
@@ -2555,11 +2562,19 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 	if (pmove->fuser2 > 0.0f)
 	{
 		// NOTE: don't do it in .f (float)
-		real_t flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+		real_t flRatio;
+
+#ifdef REGAMEDLL_ADD
+		if (player_movement_legacy.value == 0)
+			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0 * player_movement_penalty_jump.value * pmove->frametime) * 0.01;
+		else
+#endif
+			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+
 		pmove->velocity[2] *= flRatio;
 	}
 
-	pmove->fuser2 = 1315.789429;
+	pmove->fuser2 = 100.0 * 1000.0 / 19.0 / 4.0;
 
 	// Decay it for simulation
 	PM_FixupGravityVelocity();
@@ -3275,7 +3290,7 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	assert(pm_shared_initialized);
 
 	pmove = ppmove;
-	
+
 #ifdef REGAMEDLL_API
 	pmoveplayer = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
 #endif

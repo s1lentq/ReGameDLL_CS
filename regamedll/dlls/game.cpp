@@ -174,6 +174,8 @@ cvar_t hostages_rescued_ratio = { "mp_hostages_rescued_ratio", "1.0", 0, 1.0f, n
 cvar_t legacy_vehicle_block               = { "mp_legacy_vehicle_block", "1", 0, 0.0f, nullptr };
 
 cvar_t dying_time              = { "mp_dying_time", "3.0", 0, 3.0f, nullptr };
+cvar_t player_movement_legacy  = { "mp_player_movement_legacy", "1", 0, 1.0f, nullptr };
+cvar_t player_movement_penalty_jump = {"mp_player_movement_penalty_jump", "100", 0, 100.0f, nullptr};
 
 void GameDLL_Version_f()
 {
@@ -425,6 +427,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&legacy_vehicle_block);
 
 	CVAR_REGISTER(&dying_time);
+	CVAR_REGISTER(&player_movement_legacy);
+	CVAR_REGISTER(&player_movement_penalty_jump);
 	CVAR_REGISTER(&deathmsg_flags);
 	CVAR_REGISTER(&assist_damage_threshold);
 
