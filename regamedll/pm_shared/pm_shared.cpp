@@ -1,5 +1,9 @@
 #include "precompiled.h"
 
+#define PLAYER_MOVEMENT_STOPSPEED   100.0	// sv_stopspeed Minimum stopping speed when on ground
+#define PLAYER_MOVEMENT_FRICTION    4.0		// sv_friction Surface friction
+#define PLAYER_MOVEMENT_JUMP_FACTOR 19.0
+
 BOOL pm_shared_initialized = FALSE;
 
 vec3_t rgv3tStuckTable[54];
@@ -888,10 +892,10 @@ void PM_WalkMove()
 
 #ifdef REGAMEDLL_ADD
 		if (player_movement_legacy.value == 0)
-			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0 * player_movement_penalty_jump.value * pmove->frametime) * 0.01;
+			flRatio = (PLAYER_MOVEMENT_STOPSPEED - pmove->fuser2 * 0.001 * PLAYER_MOVEMENT_JUMP_FACTOR * player_movement_penalty_jump.value * pmove->frametime) / 100.0;
 		else
 #endif
-			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+			flRatio = (PLAYER_MOVEMENT_STOPSPEED - pmove->fuser2 * 0.001 * PLAYER_MOVEMENT_JUMP_FACTOR /** PLAYER_MOVEMENT_FRICTION * pmove->frametime*/) / 100.0;
 
 		pmove->velocity[0] *= flRatio;
 		pmove->velocity[1] *= flRatio;
@@ -2566,15 +2570,15 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 
 #ifdef REGAMEDLL_ADD
 		if (player_movement_legacy.value == 0)
-			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0 * player_movement_penalty_jump.value * pmove->frametime) * 0.01;
+			flRatio = (PLAYER_MOVEMENT_STOPSPEED - pmove->fuser2 * 0.001 * PLAYER_MOVEMENT_JUMP_FACTOR * player_movement_penalty_jump.value * pmove->frametime) / 100.0;
 		else
 #endif
-			flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+			flRatio = (PLAYER_MOVEMENT_STOPSPEED - pmove->fuser2 * 0.001 * PLAYER_MOVEMENT_JUMP_FACTOR /** PLAYER_MOVEMENT_FRICTION * pmove->frametime*/) / 100.0;
 
 		pmove->velocity[2] *= flRatio;
 	}
 
-	pmove->fuser2 = 100.0 * 1000.0 / 19.0 / 4.0;
+	pmove->fuser2 = 100.0 / 0.001 / PLAYER_MOVEMENT_JUMP_FACTOR / PLAYER_MOVEMENT_FRICTION;
 
 	// Decay it for simulation
 	PM_FixupGravityVelocity();
