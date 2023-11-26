@@ -168,6 +168,8 @@ cvar_t plant_c4_anywhere                 = { "mp_plant_c4_anywhere", "0", 0, 0.0
 cvar_t give_c4_frags                     = { "mp_give_c4_frags", "3", 0, 3.0f, nullptr };
 cvar_t deathmsg_flags                    = { "mp_deathmsg_flags", "abc", 0, 0.0f, nullptr };
 cvar_t assist_damage_threshold           = { "mp_assist_damage_threshold", "40", 0, 40.0f, nullptr };
+cvar_t freezetime_duck                   = { "mp_freezetime_duck", "1", 0, 1.0f, nullptr };
+cvar_t freezetime_jump                   = { "mp_freezetime_jump", "1", 0, 1.0f, nullptr };
 
 cvar_t hostages_rescued_ratio = { "mp_hostages_rescued_ratio", "1.0", 0, 1.0f, nullptr };
 
@@ -427,6 +429,9 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&dying_time);
 	CVAR_REGISTER(&deathmsg_flags);
 	CVAR_REGISTER(&assist_damage_threshold);
+
+	CVAR_REGISTER(&freezetime_duck);
+	CVAR_REGISTER(&freezetime_jump);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
