@@ -447,7 +447,8 @@ public:
 	void CheckTimeBasedDamage_OrigFunc();
 	edict_t *EntSelectSpawnPoint_OrigFunc();
 	void PlayerDeathThink_OrigFunc();
-
+	void Observer_Think_OrigFunc();
+	
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
 

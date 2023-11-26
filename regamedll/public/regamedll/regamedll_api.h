@@ -620,6 +620,10 @@ typedef IHookChainRegistryClass<void, CBasePlayerWeapon, int, int> IReGameHookRe
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_PlayerDeathThink;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_PlayerDeathThink;
 
+// CBasePlayer::Observer_Think hook
+typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Observer_Think;
+typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_Observer_Think;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -780,6 +784,7 @@ public:
 	virtual IReGameHookRegistry_CSGameRules_SendDeathMessage *CSGameRules_SendDeathMessage() = 0;
 
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 };
 
 struct ReGameFuncs_t {
