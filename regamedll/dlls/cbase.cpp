@@ -697,7 +697,11 @@ BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	pev->health -= flDamage;
 	if (pev->health <= 0)
 	{
+#ifdef REGAMEDLL_FIXES
+		KilledInflicted(pevInflictor, pevAttacker, GIB_NORMAL);
+#else
 		Killed(pevAttacker, GIB_NORMAL);
+#endif
 		return FALSE;
 	}
 

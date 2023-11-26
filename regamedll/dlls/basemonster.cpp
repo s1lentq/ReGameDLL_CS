@@ -451,17 +451,13 @@ BOOL CBaseMonster::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, f
 
 	if (pev->health <= 0.0f)
 	{
-		g_pevLastInflictor = pevInflictor;
-
 		if (bitsDamageType & DMG_ALWAYSGIB)
-			Killed(pevAttacker, GIB_ALWAYS);
-
+			KilledInflicted(pevInflictor, pevAttacker, GIB_ALWAYS);
 		else if (bitsDamageType & DMG_NEVERGIB)
-			Killed(pevAttacker, GIB_NEVER);
+			KilledInflicted(pevInflictor, pevAttacker, GIB_NEVER);
 		else
-			Killed(pevAttacker, GIB_NORMAL);
+			KilledInflicted(pevInflictor, pevAttacker, GIB_NORMAL);
 
-		g_pevLastInflictor = nullptr;
 		return FALSE;
 	}
 	if ((pev->flags & FL_MONSTER) && !FNullEnt(pevAttacker))

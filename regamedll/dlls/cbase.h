@@ -246,6 +246,9 @@ public:
 	void ResetDmgPenetrationLevel();
 	int GetDmgPenetrationLevel() const;
 
+	void KilledInflicted(entvars_t *pevInflictor, entvars_t *pevAttacker, int iGib);
+	entvars_t *GetLastInflictor();
+
 #ifdef REGAMEDLL_API
 	CCSEntity *m_pEntity;
 	CCSEntity *CSEntity() const;
