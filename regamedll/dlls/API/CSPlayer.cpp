@@ -268,7 +268,7 @@ EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 
 EXT_FUNC bool CCSPlayer::IsConnected() const
 {
-	return m_pContainingEntity->has_disconnected == false;
+	return BaseEntity()->has_disconnected == false;
 }
 
 EXT_FUNC void CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim)
