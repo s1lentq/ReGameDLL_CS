@@ -32,114 +32,114 @@
 #pragma once
 #endif
 
-#define MAXSTUDIOTRIANGLES	20000	// TODO: tune this
-#define MAXSTUDIOVERTS		2048	// TODO: tune this
-#define MAXSTUDIOSEQUENCES	2048	// total animation sequences
-#define MAXSTUDIOSKINS		100		// total textures
-#define MAXSTUDIOSRCBONES	512		// bones allowed at source movement
-#define MAXSTUDIOBONES		128		// total bones actually used
-#define MAXSTUDIOMODELS		32		// sub-models per model
-#define MAXSTUDIOBODYPARTS	32
-#define MAXSTUDIOGROUPS		16
-#define MAXSTUDIOANIMATIONS	2048	// per sequence
-#define MAXSTUDIOMESHES		256
-#define MAXSTUDIOEVENTS		1024
-#define MAXSTUDIOPIVOTS		256
-#define MAXSTUDIOCONTROLLERS 8
+#define MAXSTUDIOTRIANGLES     20000     // TODO: tune this
+#define MAXSTUDIOVERTS         2048      // TODO: tune this
+#define MAXSTUDIOSEQUENCES     2048      // total animation sequences
+#define MAXSTUDIOSKINS         100       // total textures
+#define MAXSTUDIOSRCBONES      512       // bones allowed at source movement
+#define MAXSTUDIOBONES         128       // total bones actually used
+#define MAXSTUDIOMODELS        32        // sub-models per model
+#define MAXSTUDIOBODYPARTS     32
+#define MAXSTUDIOGROUPS        16
+#define MAXSTUDIOANIMATIONS    2048      // per sequence
+#define MAXSTUDIOMESHES        256
+#define MAXSTUDIOEVENTS        1024
+#define MAXSTUDIOPIVOTS        256
+#define MAXSTUDIOCONTROLLERS   8
 
 typedef struct 
 {
-	int					id;
-	int					version;
+	int				id;
+	int				version;
 
 	char				name[64];
-	int					length;
+	int				length;
 
-	vec3_t				eyeposition;	// ideal eye position
+	vec3_t				eyeposition;		// ideal eye position
 	vec3_t				min;			// ideal movement hull size
 	vec3_t				max;			
 
 	vec3_t				bbmin;			// clipping bounding box
 	vec3_t				bbmax;		
 
-	int					flags;
+	int				flags;
 
-	int					numbones;			// bones
-	int					boneindex;
+	int				numbones;		// bones
+	int				boneindex;
 
-	int					numbonecontrollers;		// bone controllers
-	int					bonecontrollerindex;
+	int				numbonecontrollers;	// bone controllers
+	int				bonecontrollerindex;
 
-	int					numhitboxes;			// complex bounding boxes
-	int					hitboxindex;			
+	int				numhitboxes;		// complex bounding boxes
+	int				hitboxindex;			
 	
-	int					numseq;				// animation sequences
-	int					seqindex;
+	int				numseq;			// animation sequences
+	int				seqindex;
 
-	int					numseqgroups;		// demand loaded sequences
-	int					seqgroupindex;
+	int				numseqgroups;		// demand loaded sequences
+	int				seqgroupindex;
 
-	int					numtextures;		// raw textures
-	int					textureindex;
-	int					texturedataindex;
+	int				numtextures;		// raw textures
+	int				textureindex;
+	int				texturedataindex;
 
-	int					numskinref;			// replaceable textures
-	int					numskinfamilies;
-	int					skinindex;
+	int				numskinref;		// replaceable textures
+	int				numskinfamilies;
+	int				skinindex;
 
-	int					numbodyparts;		
-	int					bodypartindex;
+	int				numbodyparts;		
+	int				bodypartindex;
 
-	int					numattachments;		// queryable attachable points
-	int					attachmentindex;
+	int				numattachments;		// queryable attachable points
+	int				attachmentindex;
 
-	int					soundtable;
-	int					soundindex;
-	int					soundgroups;
-	int					soundgroupindex;
+	int				soundtable;
+	int				soundindex;
+	int				soundgroups;
+	int				soundgroupindex;
 
-	int					numtransitions;		// animation node to animation node transition graph
-	int					transitionindex;
+	int				numtransitions;		// animation node to animation node transition graph
+	int				transitionindex;
 } studiohdr_t;
 
 // header for demand loaded sequence group data
 typedef struct 
 {
-	int					id;
-	int					version;
+	int				id;
+	int				version;
 
 	char				name[64];
-	int					length;
+	int				length;
 } studioseqhdr_t;
 
 // bones
 typedef struct 
 {
-	char				name[32];	// bone name for symbolic links
-	int		 			parent;		// parent bone
-	int					flags;		// ??
-	int					bonecontroller[6];	// bone controller index, -1 == none
-	float				value[6];	// default DoF values
-	float				scale[6];   // scale for delta DoF values
+	char				name[32];		// bone name for symbolic links
+	int		 		parent;			// parent bone
+	int				flags;			// ??
+	int				bonecontroller[6];	// bone controller index, -1 == none
+	float				value[6];		// default DoF values
+	float				scale[6];   		// scale for delta DoF values
 } mstudiobone_t;
 
 
 // bone controllers
 typedef struct 
 {
-	int					bone;	// -1 == 0
-	int					type;	// X, Y, Z, XR, YR, ZR, M
+	int				bone;		// -1 == 0
+	int				type;		// X, Y, Z, XR, YR, ZR, M
 	float				start;
 	float				end;
-	int					rest;	// byte index value at rest
-	int					index;	// 0-3 user set controller, 4 mouth
+	int				rest;		// byte index value at rest
+	int				index;		// 0-3 user set controller, 4 mouth
 } mstudiobonecontroller_t;
 
 // intersection boxes
 typedef struct
 {
-	int					bone;
-	int					group;			// intersection group
+	int				bone;
+	int				group;		// intersection group
 	vec3_t				bbmin;		// bounding box
 	vec3_t				bbmax;		
 } mstudiobbox_t;
@@ -149,8 +149,8 @@ typedef struct
 {
 	char				label[32];	// textual name
 	char				name[64];	// file name
-	int32				unused1;    // was "cache"  - index pointer
-	int					unused2;    // was "data" -  hack for group 0
+	int32				unused1;    	// was "cache"  - index pointer
+	int				unused2;   	// was "data" -  hack for group 0
 } mstudioseqgroup_t;
 
 // sequence descriptions
@@ -159,44 +159,44 @@ typedef struct
 	char				label[32];	// sequence label
 
 	float				fps;		// frames per second	
-	int					flags;		// looping/non-looping flags
+	int				flags;		// looping/non-looping flags
 
-	int					activity;
-	int					actweight;
+	int				activity;
+	int				actweight;
 
-	int					numevents;
-	int					eventindex;
+	int				numevents;
+	int				eventindex;
 
-	int					numframes;	// number of frames per sequence
+	int				numframes;	// number of frames per sequence
 
-	int					numpivots;	// number of foot pivots
-	int					pivotindex;
+	int				numpivots;	// number of foot pivots
+	int				pivotindex;
 
-	int					motiontype;	
-	int					motionbone;
+	int				motiontype;	
+	int				motionbone;
 	vec3_t				linearmovement;
-	int					automoveposindex;
-	int					automoveangleindex;
+	int				automoveposindex;
+	int				automoveangleindex;
 
 	vec3_t				bbmin;		// per sequence bounding box
 	vec3_t				bbmax;		
 
-	int					numblends;
-	int					animindex;		// mstudioanim_t pointer relative to start of sequence group data
-										// [blend][bone][X, Y, Z, XR, YR, ZR]
+	int				numblends;
+	int				animindex;	// mstudioanim_t pointer relative to start of sequence group data
+							// [blend][bone][X, Y, Z, XR, YR, ZR]
 
-	int					blendtype[2];	// X, Y, Z, XR, YR, ZR
+	int				blendtype[2];	// X, Y, Z, XR, YR, ZR
 	float				blendstart[2];	// starting value
 	float				blendend[2];	// ending value
-	int					blendparent;
+	int				blendparent;
 
-	int					seqgroup;		// sequence group for demand loading
+	int				seqgroup;	// sequence group for demand loading
 
-	int					entrynode;		// transition node at entry
-	int					exitnode;		// transition node at exit
-	int					nodeflags;		// transition rules
+	int				entrynode;	// transition node at entry
+	int				exitnode;	// transition node at exit
+	int				nodeflags;	// transition rules
 	
-	int					nextseq;		// auto advancing sequences
+	int				nextseq;	// auto advancing sequences
 } mstudioseqdesc_t;
 
 // events
@@ -205,8 +205,8 @@ typedef struct
 typedef struct 
 {
 	int 				frame;
-	int					event;
-	int					type;
+	int				event;
+	int				type;
 	char				options[64];
 } mstudioevent_t;
 */
@@ -214,18 +214,18 @@ typedef struct
 // pivots
 typedef struct 
 {
-	vec3_t				org;	// pivot point
-	int					start;
-	int					end;
+	vec3_t				org;		// pivot point
+	int				start;
+	int				end;
 } mstudiopivot_t;
 
 // attachment
 typedef struct 
 {
 	char				name[32];
-	int					type;
-	int					bone;
-	vec3_t				org;	// attachment point
+	int				type;
+	int				bone;
+	vec3_t				org;		// attachment point
 	vec3_t				vectors[3];
 } mstudioattachment_t;
 
@@ -250,9 +250,9 @@ typedef union
 typedef struct
 {
 	char				name[64];
-	int					nummodels;
-	int					base;
-	int					modelindex; // index into models array
+	int				nummodels;
+	int				base;
+	int				modelindex;	// index into models array
 } mstudiobodyparts_t;
 
 
@@ -260,11 +260,11 @@ typedef struct
 // skin info
 typedef struct
 {
-	char					name[64];
-	int						flags;
-	int						width;
-	int						height;
-	int						index;
+	char				name[64];
+	int				flags;
+	int				width;
+	int				height;
+	int				index;
 } mstudiotexture_t;
 
 
@@ -276,50 +276,50 @@ typedef struct
 {
 	char				name[64];
 
-	int					type;
+	int				type;
 
 	float				boundingradius;
 
-	int					nummesh;
-	int					meshindex;
+	int				nummesh;
+	int				meshindex;
 
-	int					numverts;		// number of unique vertices
-	int					vertinfoindex;	// vertex bone info
-	int					vertindex;		// vertex vec3_t
-	int					numnorms;		// number of unique surface normals
-	int					norminfoindex;	// normal bone info
-	int					normindex;		// normal vec3_t
+	int				numverts;	// number of unique vertices
+	int				vertinfoindex;	// vertex bone info
+	int				vertindex;	// vertex vec3_t
+	int				numnorms;	// number of unique surface normals
+	int				norminfoindex;	// normal bone info
+	int				normindex;	// normal vec3_t
 
-	int					numgroups;		// deformation groups
-	int					groupindex;
+	int				numgroups;	// deformation groups
+	int				groupindex;
 } mstudiomodel_t;
 
 
-// vec3_t	boundingbox[model][bone][2];	// complex intersection info
+// vec3_t	boundingbox[model][bone][2];		// complex intersection info
 
 
 // meshes
 typedef struct 
 {
-	int					numtris;
-	int					triindex;
-	int					skinref;
-	int					numnorms;		// per mesh normals
-	int					normindex;		// normal vec3_t
+	int				numtris;
+	int				triindex;
+	int				skinref;
+	int				numnorms;	// per mesh normals
+	int				normindex;	// normal vec3_t
 } mstudiomesh_t;
 
 // triangles
 #if 0
 typedef struct 
 {
-	short				vertindex;		// index into vertex array
-	short				normindex;		// index into normal array
-	short				s,t;			// s,t position on skin
+	short				vertindex;	// index into vertex array
+	short				normindex;	// index into normal array
+	short				s,t;		// s,t position on skin
 } mstudiotrivert_t;
 #endif
 
-#define STUDIO_DYNAMIC_LIGHT		0x0100	// dynamically get lighting from floor or ceil (flying monsters)
-#define STUDIO_TRACE_HITBOX		0x0200	// always use hitbox trace instead of bbox
+#define STUDIO_DYNAMIC_LIGHT		0x0100		// dynamically get lighting from floor or ceil (flying monsters)
+#define STUDIO_TRACE_HITBOX		0x0200		// always use hitbox trace instead of bbox
 
 // lighting options
 #define STUDIO_NF_FLATSHADE		0x0001
@@ -346,15 +346,15 @@ typedef struct
 #define STUDIO_AXR		0x1000
 #define STUDIO_AYR		0x2000
 #define STUDIO_AZR		0x4000
-#define STUDIO_TYPES	0x7FFF
-#define STUDIO_RLOOP	0x8000	// controller that wraps shortest distance
+#define STUDIO_TYPES		0x7FFF
+#define STUDIO_RLOOP		0x8000	// controller that wraps shortest distance
 
 // sequence flags
-#define STUDIO_LOOPING	0x0001
+#define STUDIO_LOOPING		0x0001
 
 // bone flags
 #define STUDIO_HAS_NORMALS	0x0001
-#define STUDIO_HAS_VERTICES 0x0002
+#define STUDIO_HAS_VERTICES 	0x0002
 #define STUDIO_HAS_BBOX		0x0004
 #define STUDIO_HAS_CHROME	0x0008	// if any of the textures have chrome on them
 
@@ -362,8 +362,8 @@ typedef struct
 #define STUDIO_TO_RAD		(M_PI/32768.0)
 
 
-#define STUDIO_NUM_HULLS 128
-#define STUDIO_NUM_PLANES (STUDIO_NUM_HULLS * 6)
-#define STUDIO_CACHE_SIZE 16
+#define STUDIO_NUM_HULLS	128
+#define STUDIO_NUM_PLANES	(STUDIO_NUM_HULLS * 6)
+#define STUDIO_CACHE_SIZE	16
 
 #endif // STUDIO_H
