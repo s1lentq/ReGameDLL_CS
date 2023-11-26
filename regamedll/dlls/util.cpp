@@ -1758,6 +1758,17 @@ int UTIL_GetNumPlayers()
 	return nNumPlayers;
 }
 
+int UTIL_CountEntities(const char *szName)
+{
+	int count = 0;
+	CBaseEntity *pEnt = nullptr;
+
+	while ((pEnt = UTIL_FindEntityByClassname(pEnt, szName)))
+		count++;
+
+	return count;
+}
+
 bool UTIL_IsSpawnPointOccupied(CBaseEntity *pSpot)
 {
 	if (!pSpot)

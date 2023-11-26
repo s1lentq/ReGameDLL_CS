@@ -779,7 +779,7 @@ public:
 	bool m_bMapHasEscapeZone;
 
 	BOOL m_bMapHasVIPSafetyZone;			// TRUE = has VIP safety zone, FALSE = does not have VIP safetyzone
-	BOOL m_bMapHasCameras;
+	int m_bMapHasCameras;
 	int m_iC4Timer;
 	int m_iC4Guy;							// The current Terrorist who has the C4.
 	int m_iLoserBonus;						// the amount of money the losing team gets. This scales up as they lose more rounds in a row

@@ -673,10 +673,12 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 	CBaseEntity *pTarget = nullptr;
 	pPlayer->m_pIntroCamera = UTIL_FindEntityByClassname(nullptr, "trigger_camera");
 
+#ifndef REGAMEDLL_FIXES 
 	if (g_pGameRules && g_pGameRules->IsMultiplayer())
 	{
 		CSGameRules()->m_bMapHasCameras = (pPlayer->m_pIntroCamera != nullptr);
 	}
+#endif
 
 	if (pPlayer->m_pIntroCamera)
 	{
@@ -694,7 +696,12 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 		pPlayer->pev->angles = CamAngles;
 		pPlayer->pev->v_angle = pPlayer->pev->angles;
 
-		pPlayer->m_fIntroCamTime = gpGlobals->time + 6;
+		pPlayer->m_fIntroCamTime = 
+#ifdef REGAMEDLL_FIXES 
+			(CSGameRules()->m_bMapHasCameras <= 1) ? 0.0 : // no need to refresh cameras if map has only one
+#endif
+			gpGlobals->time + 6;
+
 		pPlayer->pev->view_ofs = g_vecZero;
 	}
 #ifndef REGAMEDLL_FIXES
