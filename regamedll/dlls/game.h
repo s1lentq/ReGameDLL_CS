@@ -43,12 +43,13 @@
 extern cvar_t *g_pskill;
 extern cvar_t *g_psv_gravity;
 extern cvar_t *g_psv_aim;
+extern cvar_t *g_footsteps;
 extern cvar_t *g_psv_accelerate;
 extern cvar_t *g_psv_friction;
 extern cvar_t *g_psv_stopspeed;
 extern cvar_t *g_psv_stepsize;
 extern cvar_t *g_psv_clienttrace;
-extern cvar_t *g_footsteps;
+extern cvar_t *g_psv_maxvelocity;
 
 extern cvar_t displaysoundlist;
 extern cvar_t timelimit;

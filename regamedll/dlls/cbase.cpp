@@ -870,6 +870,17 @@ BOOL CBaseEntity::IsInWorld()
 	}
 
 	// speed
+#ifdef REGAMEDLL_FIXES
+	float maxvel = g_psv_maxvelocity->value;
+	if (pev->velocity.x > maxvel || pev->velocity.y > maxvel || pev->velocity.z > maxvel)
+	{
+		return FALSE;
+	}
+	if (pev->velocity.x < -maxvel || pev->velocity.y < -maxvel || pev->velocity.z < -maxvel)
+	{
+		return FALSE;
+	}
+#else
 	if (pev->velocity.x >= 2000.0 || pev->velocity.y >= 2000.0 || pev->velocity.z >= 2000.0)
 	{
 		return FALSE;
@@ -878,6 +889,7 @@ BOOL CBaseEntity::IsInWorld()
 	{
 		return FALSE;
 	}
+#endif
 
 	return TRUE;
 }
