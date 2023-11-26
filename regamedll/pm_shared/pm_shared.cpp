@@ -1,8 +1,9 @@
 #include "precompiled.h"
 
-#define PLAYER_MOVEMENT_STOPSPEED   100.0	// sv_stopspeed Minimum stopping speed when on ground
-#define PLAYER_MOVEMENT_FRICTION    4.0		// sv_friction Surface friction
-#define PLAYER_MOVEMENT_JUMP_FACTOR 19.0
+#define PLAYER_MOVEMENT_STOPSPEED        100.0	// sv_stopspeed Minimum stopping speed when on ground
+#define PLAYER_MOVEMENT_FRICTION         4.0		// sv_friction Surface friction
+#define PLAYER_MOVEMENT_JUMP_FACTOR      19.0
+#define PLAYER_MOVEMENT_MAX_SPEED_FACTOR 5.0
 
 BOOL pm_shared_initialized = FALSE;
 
@@ -941,9 +942,21 @@ void PM_WalkMove()
 	// Add in any base velocity to the current velocity.
 	VectorAdd(pmove->velocity, pmove->basevelocity, pmove->velocity);
 
+	float fFraction = 0.05f;
+	real_t fMinSpeed = 1.0;
+
+	// Minimum speed to be considered
+#ifdef REGAMEDLL_ADD
+	if (player_movement_legacy.value == 0 && wishspeed > 0)
+		fMinSpeed = (wishspeed * pmove->frametime * PLAYER_MOVEMENT_MAX_SPEED_FACTOR) - fFraction;
+
+	if (fMinSpeed < 0)
+		fMinSpeed = 0.1;
+#endif
+
 	spd = Length(pmove->velocity);
 
-	if (spd < 1.0)
+	if (spd < fMinSpeed)
 	{
 		VectorClear(pmove->velocity);
 		return;
