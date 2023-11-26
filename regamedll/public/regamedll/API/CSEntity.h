@@ -43,6 +43,8 @@ public:
 	virtual void FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
 	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
 
+	CBaseEntity *BaseEntity() const;
+
 public:
 	CBaseEntity *m_pContainingEntity;
 	unsigned char m_ucDmgPenetrationLevel; // penetration level of the damage caused by the inflictor
@@ -87,6 +89,12 @@ private:
 #pragma endregion
 #endif
 };
+
+// Inlines
+inline CBaseEntity *CCSEntity::BaseEntity() const
+{
+	return this->m_pContainingEntity;
+}
 
 inline void CBaseEntity::SetDmgPenetrationLevel(int iPenetrationLevel)
 {
