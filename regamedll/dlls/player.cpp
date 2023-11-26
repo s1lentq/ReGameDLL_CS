@@ -1695,7 +1695,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 {
-	bool bKillProgBar = false;
 	int i;
 
 #ifdef REGAMEDLL_FIXES
@@ -1715,19 +1714,11 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	{
 		m_bHasC4 = false;
 		pev->body = 0;
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("c4");
-		MESSAGE_END();
-
-		bKillProgBar = true;
+		SetBombIcon(FALSE);
+		SetProgressBarTime(0);
 	}
 
 	RemoveShield();
-
-	if (bKillProgBar)
-		SetProgressBarTime(0);
 
 	if (m_pActiveItem)
 	{
@@ -10361,8 +10352,8 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(MakeBomber)()
 	}
 
 	m_bHasC4 = true;
-	SetBombIcon();
 	pev->body = 1;
+	SetBombIcon();
 
 	m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
 	HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
