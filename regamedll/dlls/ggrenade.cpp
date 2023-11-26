@@ -772,6 +772,13 @@ void CGrenade::BounceSound()
 
 void CGrenade::TumbleThink()
 {
+#ifdef REGAMEDLL_FIXES
+	if (pev->velocity.IsLengthGreaterThan(g_psv_maxvelocity->value))
+	{
+		pev->velocity = pev->velocity.Normalize() * g_psv_maxvelocity->value;
+	}
+#endif
+
 	if (!IsInWorld())
 	{
 		UTIL_Remove(this);
@@ -809,6 +816,13 @@ void CGrenade::TumbleThink()
 
 void CGrenade::SG_TumbleThink()
 {
+#ifdef REGAMEDLL_FIXES
+	if (pev->velocity.IsLengthGreaterThan(g_psv_maxvelocity->value))
+	{
+		pev->velocity = pev->velocity.Normalize() * g_psv_maxvelocity->value;
+	}
+#endif
+
 	if (!IsInWorld())
 	{
 		UTIL_Remove(this);
@@ -1322,6 +1336,13 @@ void AnnounceFlashInterval(float interval, float offset)
 
 void CGrenade::C4Think()
 {
+#ifdef REGAMEDLL_FIXES
+	if (pev->velocity.IsLengthGreaterThan(g_psv_maxvelocity->value))
+	{
+		pev->velocity = pev->velocity.Normalize() * g_psv_maxvelocity->value;
+	}
+#endif
+
 	if (!IsInWorld())
 	{
 #ifdef REGAMEDLL_FIXES

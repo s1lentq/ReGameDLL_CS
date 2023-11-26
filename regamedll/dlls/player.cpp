@@ -82,7 +82,9 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
+#ifndef REGAMEDLL_API
 entvars_t *g_pevLastInflictor;
+#endif
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
 
@@ -1693,7 +1695,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 {
-	bool bKillProgBar = false;
 	int i;
 
 #ifdef REGAMEDLL_FIXES
@@ -1713,19 +1714,11 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	{
 		m_bHasC4 = false;
 		pev->body = 0;
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("c4");
-		MESSAGE_END();
-
-		bKillProgBar = true;
+		SetBombIcon(FALSE);
+		SetProgressBarTime(0);
 	}
 
 	RemoveShield();
-
-	if (bKillProgBar)
-		SetProgressBarTime(0);
 
 	if (m_pActiveItem)
 	{
@@ -2130,7 +2123,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
 						wasBlind = true;
 
-					TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
 				}
 			}
 #endif
@@ -2161,7 +2154,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				{
 					if (TheCareerTasks)
 					{
-						TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
+						TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
 					}
 				}
 			}
@@ -2171,7 +2164,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if (!m_bKilledByBomb)
 	{
-		g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
+		g_pGameRules->PlayerKilled(this, pevAttacker, GetLastInflictor());
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pev);
@@ -3673,7 +3666,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 		}
 	}
 
-	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime)
+	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime
+#ifdef REGAMEDLL_FIXES 
+		&& m_fIntroCamTime > 0.0 // update only if cameras are available
+#endif
+		)
 	{
 		// find the next another camera
 		m_pIntroCamera = UTIL_FindEntityByClassname(m_pIntroCamera, "trigger_camera");
@@ -10359,8 +10356,8 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(MakeBomber)()
 	}
 
 	m_bHasC4 = true;
-	SetBombIcon();
 	pev->body = 1;
+	SetBombIcon();
 
 	m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
 	HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);

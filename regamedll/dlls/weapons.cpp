@@ -1920,8 +1920,8 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				MESSAGE_END();
 
 				pPlayer->m_bHasC4 = true;
-				pPlayer->SetBombIcon(FALSE);
 				pPlayer->pev->body = 1;
+				pPlayer->SetBombIcon(FALSE);
 
 				CBaseEntity *pEntity = nullptr;
 				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))

@@ -697,7 +697,11 @@ BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	pev->health -= flDamage;
 	if (pev->health <= 0)
 	{
+#ifdef REGAMEDLL_FIXES
+		KilledInflicted(pevInflictor, pevAttacker, GIB_NORMAL);
+#else
 		Killed(pevAttacker, GIB_NORMAL);
+#endif
 		return FALSE;
 	}
 
@@ -866,6 +870,17 @@ BOOL CBaseEntity::IsInWorld()
 	}
 
 	// speed
+#ifdef REGAMEDLL_FIXES
+	float maxvel = g_psv_maxvelocity->value;
+	if (pev->velocity.x > maxvel || pev->velocity.y > maxvel || pev->velocity.z > maxvel)
+	{
+		return FALSE;
+	}
+	if (pev->velocity.x < -maxvel || pev->velocity.y < -maxvel || pev->velocity.z < -maxvel)
+	{
+		return FALSE;
+	}
+#else
 	if (pev->velocity.x >= 2000.0 || pev->velocity.y >= 2000.0 || pev->velocity.z >= 2000.0)
 	{
 		return FALSE;
@@ -874,6 +889,7 @@ BOOL CBaseEntity::IsInWorld()
 	{
 		return FALSE;
 	}
+#endif
 
 	return TRUE;
 }

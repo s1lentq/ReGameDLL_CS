@@ -447,7 +447,8 @@ public:
 	void CheckTimeBasedDamage_OrigFunc();
 	edict_t *EntSelectSpawnPoint_OrigFunc();
 	void PlayerDeathThink_OrigFunc();
-
+	void Observer_Think_OrigFunc();
+	
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
 
@@ -975,7 +976,9 @@ inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
 	return pPlayer;
 }
 
+#ifndef REGAMEDLL_API
 extern entvars_t *g_pevLastInflictor;
+#endif
 extern CBaseEntity *g_pLastSpawn;
 extern CBaseEntity *g_pLastCTSpawn;
 extern CBaseEntity *g_pLastTerroristSpawn;
