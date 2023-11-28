@@ -12,7 +12,7 @@ server_studio_api_t IEngineStudio;
 studiohdr_t *g_pstudiohdr;
 
 float (*g_pRotationMatrix)[3][4];
-float (*g_pBoneTransform)[128][3][4];
+float (*g_pBoneTransform)[MAXSTUDIOBONES][3][4];
 
 int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs)
 {
@@ -537,7 +537,7 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_inte
 	IEngineStudio.Mod_Extradata = ((struct server_studio_api_s *)pstudio)->Mod_Extradata;
 
 	g_pRotationMatrix = (float (*)[3][4])rotationmatrix;
-	g_pBoneTransform = (float (*)[128][3][4])bonetransform;
+	g_pBoneTransform = (float (*)[MAXSTUDIOBONES][3][4])bonetransform;
 
 	return 1;
 }
