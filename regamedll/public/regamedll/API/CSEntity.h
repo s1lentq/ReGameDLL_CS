@@ -33,7 +33,8 @@ class CCSEntity
 {
 public:
 	CCSEntity() :
-		m_pContainingEntity(nullptr)
+		m_pContainingEntity(nullptr),
+		m_pevLastInflictor(nullptr)
 	{
 		m_ucDmgPenetrationLevel = 0;
 	}
