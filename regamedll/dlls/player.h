@@ -641,6 +641,7 @@ public:
 	bool ShouldToShowAccount(CBasePlayer *pReceiver) const;
 	bool ShouldToShowHealthInfo(CBasePlayer *pReceiver) const;
 	const char *GetKillerWeaponName(entvars_t *pevInflictor, entvars_t *pevKiller) const;
+	bool ShouldGibPlayer(int iGib);
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
