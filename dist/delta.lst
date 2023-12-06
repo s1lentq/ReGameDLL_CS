@@ -6,14 +6,14 @@
 clientdata_t none
 {
 	DEFINE_DELTA( flTimeStepSound, DT_INTEGER, 10, 1.0 ),
-	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 24, 32.0 ),
-	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 24, 32.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
 	DEFINE_DELTA( velocity[0], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 	DEFINE_DELTA( velocity[1], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 
 	DEFINE_DELTA( m_flNextAttack, DT_FLOAT | DT_SIGNED, 22, 1000.0 ),
 
-	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 24, 32.0 ),
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
 	DEFINE_DELTA( velocity[2], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 
 	DEFINE_DELTA( ammo_nails, DT_SIGNED | DT_INTEGER, 10, 1.0 ),
