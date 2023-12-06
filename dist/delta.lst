@@ -148,7 +148,7 @@ entity_state_player_t gamedll Player_Encode
 	// DEFINE_DELTA( team, DT_INTEGER, 4, 1.0 )
 	// DEFINE_DELTA( playerclass, DT_INTEGER, 4, 1.0 )
 	DEFINE_DELTA( owner, DT_INTEGER, 5, 1.0 ),
-	DEFINE_DELTA( effects, DT_INTEGER, 8, 1.0 ),
+	DEFINE_DELTA( effects, DT_INTEGER, 16, 1.0 ),
 	DEFINE_DELTA( angles[2], DT_ANGLE, 16, 1.0 ),
 	DEFINE_DELTA( colormap, DT_INTEGER, 16, 1.0 ),
 	DEFINE_DELTA( framerate, DT_SIGNED | DT_FLOAT, 8, 16.0 ),
