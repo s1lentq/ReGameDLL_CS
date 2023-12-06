@@ -26,7 +26,7 @@ clientdata_t none
 	DEFINE_DELTA( punchangle[2], DT_SIGNED | DT_FLOAT, 21, 8.0 ),
 	DEFINE_DELTA( flags, DT_INTEGER, 32, 1.0 ), // Cut to 3 bits?
 	DEFINE_DELTA( weaponanim, DT_INTEGER, 8, 1.0 ),
-	DEFINE_DELTA( health, DT_SIGNED | DT_FLOAT, 10, 1.0 ), // Cut # of bits?
+	DEFINE_DELTA( health, DT_FLOAT, 17, 1.0 ), // Cut # of bits?
 	DEFINE_DELTA( maxspeed, DT_FLOAT, 16, 10.0 ),
 	DEFINE_DELTA( flDuckTime, DT_INTEGER, 10, 1.0 ),
 	DEFINE_DELTA( view_ofs[2], DT_SIGNED | DT_FLOAT, 10, 4.0 ),
