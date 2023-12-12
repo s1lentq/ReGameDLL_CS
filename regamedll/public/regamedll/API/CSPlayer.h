@@ -214,12 +214,19 @@ inline void CCSPlayer::SetPlayerDominated(CBasePlayer *pPlayer, bool bDominated)
 	m_bPlayerDominated[iPlayerIndex - 1] = bDominated;
 }
 
+#ifdef REGAMEDLL_API
+// Determine whether player can be gibbed or not
 inline bool CBasePlayer::ShouldGibPlayer(int iGib)
 {
-#ifdef REGAMEDLL_API
-	int threshold = CSPlayer()->m_iGibDamageThreshold;
-#else 
-	int threshold = GIB_PLAYER_THRESHOLD;
-#endif
-	return ((pev->health < threshold && iGib != GIB_NEVER) || iGib == GIB_ALWAYS);
+	// Always gib the player regardless of incoming damage
+	if (iGib == GIB_ALWAYS)
+		return true;
+
+	// Gib the player if health is below the gib damage threshold
+	if (pev->health < CSPlayer()->m_iGibDamageThreshold && iGib != GIB_NEVER)
+		return true;
+
+	// do not gib the player
+	return false;
 }
+#endif
