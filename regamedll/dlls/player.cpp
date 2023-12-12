@@ -82,10 +82,6 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-#ifndef REGAMEDLL_API
-entvars_t *g_pevLastInflictor;
-#endif
-
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
 
 #ifdef REGAMEDLL_API

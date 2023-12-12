@@ -4855,7 +4855,12 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 	}
 
 	cd->flags = pev->flags;
+#ifdef REGAMEDLL_FIXES
+	cd->health = max(pev->health, 0.0f);
+#else
 	cd->health = pev->health;
+#endif
+
 	cd->viewmodel = MODEL_INDEX(STRING(pev->viewmodel));
 	cd->waterlevel = pev->waterlevel;
 	cd->watertype = pev->watertype;

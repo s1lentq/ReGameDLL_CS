@@ -98,54 +98,34 @@ inline CBaseEntity *CCSEntity::BaseEntity() const
 	return this->m_pContainingEntity;
 }
 
+#ifdef REGAMEDLL_API
 inline void CBaseEntity::SetDmgPenetrationLevel(int iPenetrationLevel)
 {
-#ifdef REGAMEDLL_API
 	CSEntity()->m_ucDmgPenetrationLevel = iPenetrationLevel;
-#endif
 }
 
 inline void CBaseEntity::ResetDmgPenetrationLevel()
 {
-#ifdef REGAMEDLL_API
 	CSEntity()->m_ucDmgPenetrationLevel = 0;
-#endif
 }
 
 inline int CBaseEntity::GetDmgPenetrationLevel() const
 {
-#ifdef REGAMEDLL_API
 	return CSEntity()->m_ucDmgPenetrationLevel;
-#else
-	return 0;
-#endif
 }
 
-inline void CBaseEntity::KilledInflicted(entvars_t* pevInflictor, entvars_t *pevAttacker, int iGib)
+inline void CBaseEntity::KilledInflicted(entvars_t *pevInflictor, entvars_t *pevAttacker, int iGib)
 {
-#ifdef REGAMEDLL_API
 	CSEntity()->m_pevLastInflictor = pevInflictor;
-#else
-	g_pevLastInflictor = pevInflictor;
-#endif
-
 	Killed(pevAttacker, iGib);
-
-#ifdef REGAMEDLL_API
 	CSEntity()->m_pevLastInflictor = nullptr;
-#else
-	g_pevLastInflictor = nullptr;
-#endif
 }
 
-inline entvars_t* CBaseEntity::GetLastInflictor()
+inline entvars_t *CBaseEntity::GetLastInflictor()
 {
-#ifdef REGAMEDLL_API
 	return CSEntity()->m_pevLastInflictor;
-#else
-	return g_pevLastInflictor;
-#endif
 }
+#endif
 
 class CCSDelay: public CCSEntity
 {

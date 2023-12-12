@@ -341,7 +341,20 @@ inline CCSEntity *CBaseEntity::CSEntity() const
 {
 	return m_pEntity;
 }
-#endif
+#else // !REGAMEDLL_API
+
+extern entvars_t *g_pevLastInflictor;
+inline void CBaseEntity::SetDmgPenetrationLevel(int iPenetrationLevel) {}
+inline void CBaseEntity::ResetDmgPenetrationLevel() {}
+inline int CBaseEntity::GetDmgPenetrationLevel() const { return 0; }
+inline entvars_t *CBaseEntity::GetLastInflictor() { return g_pevLastInflictor; }
+inline void CBaseEntity::KilledInflicted(entvars_t *pevInflictor, entvars_t *pevAttacker, int iGib)
+{
+	g_pevLastInflictor = pevInflictor;
+	Killed(pevAttacker, iGib);
+	g_pevLastInflictor = nullptr;
+}
+#endif // !REGAMEDLL_API
 
 class CPointEntity: public CBaseEntity {
 public:

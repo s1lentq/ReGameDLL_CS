@@ -63,6 +63,10 @@ NEW_DLL_FUNCTIONS gNewDLLFunctions =
 	nullptr
 };
 
+#ifndef REGAMEDLL_API
+entvars_t *g_pevLastInflictor = nullptr;
+#endif
+
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
 
 int CaseInsensitiveHash(const char *string, int iBounds)
