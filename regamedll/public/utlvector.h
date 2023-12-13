@@ -30,6 +30,8 @@
 
 #include "utlmemory.h"
 
+#include <algorithm>
+
 template<class T>
 class CUtlVector
 {
@@ -125,6 +127,20 @@ public:
 
 	// Set the size by which it grows when it needs to allocate more memory.
 	void SetGrowSize(int size);
+
+	// sort using std:: and expecting a "<" function to be defined for the type
+	void Sort();
+	void Sort(bool (*pfnLessFunc)(const T &src1, const T &src2));
+
+#if defined(_WIN32)
+	void Sort(int (__cdecl *pfnCompare)(const T *, const T *));
+#else
+	void Sort(int (*pfnCompare)(const T *, const T *));
+#endif
+
+	// sort using std:: with a predicate. e.g. [] -> bool (const T &a, const T &b) const { return a < b; }
+	template <class F>
+	void SortPredicate(F &&predicate);
 
 protected:
 	// Can't copy this unless we explicitly do it!
@@ -561,4 +577,56 @@ template <class T>
 void CUtlVector<T>::SetGrowSize(int size)
 {
 	m_Memory.SetGrowSize(size);
+}
+
+// Sort methods
+template <class T>
+void CUtlVector<T>::Sort()
+{
+	std::sort(Base(), Base() + Count());
+}
+
+template <class T>
+void CUtlVector<T>::Sort(bool (*pfnLessFunc)(const T &src1, const T &src2))
+{
+	std::sort(Base(), Base() + Count(),
+		[pfnLessFunc](const T &a, const T &b) -> bool
+		{
+			if (&a == &b)
+				return false;
+
+			return (*pfnLessFunc)(a, b);
+		});
+}
+
+#if defined(_WIN32)
+
+template <class T>
+void CUtlVector<T>::Sort(int (__cdecl *pfnCompare)(const T *, const T *))
+{
+	typedef int (__cdecl *QSortCompareFunc_t)(const void *, const void *);
+	if (Count() <= 1)
+		return;
+
+	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
+}
+
+#else // #if defined(_LINUX)
+
+template <class T>
+void CUtlVector<T>::Sort(int (*pfnCompare)(const T *, const T *))
+{
+	typedef int (*QSortCompareFunc_t)(const void *, const void *);
+	if (Count() <= 1)
+		return;
+
+	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
+}
+#endif // #if defined(_LINUX)
+
+template <class T>
+template <class F>
+void CUtlVector<T>::SortPredicate(F &&predicate)
+{
+	std::sort(Base(), Base() + Count(), predicate);
 }
