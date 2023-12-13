@@ -5276,7 +5276,7 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 		// That is done so that the domination and revenge will be calculated prior
 		// to the death message being sent to the clients
 		int iAttackerEntityIndex = pKillerPlayer->entindex();
-		assert(iAttackerEntityIndex >= 0 && iAttackerEntityIndex < MAX_CLIENTS);
+		assert(iAttackerEntityIndex > 0 && iAttackerEntityIndex <= MAX_CLIENTS);
 
 		int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[iAttackerEntityIndex - 1] + 1;
 		if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION || pKillerPlayer->CSPlayer()->IsPlayerDominated(pVictim->entindex() - 1))

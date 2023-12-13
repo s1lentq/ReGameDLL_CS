@@ -207,6 +207,6 @@ inline bool CCSPlayer::IsPlayerDominated(int iPlayerIndex) const
 inline void CCSPlayer::SetPlayerDominated(CBasePlayer *pPlayer, bool bDominated)
 {
 	int iPlayerIndex = pPlayer->entindex();
-	assert(iPlayerIndex >= 0 && iPlayerIndex < MAX_CLIENTS);
+	assert(iPlayerIndex > 0 && iPlayerIndex <= MAX_CLIENTS);
 	m_bPlayerDominated[iPlayerIndex - 1] = bDominated;
 }
