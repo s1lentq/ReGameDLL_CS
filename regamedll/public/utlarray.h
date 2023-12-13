@@ -20,6 +20,8 @@
 #include "tier0/platform.h"
 #include "tier0/dbg.h"
 
+#include <algorithm>
+
 #define FOR_EACH_ARRAY(vecName, iteratorName)\
 	for (int iteratorName = 0; (vecName).IsUtlArray && iteratorName < (vecName).Count(); iteratorName++)
 
@@ -70,6 +72,15 @@ public:
 	void FillWithValue(const T &src);
 
 	bool HasElement(const T &src) const;
+
+	// sort using std:: and expecting a "<" function to be defined for the type
+	void Sort();
+	void Sort(bool (*pfnLessFunc)(const T &src1, const T &src2));
+	void Sort(int (__cdecl *pfnCompare)(const T *, const T *));
+
+	// sort using std:: with a predicate. e.g. [] -> bool (const T &a, const T &b) const { return a < b; }
+	template <class F>
+	void SortPredicate(F &&predicate);
 
 protected:
 	T m_Memory[MAX_SIZE];
@@ -178,6 +189,43 @@ template <typename T, size_t MAX_SIZE>
 inline int CUtlArray<T, MAX_SIZE>::InvalidIndex()
 {
 	return -1;
+}
+
+// Sort methods
+template <typename T, size_t MAX_SIZE>
+void CUtlArray<T, MAX_SIZE>::Sort()
+{
+	std::sort(Base(), Base() + Count());
+}
+
+template <typename T, size_t MAX_SIZE>
+void CUtlArray<T, MAX_SIZE>::Sort(bool (*pfnLessFunc)(const T &src1, const T &src2))
+{
+	std::sort(Base(), Base() + Count(),
+		[pfnLessFunc](const T &a, const T &b) -> bool
+		{
+			if (&a == &b)
+				return false;
+
+			return (*pfnLessFunc)(a, b);
+		});
+}
+
+template <typename T, size_t MAX_SIZE>
+void CUtlArray<T, MAX_SIZE>::Sort(int (__cdecl *pfnCompare)(const T *, const T *))
+{
+	typedef int (__cdecl *QSortCompareFunc_t)(const void *, const void *);
+	if (Count() <= 1)
+		return;
+
+	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
+}
+
+template <typename T, size_t MAX_SIZE>
+template <class F>
+void CUtlArray<T, MAX_SIZE>::SortPredicate(F &&predicate)
+{
+	std::sort(Base(), Base() + Count(), predicate);
 }
 
 template <typename T, size_t MAX_SIZE>
