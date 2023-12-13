@@ -540,6 +540,7 @@
     <ClCompile Include="..\public\FileSystem.cpp" />
     <ClCompile Include="..\public\interface.cpp" />
     <ClCompile Include="..\public\MemPool.cpp" />
+    <ClCompile Include="..\public\tier0\assert_dialog.cpp" />
     <ClCompile Include="..\public\tier0\dbg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
@@ -548,6 +549,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\public\tier0\platform_win32.cpp" />
     <ClCompile Include="..\public\utlsymbol.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">true</ExcludedFromBuild>
@@ -787,6 +789,7 @@
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\tier0\dbg.h" />
     <ClInclude Include="..\public\tier0\platform.h" />
+    <ClInclude Include="..\public\tier0\resource.h" />
     <ClInclude Include="..\public\utlarray.h" />
     <ClInclude Include="..\public\utlmemory.h" />
     <ClInclude Include="..\public\utlrbtree.h" />
@@ -809,6 +812,9 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\public\tier0\assert_dialog.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{70A2B904-B7DB-4C48-8DE0-AF567360D572}</ProjectGuid>

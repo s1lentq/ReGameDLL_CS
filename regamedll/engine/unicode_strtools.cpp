@@ -756,9 +756,8 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 
 			if (bErr)
 			{
-#ifdef _DEBUG
-				AssertMsg(!(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence");
-#endif
+				DbgAssertMsg(!(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence");
+
 				if (ePolicy & _STRINGCONVERTFLAG_SKIP)
 				{
 					nOut -= EncodeDstLen(uVal);
@@ -793,9 +792,8 @@ int Q_UnicodeConvertT(const SrcType *pIn, int nInChars, DstType *pOut, int nOutB
 			nOut += EncodeDst(uVal, pOut + nOut);
 			if (bErr)
 			{
-#ifdef _DEBUG
-				AssertMsg(!(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence");
-#endif
+				DbgAssertMsg(!(ePolicy & _STRINGCONVERTFLAG_ASSERT), "invalid Unicode byte sequence");
+
 				if (ePolicy & _STRINGCONVERTFLAG_SKIP)
 				{
 					nOut -= EncodeDstLen(uVal);

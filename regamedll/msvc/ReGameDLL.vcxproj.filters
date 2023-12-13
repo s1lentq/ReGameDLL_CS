@@ -555,6 +555,12 @@
     <ClCompile Include="..\public\FileSystem.cpp">
       <Filter>public</Filter>
     </ClCompile>
+    <ClCompile Include="..\public\tier0\platform_win32.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\tier0\assert_dialog.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\version\version.h">
@@ -1055,5 +1061,13 @@
     <ClInclude Include="..\public\utlarray.h">
       <Filter>public</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\tier0\resource.h">
+      <Filter>public\tier0</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\public\tier0\assert_dialog.rc">
+      <Filter>public\tier0</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

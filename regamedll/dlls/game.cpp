@@ -228,8 +228,13 @@ void GameDLL_SwapTeams_f()
 
 #endif // REGAMEDLL_ADD
 
+SpewRetval_t GameDLL_SpewHandler(SpewType_t spewType, int level, const char *pMsg);
+
 void EXT_FUNC GameDLLInit()
 {
+	// By default, direct dbg reporting...
+	SpewOutputFunc(GameDLL_SpewHandler);
+
 	g_pskill          = CVAR_GET_POINTER("skill");
 	g_psv_gravity     = CVAR_GET_POINTER("sv_gravity");
 	g_psv_aim         = CVAR_GET_POINTER("sv_aim");
@@ -454,4 +459,29 @@ void EXT_FUNC GameDLLInit()
 	SERVER_EXECUTE();
 #endif
 
+}
+
+SpewRetval_t GameDLL_SpewHandler(SpewType_t spewType, int level, const char *pMsg)
+{
+	bool bSpewPrint = (CVAR_GET_FLOAT("developer") >= level);
+	switch (spewType)
+	{
+	case SPEW_LOG:
+	case SPEW_MESSAGE:
+		if (bSpewPrint) UTIL_ServerPrint("%s", pMsg);
+		break;
+	case SPEW_WARNING:
+		if (bSpewPrint) UTIL_ServerPrint("Warning: %s", pMsg);
+		break;
+	case SPEW_ERROR:
+		Sys_Error("%s", pMsg);
+		return SPEW_ABORT; // fatal error, terminate it!
+	case SPEW_ASSERT:
+		UTIL_ServerPrint("Assert: %s", pMsg);
+		return SPEW_DEBUGGER; // assert always tries to debugger break
+	default:
+		break;
+	}
+
+	return SPEW_CONTINUE; // spew handled, continue on
 }

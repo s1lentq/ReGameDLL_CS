@@ -41,7 +41,14 @@
 #endif
 
 // Used to step into the debugger
-#define DebuggerBreak() __asm { int 3 }
+#if defined(__GNUC__) && !defined(__clang__)
+	#define DebuggerBreak() __asm__ __volatile__("int3;")
+#else
+	#define DebuggerBreak() __asm { int 3 }
+#endif
+
+#define	DebuggerBreakIfDebugging() if (Plat_IsInDebugSession()) { DebuggerBreak(); }
+#define DebuggerSegFault() { volatile int *null = 0; *null = 0; }
 
 // C functions for external declarations that call the appropriate C++ methods
 #ifndef EXPORT
@@ -104,6 +111,37 @@
 		#pragma warning(disable:4511) // Disable warnings about private copy constructors
 	#endif
 #endif
+
+//
+// Macro to assist in asserting constant invariants during compilation
+
+#define STRINGIFY_INTERNAL(x) #x
+#define STRINGIFY(x) STRINGIFY_INTERNAL(x)
+
+// This implementation of compile time assert has zero cost (so it can safely be
+// included in release builds) and can be used at file scope or function scope.
+#define COMPILE_TIME_ASSERT(pred) static_assert(pred, "Compile time assert constraint is not true: " #pred)
+
+// ASSERT_INVARIANT used to be needed in order to allow COMPILE_TIME_ASSERTs at global
+// scope. However the new COMPILE_TIME_ASSERT macro supports that by default.
+#define ASSERT_INVARIANT(pred)	COMPILE_TIME_ASSERT(pred)
+
+// Macro to assist in asserting constant invariants during compilation
+//
+// If available use static_assert instead of weird language tricks. This
+// leads to much more readable messages when compile time assert constraints
+// are violated.
+#if !defined(OSX) && (_MSC_VER > 1500 || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5))
+	#define PLAT_COMPILE_TIME_ASSERT(pred) static_assert(pred, "Compile time assert constraint is not true: " #pred)
+#else
+	#define PLAT_COMPILE_TIME_ASSERT(pred) typedef int UNIQUE_ID[ (pred) ? 1 : -1]
+#endif
+
+bool Plat_IsInDebugSession();
+void Plat_DebugString(const char *psz);
+void Plat_OutputDebugString(const char *psz);
+void Plat_OutputDebugStringRaw(const char *psz);
+const char *Plat_GetCommandLine();
 
 // Methods to invoke the constructor, copy constructor, and destructor
 template <class T>

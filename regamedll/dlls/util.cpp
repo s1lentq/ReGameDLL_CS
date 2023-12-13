@@ -1497,7 +1497,7 @@ void UTIL_RestartOther(const char *szClassname)
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, szClassname)))
 	{
 		pEntity->Restart();
-		
+
 #ifdef REGAMEDLL_ADD
 		FireTargets("game_entity_restart", pEntity, nullptr, USE_TOGGLE, 0.0);
 #endif
@@ -1731,7 +1731,7 @@ bool UTIL_AreHostagesImprov()
 #ifdef REGAMEDLL_ADD
 	if (g_engfuncs.pfnEngCheckParm == nullptr)
 		return false;
-	
+
 	// someday in CS 1.6
 	int improv = ENG_CHECK_PARM("-host-improv", nullptr);
 	if (improv)
@@ -1819,10 +1819,11 @@ void NORETURN Sys_Error(const char *error, ...)
 
 	CONSOLE_ECHO("FATAL ERROR (shutting down): %s\n", text);
 
-	//TerminateProcess(GetCurrentProcess(), 1);
-	int *null = 0;
-	*null = 0;
-	exit(-1);
+#if defined(_WIN32)
+	MessageBoxA(NULL, text, "Fatal error", MB_ICONERROR | MB_OK);
+#endif
+
+	exit(EXIT_FAILURE);
 }
 
 int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, int &playersInCount, int &playersOutCount, CPlayerInVolumeAdapter *pAdapter)

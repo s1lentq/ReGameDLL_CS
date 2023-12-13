@@ -1,30 +1,10 @@
-/*
-*
-*    This program is free software; you can redistribute it and/or modify it
-*    under the terms of the GNU General Public License as published by the
-*    Free Software Foundation; either version 2 of the License, or (at
-*    your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful, but
-*    WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program; if not, write to the Free Software Foundation,
-*    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*    In addition, as a special exception, the author gives permission to
-*    link the code of this program with the Half-Life Game Engine ("HL
-*    Engine") and Modified Game Libraries ("MODs") developed by Valve,
-*    L.L.C ("Valve").  You must obey the GNU General Public License in all
-*    respects for all of the code used other than the HL Engine and MODs
-*    from Valve.  If you modify this file, you may extend this exception
-*    to your version of the file, but you are not obligated to do so.  If
-*    you do not wish to do so, delete this exception statement from your
-*    version.
-*
-*/
+//========= Copyright Valve Corporation, All rights reserved. ============//
+//
+// Purpose:
+//
+// $NoKeywords: $
+//
+//===========================================================================//
 
 #pragma once
 
@@ -34,16 +14,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-// dll export stuff
-#ifdef TIER0_DLL_EXPORT
-#define DBG_INTERFACE DLL_EXPORT
-#define DBG_OVERLOAD  DLL_GLOBAL_EXPORT
-#define DBG_CLASS     DLL_CLASS_EXPORT
-#else
-#define DBG_INTERFACE DLL_IMPORT
-#define DBG_OVERLOAD  DLL_GLOBAL_IMPORT
-#define DBG_CLASS     DLL_CLASS_IMPORT
-#endif
+#define DBG_DEFAULT_LEVEL 0
 
 // Usage model for the Dbg library
 //
@@ -87,22 +58,6 @@
 //	   Msg("Isn't this exciting %d?", 5);
 //	   Error("I'm just thrilled");
 //
-//   Dynamic Spew messages
-//
-//     It is possible to dynamically turn spew on and off. Dynamic spew is
-//     identified by a spew group and priority level. To turn spew on for a
-//     particular spew group, use SpewActivate("group", level). This will
-//     cause all spew in that particular group with priority levels <= the
-//     level specified in the SpewActivate function to be printed. Use DSpew
-//     to perform the spew:
-//
-//     DWarning("group", level, "Oh I feel even yummier!\n");
-//
-//     Priority level 0 means that the spew will *always* be printed, and group
-//     '*' is the default spew group. If a DWarning is encountered using a group
-//     whose priority has not been set, it will use the priority of the default
-//     group. The priority of the default group is initially set to 0.
-//
 //   Spew output
 //
 //     The output of the spew system can be redirected to an externally-supplied
@@ -130,12 +85,6 @@
 //					++x;
 //				}
 //          );
-//
-//   Code can be activated based on the dynamic spew groups also. Use
-//
-//   DBG_DCODE("group", level,
-//              { int x = 5; ++x; }
-//           );
 //
 // 3. Breaking into the debugger.
 //
@@ -170,7 +119,7 @@ enum SpewRetval_t
 };
 
 // Type of externally defined function used to display debug spew
-typedef SpewRetval_t (*SpewOutputFunc_t)(SpewType_t spewType, const char *pMsg);
+typedef SpewRetval_t (*SpewOutputFunc_t)(SpewType_t spewType, int level, const char *pMsg);
 
 // Used to redirect spew output
 void SpewOutputFunc(SpewOutputFunc_t func);
@@ -178,134 +127,220 @@ void SpewOutputFunc(SpewOutputFunc_t func);
 // Used ot get the current spew output function
 SpewOutputFunc_t GetSpewOutputFunc();
 
-// Used to manage spew groups and subgroups
-void SpewActivate(const char *pGroupName, int level);
-bool IsSpewActive(const char *pGroupName, int level);
-
 // Used to display messages, should never be called directly.
-void _SpewInfo(SpewType_t type, const char *pFile, int line);
-SpewRetval_t _SpewMessage(const char *pMsg, ...);
-SpewRetval_t _DSpewMessage(const char *pGroupName, int level, const char *pMsg, ...);
+SpewRetval_t	_SpewAssert(const char *pFile, int line, int level, const char *pMsg, ...);
+void			_ExitOnFatalAssert();
+bool			_SpewAssertDialog();
 
-// Used to define macros, never use these directly.
-#define _Assert(_exp)                                                      \
-	do {                                                                   \
-		if (!(_exp))                                                       \
-		{                                                                  \
-			_SpewInfo(SPEW_ASSERT, __FILE__, __LINE__);                    \
-			if (_SpewMessage("Assertion Failed: " #_exp) == SPEW_DEBUGGER) \
-			{                                                              \
-				DebuggerBreak();                                           \
-			}                                                              \
-		}                                                                  \
+inline bool ShouldUseNewAssertDialog()
+{
+#if defined(DBGFLAG_ASSERTDLG)
+	return true;		// always show an assert dialog
+#else
+	return Plat_IsInDebugSession();		// only show an assert dialog if the process is being debugged
+#endif // DBGFLAG_ASSERTDLG
+}
+
+#define _AssertMsg(_exp, _msg, _executeExp, _bFatal)                                                                 \
+	do {                                                                                                             \
+		if (!(_exp))                                                                                                 \
+		{                                                                                                            \
+			SpewRetval_t ret = _SpewAssert(__FILE__, __LINE__, DBG_DEFAULT_LEVEL, _msg);                             \
+			if (ret == SPEW_DEBUGGER)                                                                                \
+			{                                                                                                        \
+				if (!ShouldUseNewAssertDialog() || _SpewAssertDialog())                                              \
+					DebuggerBreakIfDebugging();                                                                      \
+			}                                                                                                        \
+			_executeExp;                                                                                             \
+			if (_bFatal)                                                                                             \
+				_ExitOnFatalAssert();                                                                                \
+		}                                                                                                            \
 	} while (0)
 
-#define _AssertMsg(_exp, _msg)                          \
-	do {                                                \
-		if (!(_exp))                                    \
-		{                                               \
-			_SpewInfo(SPEW_ASSERT, __FILE__, __LINE__); \
-			if (_SpewMessage(_msg) == SPEW_DEBUGGER)    \
-			{                                           \
-				DebuggerBreak();                        \
-			}                                           \
-		}                                               \
-	} while (0)
+#define _AssertMsgWarn(_exp, _msg)                                                                                   \
+	if (!(_exp))                                                                                                     \
+	{                                                                                                                \
+		Warning("%s (%d) : " _msg, __FILE__, __LINE__);                                                              \
+	}                                                                                                                \
 
-#define _AssertFunc(_exp, _f)                                           \
-	do {                                                                \
-		if (!(_exp))                                                    \
-		{                                                               \
-			_SpewInfo(SPEW_ASSERT, __FILE__, __LINE__);                 \
-			SpewRetval_t ret = _SpewMessage("Assertion Failed!" #_exp); \
-			_f;                                                         \
-			if (ret == SPEW_DEBUGGER)                                   \
-			{                                                           \
-				DebuggerBreak();                                        \
-			}                                                           \
-		}                                                               \
-	} while (0)
-
-#define _AssertEquals(_exp, _expectedValue)                                                       \
-	do {                                                                                          \
-		if ((_exp) != (_expectedValue))                                                           \
-		{                                                                                         \
-			_SpewInfo(SPEW_ASSERT, __FILE__, __LINE__);                                           \
-			SpewRetval_t ret = _SpewMessage("Expected %d but got %d!", (_expectedValue), (_exp)); \
-			if (ret == SPEW_DEBUGGER)                                                             \
-			{                                                                                     \
-				DebuggerBreak();                                                                  \
-			}                                                                                     \
-		}                                                                                         \
-	} while (0)
-
-#define _AssertFloatEquals(_exp, _expectedValue, _tol)                                            \
-	do {                                                                                          \
-		if (fabs((_exp) - (_expectedValue)) > (_tol))                                             \
-		{                                                                                         \
-			_SpewInfo(SPEW_ASSERT, __FILE__, __LINE__);                                           \
-			SpewRetval_t ret = _SpewMessage("Expected %f but got %f!", (_expectedValue), (_exp)); \
-			if (ret == SPEW_DEBUGGER)                                                             \
-			{                                                                                     \
-				DebuggerBreak();                                                                  \
-			}                                                                                     \
-		}                                                                                         \
+#define _AssertMsgOnce(_exp, _msg, _bFatal)                                                                          \
+	do {                                                                                                             \
+		static bool fAsserted = false;                                                                               \
+		if (!fAsserted && !(_exp))                                                                                   \
+		{                                                                                                            \
+			fAsserted = true;                                                                                        \
+			_AssertMsg(_exp, _msg, (fAsserted = true), _bFatal);                                                     \
+		}                                                                                                            \
 	} while (0)
 
 // Spew macros...
-#ifdef _DEBUG
+// AssertFatal macros
+// AssertFatal is used to detect an unrecoverable error condition.
+// If enabled, it may display an assert dialog (if DBGFLAG_ASSERTDLG is turned on or running under the debugger),
+// and always terminates the application
 
-#define Assert(_exp)                                  _Assert(_exp)
-#define AssertMsg(_exp, _msg)                         _AssertMsg(_exp, _msg)
-#define AssertFunc(_exp, _f)                          _AssertFunc(_exp, _f)
-#define AssertEquals(_exp, _expectedValue)            _AssertEquals(_exp, _expectedValue)
-#define AssertFloatEquals(_exp, _expectedValue, _tol) _AssertFloatEquals(_exp, _expectedValue, _tol)
-#define Verify(_exp)                                  _Assert(_exp)
+#if defined(DBGFLAG_ASSERTFATAL)
 
-#define AssertMsg1(_exp, _msg, a1)                                 _AssertMsg(_exp, CDbgFmtMsg(_msg, a1))
-#define AssertMsg2(_exp, _msg, a1, a2)                             _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2))
-#define AssertMsg3(_exp, _msg, a1, a2, a3)                         _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3))
-#define AssertMsg4(_exp, _msg, a1, a2, a3, a4)                     _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4))
-#define AssertMsg5(_exp, _msg, a1, a2, a3, a4, a5)                 _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5))
-#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6))
-#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6))
-#define AssertMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)         _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7))
-#define AssertMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)     _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8))
-#define AssertMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9) _AssertMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8, a9))
+#define AssertWarn(_exp)												_AssertMsgWarn(_exp, "Assertion Failed: " #_exp)
+#define AssertFatal(_exp)												_AssertMsg(_exp, "Assertion Failed: " #_exp, ((void)0), true)
+#define AssertFatalOnce(_exp)                                           _AssertMsgOnce(_exp, "Assertion Failed: " #_exp, true)
+#define AssertFatalMsg(_exp, _msg)                                      _AssertMsg(_exp, _msg, ((void)0), true)
+#define AssertFatalMsgOnce(_exp, _msg)                                  _AssertMsgOnce(_exp, _msg, true)
+#define AssertFatalFunc(_exp, _f)                                       _AssertMsg(_exp, "Assertion Failed: " #_exp, _f, true)
+#define AssertFatalEquals(_exp, _expectedValue)                         AssertFatalMsg2((_exp) == (_expectedValue), "Expected %d but got %d!", (_expectedValue), (_exp))
+#define AssertFatalFloatEquals(_exp, _expectedValue, _tol)              AssertFatalMsg2(fabs((_exp) - (_expectedValue)) <= (_tol), "Expected %f but got %f!", (_expectedValue), (_exp))
+#define VerifyFatal(_exp)                                               AssertFatal(_exp)
+#define VerifyEqualsFatal(_exp, _expectedValue)                         AssertFatalEquals(_exp, _expectedValue)
 
-#else // _DEBUG
+#if defined(_DEBUG)
+	#define DbgVerifyFatal(_exp)                                        AssertFatal(_exp)
+#else
+	#define DbgVerifyFatal(_exp)                                        ((void)0)
+#endif
 
-#define Assert(_exp)                                  ((void)0)
-#define AssertMsg(_exp, _msg)                         ((void)0)
-#define AssertFunc(_exp, _f)                          ((void)0)
-#define AssertEquals(_exp, _expectedValue)            ((void)0)
-#define AssertFloatEquals(_exp, _expectedValue, _tol) ((void)0)
-#define Verify(_exp)                                  (_exp)
+#define AssertFatalMsg1(_exp, _msg, a1)                                 AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1).ToString())
+#define AssertFatalMsg2(_exp, _msg, a1, a2)                             AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2).ToString())
+#define AssertFatalMsg3(_exp, _msg, a1, a2, a3)                         AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3).ToString())
+#define AssertFatalMsg4(_exp, _msg, a1, a2, a3, a4)                     AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4).ToString())
+#define AssertFatalMsg5(_exp, _msg, a1, a2, a3, a4, a5)                 AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5).ToString())
+#define AssertFatalMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6).ToString())
+#define AssertFatalMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)         AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7).ToString())
+#define AssertFatalMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)     AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8).ToString())
+#define AssertFatalMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9) AssertFatalMsg(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8, a9).ToString())
 
-#define AssertMsg1(_exp, _msg, a1)                                 ((void)0)
-#define AssertMsg2(_exp, _msg, a1, a2)                             ((void)0)
-#define AssertMsg3(_exp, _msg, a1, a2, a3)                         ((void)0)
-#define AssertMsg4(_exp, _msg, a1, a2, a3, a4)                     ((void)0)
-#define AssertMsg5(_exp, _msg, a1, a2, a3, a4, a5)                 ((void)0)
-#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             ((void)0)
-#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             ((void)0)
-#define AssertMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)         ((void)0)
-#define AssertMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)     ((void)0)
-#define AssertMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9) ((void)0)
+#else // DBGFLAG_ASSERTFATAL
 
-#endif // _DEBUG
+#define AssertWarn(_exp)                                                ((void)0)
+#define AssertFatal(_exp)                                               ((void)0)
+#define AssertFatalOnce(_exp)                                           ((void)0)
+#define AssertFatalMsg(_exp, _msg)                                      ((void)0)
+#define AssertFatalMsgOnce(_exp, _msg)                                  ((void)0)
+#define AssertFatalFunc(_exp, _f)                                       ((void)0)
+#define AssertFatalEquals(_exp, _expectedValue)                         ((void)0)
+#define AssertFatalFloatEquals(_exp, _expectedValue, _tol)              ((void)0)
+#define VerifyFatal(_exp)                                               (_exp)
+#define VerifyEqualsFatal(_exp, _expectedValue)                         (_exp)
+
+#define DbgVerifyFatal(_exp)                                            (_exp)
+
+#define AssertFatalMsg1(_exp, _msg, a1)                                 ((void)0)
+#define AssertFatalMsg2(_exp, _msg, a1, a2)                             ((void)0)
+#define AssertFatalMsg3(_exp, _msg, a1, a2, a3)                         ((void)0)
+#define AssertFatalMsg4(_exp, _msg, a1, a2, a3, a4)                     ((void)0)
+#define AssertFatalMsg5(_exp, _msg, a1, a2, a3, a4, a5)                 ((void)0)
+#define AssertFatalMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)             ((void)0)
+#define AssertFatalMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)         ((void)0)
+#define AssertFatalMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)     ((void)0)
+#define AssertFatalMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9) ((void)0)
+
+#endif // DBGFLAG_ASSERTFATAL
+
+#if defined(DBGFLAG_ASSERT)
+
+#define Assert(_exp)                                                    _AssertMsg(_exp, "Assertion Failed: " #_exp, ((void)0), false)
+#define AssertMsg_(_exp, _msg)                                          _AssertMsg(_exp, _msg, ((void)0), false)
+#define AssertOnce(_exp)                                                _AssertMsgOnce(_exp, "Assertion Failed: " #_exp, false)
+#define AssertMsgOnce(_exp, _msg)                                       _AssertMsgOnce(_exp, _msg, false)
+#define AssertFunc(_exp, _f)                                            _AssertMsg(_exp, "Assertion Failed: " #_exp, _f, false)
+#define AssertEquals(_exp, _expectedValue)                              AssertMsg2((_exp) == (_expectedValue), "Expected %d but got %d!", (_expectedValue), (_exp))
+#define AssertFloatEquals(_exp, _expectedValue, _tol)                   AssertMsg2(fabs((_exp) - (_expectedValue)) <= (_tol), "Expected %f but got %f!", (_expectedValue), (_exp))
+#define Verify(_exp)                                                    (_exp)
+#define VerifyEquals(_exp, _expectedValue)                              AssertEquals(_exp, _expectedValue)
+
+#if defined(_DEBUG)
+	#define DbgVerify(_exp)                                             (_exp)
+	#define DbgAssert(_exp)                                             Assert(_exp)
+	#define DbgAssertMsg(_exp, _msg)                                    AssertMsg(_exp, _msg)
+	#define DbgAssertMsg1(_exp, _msg, a1)                               AssertMsg1(_exp, _msg, a1)
+	#define DbgAssertMsg2(_exp, _msg, a1, a2)                           AssertMsg2(_exp, _msg, a1, a2)
+	#define DbgAssertMsg3(_exp, _msg, a1, a2, a3)                       AssertMsg3(_exp, _msg, a1, a2, a3)
+	#define DbgAssertMsg4(_exp, _msg, a1, a2, a3)                       AssertMsg4(_exp, _msg, a1, a2, a3, a4)
+	#define DbgAssertMsg5(_exp, _msg, a1, a2, a3)                       AssertMsg5(_exp, _msg, a1, a2, a3, a4, a5)
+	#define DbgAssertMsg6(_exp, _msg, a1, a2, a3)                       AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)
+	#define DbgAssertMsg7(_exp, _msg, a1, a2, a3)                       AssertMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)
+	#define DbgAssertMsg8(_exp, _msg, a1, a2, a3)                       AssertMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)
+	#define DbgAssertMsg9(_exp, _msg, a1, a2, a3)                       AssertMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9)
+#else
+	#define DbgVerify(_exp)                                             ((void)0)
+	#define DbgAssert(_exp)                                             ((void)0)
+	#define DbgAssertMsg(_exp, _msg)                                    ((void)0)
+	#define DbgAssertMsg1(_exp, _msg, a1)                               ((void)0)
+	#define DbgAssertMsg2(_exp, _msg, a1, a2)                           ((void)0)
+	#define DbgAssertMsg3(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg4(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg5(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg6(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg7(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg8(_exp, _msg, a1, a2, a3)                       ((void)0)
+	#define DbgAssertMsg9(_exp, _msg, a1, a2, a3)                       ((void)0)
+#endif
+
+#define AssertMsg(_exp, _msg)                                           AssertMsg_(_exp, _msg)
+#define AssertMsg1(_exp, _msg, a1)                                      AssertMsg_(_exp, CDbgFmtMsg(_msg, a1).ToString())
+#define AssertMsg2(_exp, _msg, a1, a2)                                  AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2).ToString())
+#define AssertMsg3(_exp, _msg, a1, a2, a3)                              AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3).ToString())
+#define AssertMsg4(_exp, _msg, a1, a2, a3, a4)                          AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4).ToString())
+#define AssertMsg5(_exp, _msg, a1, a2, a3, a4, a5)                      AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5).ToString())
+#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)                  AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6).ToString())
+#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)                  AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6).ToString())
+#define AssertMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)              AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7).ToString())
+#define AssertMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)          AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8).ToString())
+#define AssertMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9)      AssertMsg_(_exp, CDbgFmtMsg(_msg, a1, a2, a3, a4, a5, a6, a7, a8, a9).ToString())
+
+#else // DBGFLAG_ASSERT
+
+#define Assert(_exp)                                                    ((void)0)
+#define AssertMsg(_exp, _msg)                                           ((void)0)
+#define AssertOnce(_exp)                                                ((void)0)
+#define AssertMsgOnce(_exp, _msg)                                       ((void)0)
+#define AssertFunc(_exp, _f)                                            ((void)0)
+#define AssertEquals(_exp, _expectedValue)                              ((void)0)
+#define AssertFloatEquals(_exp, _expectedValue, _tol)                   ((void)0)
+
+#define Verify(_exp)                                                    ((void)0)
+#define VerifyEquals(_exp, _expectedValue)                              ((void)0)
+
+#define DbgVerify(_exp)                                                 ((void)0)
+#define DbgAssert(_exp)                                                 ((void)0)
+#define DbgAssertMsg(_exp, _msg)                                        ((void)0)
+#define DbgAssertMsg1(_exp, _msg, a1)                                   ((void)0)
+#define DbgAssertMsg2(_exp, _msg, a1, a2)                               ((void)0)
+#define DbgAssertMsg3(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg4(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg5(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg6(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg7(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg8(_exp, _msg, a1, a2, a3)                           ((void)0)
+#define DbgAssertMsg9(_exp, _msg, a1, a2, a3)                           ((void)0)
+
+#define AssertMsg1(_exp, _msg, a1)                                      ((void)0)
+#define AssertMsg2(_exp, _msg, a1, a2)                                  ((void)0)
+#define AssertMsg3(_exp, _msg, a1, a2, a3)                              ((void)0)
+#define AssertMsg4(_exp, _msg, a1, a2, a3, a4)                          ((void)0)
+#define AssertMsg5(_exp, _msg, a1, a2, a3, a4, a5)                      ((void)0)
+#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)                  ((void)0)
+#define AssertMsg6(_exp, _msg, a1, a2, a3, a4, a5, a6)                  ((void)0)
+#define AssertMsg7(_exp, _msg, a1, a2, a3, a4, a5, a6, a7)              ((void)0)
+#define AssertMsg8(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8)          ((void)0)
+#define AssertMsg9(_exp, _msg, a1, a2, a3, a4, a5, a6, a7, a8, a9)      ((void)0)
+
+#endif // DBGFLAG_ASSERT
+
+// default level versions (level 0)
+#define Msg(...)        _Msg    (0, __VA_ARGS__)
+#define Warning(...)    _Warning(0, __VA_ARGS__)
+#define Log(...)        _Log    (0, __VA_ARGS__)
+
+// These looked at the "developer" functions
+#define DevMsg(...)     _Msg    (1, __VA_ARGS__)
+#define DevWarning(...) _Warning(1, __VA_ARGS__)
+#define DevLog(...)     _Log    (1, __VA_ARGS__)
 
 // These are always compiled in
-void Msg(const char *pMsg, ...);
-void DMsg(const char *pGroupName, int level, const char *pMsg, ...);
-
-void Warning(const char *pMsg, ...);
-void DWarning(const char *pGroupName, int level, const char *pMsg, ...);
-
-void Log(const char *pMsg, ...);
-void DLog(const char *pGroupName, int level, const char *pMsg, ...);
-
-void Error(const char *pMsg, ...);
+void _Msg    (int level, const char *pMsg, ...);
+void _Warning(int level, const char *pMsg, ...);
+void _Log    (int level, const char *pMsg, ...);
+void Error   (const char *pMsg, ...);
 
 // You can use this macro like a runtime assert macro.
 // If the condition fails, then Error is called with the message. This macro is called
@@ -320,41 +355,16 @@ void Error(const char *pMsg, ...);
 		Error msg;                 \
 	}
 
-// A couple of super-common dynamic spew messages, here for convenience
-// These looked at the "developer" group
-void DevMsg(int level, char const* pMsg, ...);
-void DevWarning(int level, const char *pMsg, ...);
-void DevLog(int level, const char *pMsg, ...);
-
-// default level versions (level 1)
-void DevMsg(char const* pMsg, ...);
-void DevWarning(const char *pMsg, ...);
-void DevLog(const char *pMsg, ...);
-
 // Code macros, debugger interface
-#ifdef _DEBUG
-#define DBG_CODE(_code)          if (0) ; else { _code }
-#define DBG_DCODE(_g, _l, _code) if (IsSpewActive(_g, _l)) { _code } else {}
-#define DBG_BREAK()              DebuggerBreak()
+#if defined(_DEBUG)
+	#define DBG_CODE(_code)          if (0) ; else { _code }
+	#define DBG_DCODE(_g, _l, _code) if (IsSpewActive(_g, _l)) { _code } else {}
+	#define DBG_BREAK()              DebuggerBreakIfDebugging()
 #else // _DEBUG
-#define DBG_CODE(_code)          ((void)0)
-#define DBG_DCODE(_g, _l, _code) ((void)0)
-#define DBG_BREAK()              ((void)0)
+	#define DBG_CODE(_code)          ((void)0)
+	#define DBG_DCODE(_g, _l, _code) ((void)0)
+	#define DBG_BREAK()              ((void)0)
 #endif // _DEBUG
-
-// Macro to assist in asserting constant invariants during compilation
-#define UID_PREFIX generated_id_
-#define UID_CAT1(a, c) a ## c
-#define UID_CAT2(a, c) UID_CAT1(a,c)
-#define UNIQUE_ID UID_CAT2(UID_PREFIX, __LINE__)
-
-#ifdef _DEBUG
-#define COMPILE_TIME_ASSERT(pred) switch(0){case 0:case pred:;}
-#define ASSERT_INVARIANT(pred)    static void UNIQUE_ID() { COMPILE_TIME_ASSERT(pred) }
-#else
-#define COMPILE_TIME_ASSERT(pred)
-#define ASSERT_INVARIANT(pred)
-#endif
 
 // Templates to assist in validating pointers:
 // Have to use these stubs so we don't have to include windows.h here.
@@ -362,15 +372,22 @@ void _AssertValidReadPtr(void *ptr, int count = 1);
 void _AssertValidWritePtr(void *ptr, int count = 1);
 void _AssertValidReadWritePtr(void *ptr, int count = 1);
 
- void AssertValidStringPtr(const char *ptr, int maxchar = 0xFFFFFF);
-template<class T> inline void AssertValidReadPtr(T *ptr, int count = 1)      { _AssertValidReadPtr((void *)ptr, count); }
-template<class T> inline void AssertValidWritePtr(T *ptr, int count = 1)     { _AssertValidWritePtr((void *)ptr, count); }
-template<class T> inline void AssertValidReadWritePtr(T *ptr, int count = 1) { _AssertValidReadWritePtr((void *)ptr, count); }
-
-#define AssertValidThis() AssertValidReadWritePtr(this, sizeof(*this))
+#if defined(DBGFLAG_ASSERT)
+	void AssertValidStringPtr(const char *ptr, int maxchar = 0xFFFFFF);
+	template <class T> inline void AssertValidReadPtr(T *ptr, int count = 1)      { _AssertValidReadPtr((void *)ptr, count); }
+	template <class T> inline void AssertValidWritePtr(T *ptr, int count = 1)     { _AssertValidWritePtr((void *)ptr, count); }
+	template <class T> inline void AssertValidReadWritePtr(T *ptr, int count = 1) { _AssertValidReadWritePtr((void *)ptr, count); }
+	#define AssertValidThis() AssertValidReadWritePtr(this, sizeof(*this))
+#else
+	#define AssertValidStringPtr(...)    ((void)0)
+	#define AssertValidReadPtr(...)      ((void)0)
+	#define AssertValidWritePtr(...)     ((void)0)
+	#define AssertValidReadWritePtr(...) ((void)0)
+	#define AssertValidThis()            ((void)0)
+#endif // #if defined(DBGFLAG_ASSERT)
 
 // Macro to protect functions that are not reentrant
-#ifdef _DEBUG
+#if defined(_DEBUG)
 class CReentryGuard
 {
 public:
@@ -406,6 +423,7 @@ public:
 		va_start(arg_ptr, pszFormat);
 		_vsnprintf(m_szBuf, sizeof(m_szBuf) - 1, pszFormat, arg_ptr);
 		va_end(arg_ptr);
+
 		m_szBuf[sizeof(m_szBuf) - 1] = '\0';
 	}
 
@@ -414,14 +432,11 @@ public:
 		return m_szBuf;
 	}
 
+	const char *ToString() const
+	{
+		return m_szBuf;
+	}
+
 private:
 	char m_szBuf[256];
 };
-
-// Embed debug info in each file.
-//#ifdef _WIN32
-//#ifdef _DEBUG
-//#pragma comment(compiler)
-//#pragma comment(exestr,"*** DEBUG file detected, Last Compile: " __DATE__ ", " __TIME__ " ***")
-//#endif
-//#endif
