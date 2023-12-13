@@ -45,6 +45,15 @@
 
 // Valve libs stuff
 #include "tier0/platform.h"
+
+// Asserts are always compiled in pre-released or nightly builds
+#if !defined(_RELEASEPROD)
+	#define DBGFLAG_ASSERT		// Turns Assert on or off
+	#define DBGFLAG_ASSERTFATAL	// Turns AssertFatal on or off
+	#define DBGFLAG_ASSERTDLG	// Turns assert dialogs on or off and debug breaks on or off when not under the debugger
+								// (Dialogs will always be on when process is being debugged.)
+#endif
+
 #include "tier0/dbg.h"
 
 #include "dlls.h"
