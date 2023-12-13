@@ -56,7 +56,8 @@ public:
 		m_flLongJumpHeight(0),
 		m_flLongJumpForce(0),
 		m_flDuckSpeedMultiplier(0),
-		m_iUserID(-1)
+		m_iUserID(-1),
+		m_iGibDamageThreshold(GIB_PLAYER_THRESHOLD)
 	{
 		m_szModel[0] = '\0';
 
@@ -172,6 +173,8 @@ public:
 	void RecordDamage(CBasePlayer *pAttacker, float flDamage, float flFlashDurationTime = -1);
 	int m_iNumKilledByUnanswered[MAX_CLIENTS]; // [0-31] how many unanswered kills this player has been dealt by each other player
 	bool m_bPlayerDominated[MAX_CLIENTS]; // [0-31] array of state per other player whether player is dominating other players
+
+	int m_iGibDamageThreshold; // negative health to reach to gib player
 };
 
 // Inlines
@@ -210,3 +213,20 @@ inline void CCSPlayer::SetPlayerDominated(CBasePlayer *pPlayer, bool bDominated)
 	Assert(iPlayerIndex > 0 && iPlayerIndex <= MAX_CLIENTS);
 	m_bPlayerDominated[iPlayerIndex - 1] = bDominated;
 }
+
+#ifdef REGAMEDLL_API
+// Determine whether player can be gibbed or not
+inline bool CBasePlayer::ShouldGibPlayer(int iGib)
+{
+	// Always gib the player regardless of incoming damage
+	if (iGib == GIB_ALWAYS)
+		return true;
+
+	// Gib the player if health is below the gib damage threshold
+	if (pev->health < CSPlayer()->m_iGibDamageThreshold && iGib != GIB_NEVER)
+		return true;
+
+	// do not gib the player
+	return false;
+}
+#endif

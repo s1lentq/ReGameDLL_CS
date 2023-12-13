@@ -106,3 +106,4 @@
 #define GIB_NEVER              1 // Never gib, no matter how much death damage is done ( freezing, etc )
 #define GIB_ALWAYS             2 // Always gib ( Houndeye Shock, Barnacle Bite )
 #define GIB_HEALTH_VALUE      -30
+#define GIB_PLAYER_THRESHOLD  -9000

@@ -2451,7 +2451,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		HintMessage("#Hint_cannot_play_because_tk", TRUE, TRUE);
 	}
 
-	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
+	if (ShouldGibPlayer(iGib))
 	{
 
 #ifndef REGAMEDLL_FIXES

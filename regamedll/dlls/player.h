@@ -448,7 +448,7 @@ public:
 	edict_t *EntSelectSpawnPoint_OrigFunc();
 	void PlayerDeathThink_OrigFunc();
 	void Observer_Think_OrigFunc();
-	
+
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
 
@@ -641,6 +641,7 @@ public:
 	bool ShouldToShowAccount(CBasePlayer *pReceiver) const;
 	bool ShouldToShowHealthInfo(CBasePlayer *pReceiver) const;
 	const char *GetKillerWeaponName(entvars_t *pevInflictor, entvars_t *pevKiller) const;
+	bool ShouldGibPlayer(int iGib);
 
 	CBasePlayerItem *GetItemByName(const char *itemName);
 	CBasePlayerItem *GetItemById(WeaponIdType weaponID);
@@ -954,7 +955,24 @@ inline bool CBasePlayer::HasTimePassedSinceDeath(float duration) const
 inline CCSPlayer *CBasePlayer::CSPlayer() const {
 	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
 }
-#endif
+#else // !REGAMEDLL_API
+
+// Determine whether player can be gibbed or not
+inline bool CBasePlayer::ShouldGibPlayer(int iGib)
+{
+	// Always gib the player regardless of incoming damage
+	if (iGib == GIB_ALWAYS)
+		return true;
+
+	// Gib the player if health is below the gib damage threshold
+	if (pev->health < GIB_PLAYER_THRESHOLD && iGib != GIB_NEVER)
+		return true;
+
+	// do not gib the player
+	return false;
+}
+
+#endif // !REGAMEDLL_API
 
 #ifdef REGAMEDLL_FIXES
 
