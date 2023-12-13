@@ -76,7 +76,12 @@ public:
 	// sort using std:: and expecting a "<" function to be defined for the type
 	void Sort();
 	void Sort(bool (*pfnLessFunc)(const T &src1, const T &src2));
+
+#if defined(_WIN32)
 	void Sort(int (__cdecl *pfnCompare)(const T *, const T *));
+#else
+	void Sort(int (*pfnCompare)(const T *, const T *));
+#endif
 
 	// sort using std:: with a predicate. e.g. [] -> bool (const T &a, const T &b) const { return a < b; }
 	template <class F>
@@ -211,6 +216,8 @@ void CUtlArray<T, MAX_SIZE>::Sort(bool (*pfnLessFunc)(const T &src1, const T &sr
 		});
 }
 
+#if defined(_WIN32)
+
 template <typename T, size_t MAX_SIZE>
 void CUtlArray<T, MAX_SIZE>::Sort(int (__cdecl *pfnCompare)(const T *, const T *))
 {
@@ -220,6 +227,19 @@ void CUtlArray<T, MAX_SIZE>::Sort(int (__cdecl *pfnCompare)(const T *, const T *
 
 	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
 }
+
+#else // #if defined(_LINUX)
+
+template <typename T, size_t MAX_SIZE>
+void CUtlArray<T, MAX_SIZE>::Sort(int (*pfnCompare)(const T *, const T *))
+{
+	typedef int (*QSortCompareFunc_t)(const void *, const void *);
+	if (Count() <= 1)
+		return;
+
+	qsort(Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare));
+}
+#endif // #if defined(_LINUX)
 
 template <typename T, size_t MAX_SIZE>
 template <class F>
