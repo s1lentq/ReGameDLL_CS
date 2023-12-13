@@ -541,14 +541,7 @@
     <ClCompile Include="..\public\interface.cpp" />
     <ClCompile Include="..\public\MemPool.cpp" />
     <ClCompile Include="..\public\tier0\assert_dialog.cpp" />
-    <ClCompile Include="..\public\tier0\dbg.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Play|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Play|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\public\tier0\dbg.cpp" />
     <ClCompile Include="..\public\tier0\platform_win32.cpp" />
     <ClCompile Include="..\public\utlsymbol.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
