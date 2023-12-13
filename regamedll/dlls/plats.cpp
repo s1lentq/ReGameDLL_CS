@@ -382,7 +382,7 @@ void CFuncPlat::GoDown()
 		EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMovement), m_volume, ATTN_NORM);
 	}
 
-	assert(m_toggle_state == TS_AT_TOP || m_toggle_state == TS_GOING_UP);
+	DbgAssert(m_toggle_state == TS_AT_TOP || m_toggle_state == TS_GOING_UP);
 	m_toggle_state = TS_GOING_DOWN;
 	SetMoveDone(&CFuncPlat::CallHitBottom);
 	LinearMove(m_vecPosition2, pev->speed);
@@ -401,7 +401,7 @@ void CFuncPlat::HitBottom()
 		EMIT_SOUND(ENT(pev), CHAN_WEAPON, (char *)STRING(pev->noiseStopMoving), m_volume, ATTN_NORM);
 	}
 
-	assert(m_toggle_state == TS_GOING_DOWN);
+	DbgAssert(m_toggle_state == TS_GOING_DOWN);
 	m_toggle_state = TS_AT_BOTTOM;
 }
 
@@ -413,7 +413,7 @@ void CFuncPlat::GoUp()
 		EMIT_SOUND(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseMovement), m_volume, ATTN_NORM);
 	}
 
-	assert(m_toggle_state == TS_AT_BOTTOM || m_toggle_state == TS_GOING_DOWN);
+	DbgAssert(m_toggle_state == TS_AT_BOTTOM || m_toggle_state == TS_GOING_DOWN);
 	m_toggle_state = TS_GOING_UP;
 	SetMoveDone(&CFuncPlat::CallHitTop);
 	LinearMove(m_vecPosition1, pev->speed);
@@ -432,7 +432,7 @@ void CFuncPlat::HitTop()
 		EMIT_SOUND(ENT(pev), CHAN_WEAPON, (char *)STRING(pev->noiseStopMoving), m_volume, ATTN_NORM);
 	}
 
-	assert(m_toggle_state == TS_GOING_UP);
+	DbgAssert(m_toggle_state == TS_GOING_UP);
 	m_toggle_state = TS_AT_TOP;
 
 	if (!IsTogglePlat())
@@ -456,7 +456,7 @@ void CFuncPlat::Blocked(CBaseEntity *pOther)
 	}
 
 	// Send the platform back where it came from
-	assert(m_toggle_state == TS_GOING_UP || m_toggle_state == TS_GOING_DOWN);
+	DbgAssert(m_toggle_state == TS_GOING_UP || m_toggle_state == TS_GOING_DOWN);
 
 	if (m_toggle_state == TS_GOING_UP)
 	{

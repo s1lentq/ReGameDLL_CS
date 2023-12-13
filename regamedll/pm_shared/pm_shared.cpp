@@ -138,7 +138,7 @@ char EXT_FUNC PM_FindTextureType(char *name)
 	int left, right, pivot;
 	int val;
 
-	assert(pm_shared_initialized);
+	DbgAssert(pm_shared_initialized);
 
 	left = 0;
 	right = pm_gcTextures - 1;
@@ -3272,7 +3272,7 @@ LINK_HOOK_VOID_CHAIN(PM_Move, (struct playermove_s *ppmove, int server), ppmove,
 // and client. This will ensure that prediction behaves appropriately.
 void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 {
-	assert(pm_shared_initialized);
+	DbgAssert(pm_shared_initialized);
 
 	pmove = ppmove;
 	
@@ -3317,7 +3317,7 @@ LINK_HOOK_VOID_CHAIN(PM_Init, (struct playermove_s *ppmove), ppmove)
 
 void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 {
-	assert(!pm_shared_initialized);
+	DbgAssert(!pm_shared_initialized);
 
 	pmove = ppmove;
 

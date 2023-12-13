@@ -1294,7 +1294,7 @@ CCSBot::PathResult CCSBot::UpdatePathMovement(bool allowSpeedChange)
 	if (IsOnLadder())
 		Jump(MUST_JUMP);
 
-	assert(m_pathIndex < m_pathLength);
+	Assert(m_pathIndex < m_pathLength);
 
 	// Check if reached the end of the path
 	bool nearEndOfPath = false;

@@ -23,7 +23,7 @@ void CPathCorner::KeyValue(KeyValueData *pkvd)
 
 void CPathCorner::Spawn()
 {
-	assert(("path_corner without a targetname", !pev->targetname.IsNull()));
+	DbgAssertMsg(!pev->targetname.IsNull(), "path_corner without a targetname");
 }
 
 TYPEDESCRIPTION CPathTrack::m_SaveData[] =

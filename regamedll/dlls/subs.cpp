@@ -330,8 +330,8 @@ void CBaseToggle::KeyValue(KeyValueData *pkvd)
 // pev->origin traveling at flSpeed
 void CBaseToggle::LinearMove(Vector vecDest, float flSpeed)
 {
-	assert(("LinearMove:  no speed is defined!", flSpeed != 0));
-	//assert(("LinearMove: no post-move function defined", m_pfnCallWhenMoveDone != nullptr));
+	DbgAssertMsg(flSpeed != 0, "LinearMove:  no speed is defined!");
+	//DbgAssertMsg(m_pfnCallWhenMoveDone != nullptr, "LinearMove: no post-move function defined");
 
 	m_vecFinalDest = vecDest;
 
@@ -382,8 +382,8 @@ NOXREF BOOL CBaseToggle::IsLockedByMaster()
 // Just like LinearMove, but rotational.
 void CBaseToggle::AngularMove(Vector vecDestAngle, float flSpeed)
 {
-	assert(("AngularMove:  no speed is defined!", flSpeed != 0));
-	//assert(("AngularMove: no post-move function defined", m_pfnCallWhenMoveDone != nullptr));
+	DbgAssertMsg(flSpeed != 0, "AngularMove:  no speed is defined!");
+	//DbgAssertMsg(m_pfnCallWhenMoveDone != nullptr, "AngularMove: no post-move function defined");
 
 	m_vecFinalAngle = vecDestAngle;
 

@@ -230,7 +230,7 @@ void *InitializeInterface(char const *interfaceName, CreateInterfaceFn *factoryL
 	}
 
 	// No provider for requested interface!!!
-	// assert(!"No provider for requested interface!!!");
+	// Assert(!"No provider for requested interface!!!");
 
 	return nullptr;
 }

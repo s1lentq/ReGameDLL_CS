@@ -144,7 +144,7 @@ public:
 
 protected:
 	// Can't copy this unless we explicitly do it!
-	CUtlVector(CUtlVector const &vec) { assert(0); }
+	CUtlVector(CUtlVector const &vec) { Assert(0); }
 
 	// Grows the vector
 	void GrowVector(int num = 1);
@@ -203,28 +203,28 @@ inline CUtlVector<T> &CUtlVector<T>::operator=(const CUtlVector<T> &other)
 template <class T>
 inline T &CUtlVector<T>::operator[](int i)
 {
-	assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <class T>
 inline T const &CUtlVector<T>::operator[](int i) const
 {
-	assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <class T>
 inline T &CUtlVector<T>::Element(int i)
 {
-	assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <class T>
 inline T const &CUtlVector<T>::Element(int i) const
 {
-	assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
@@ -301,7 +301,7 @@ void CUtlVector<T>::EnsureCount(int num)
 template <class T>
 void CUtlVector<T>::ShiftElementsRight(int elem, int num)
 {
-	assert(IsValidIndex(elem) || (m_Size == 0) || (num == 0));
+	DbgAssert(IsValidIndex(elem) || (m_Size == 0) || (num == 0));
 	int numToMove = m_Size - elem - num;
 	if ((numToMove > 0) && (num > 0))
 		memmove(&Element(elem+num), &Element(elem), numToMove * sizeof(T));
@@ -310,7 +310,7 @@ void CUtlVector<T>::ShiftElementsRight(int elem, int num)
 template <class T>
 void CUtlVector<T>::ShiftElementsLeft(int elem, int num)
 {
-	assert(IsValidIndex(elem) || (m_Size == 0) || (num == 0));
+	DbgAssert(IsValidIndex(elem) || (m_Size == 0) || (num == 0));
 	int numToMove = m_Size - elem - num;
 	if ((numToMove > 0) && (num > 0))
 	{
@@ -345,7 +345,7 @@ template <class T>
 int CUtlVector<T>::InsertBefore(int elem)
 {
 	// Can insert at the end
-	assert((elem == Count()) || IsValidIndex(elem));
+	DbgAssert((elem == Count()) || IsValidIndex(elem));
 
 	GrowVector();
 	ShiftElementsRight(elem);
@@ -376,7 +376,7 @@ template< class T >
 int CUtlVector<T>::InsertBefore(int elem, T const &src)
 {
 	// Can insert at the end
-	assert((elem == Count()) || IsValidIndex(elem));
+	DbgAssert((elem == Count()) || IsValidIndex(elem));
 
 	GrowVector();
 	ShiftElementsRight(elem);
@@ -450,7 +450,7 @@ inline int CUtlVector<T>::InsertMultipleBefore(int elem, int num, const T *pToIn
 		return elem;
 
 	// Can insert at the end
-	assert((elem == Count()) || IsValidIndex(elem));
+	DbgAssert((elem == Count()) || IsValidIndex(elem));
 
 	GrowVector(num);
 	ShiftElementsRight(elem, num);
@@ -496,7 +496,7 @@ bool CUtlVector<T>::HasElement(T const &src)
 template <class T>
 void CUtlVector<T>::FastRemove(int elem)
 {
-	assert(IsValidIndex(elem));
+	DbgAssert(IsValidIndex(elem));
 
 	Destruct(&Element(elem));
 	if (m_Size > 0)
@@ -527,8 +527,8 @@ void CUtlVector<T>::FindAndRemove(T const &src)
 template <class T>
 void CUtlVector<T>::RemoveMultiple(int elem, int num)
 {
-	assert(IsValidIndex(elem));
-	assert(elem + num <= Count());
+	DbgAssert(IsValidIndex(elem));
+	DbgAssert(elem + num <= Count());
 
 	for (int i = elem + num; --i >= elem;)
 		Destruct(&Element(i));

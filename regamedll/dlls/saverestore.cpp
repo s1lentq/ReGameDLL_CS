@@ -955,10 +955,10 @@ void CGlobalState::DumpGlobals()
 
 void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE state)
 {
-	assert(!Find(globalname));
+	DbgAssert(!Find(globalname));
 
 	globalentity_t *pNewEntity = (globalentity_t *)calloc(sizeof(globalentity_t), 1);
-	assert(pNewEntity != nullptr);
+	DbgAssert(pNewEntity != nullptr);
 
 	pNewEntity->pNext = m_pList;
 	m_pList = pNewEntity;

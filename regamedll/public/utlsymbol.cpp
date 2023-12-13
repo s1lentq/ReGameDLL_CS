@@ -126,7 +126,7 @@ const char *CUtlSymbolTable::String(CUtlSymbol id) const
 	if (!id.IsValid())
 		return "";
 
-	assert(m_Lookup.IsValidIndex((UtlSymId_t)id));
+	DbgAssert(m_Lookup.IsValidIndex((UtlSymId_t)id));
 	return &m_Strings[id];
 }
 

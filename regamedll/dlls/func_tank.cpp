@@ -297,10 +297,10 @@ void CFuncTank::StopControl()
 
 void CFuncTank::ControllerPostFrame()
 {
-	assert(m_pController != nullptr);
-
 	if (gpGlobals->time < m_flNextAttack)
 		return;
+
+	Assert(m_pController != nullptr);
 
 	if (m_pController->pev->button & IN_ATTACK)
 	{
@@ -879,7 +879,7 @@ void CFuncTankControls::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	}
 
 	// if this fails,  most likely means save/restore hasn't worked properly
-	assert(m_pTank != nullptr);
+	DbgAssert(m_pTank != nullptr);
 }
 
 void CFuncTankControls::Think()

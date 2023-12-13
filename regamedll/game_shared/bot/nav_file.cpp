@@ -15,7 +15,6 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <assert.h>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -42,7 +41,7 @@ PlaceDirectory::EntryType PlaceDirectory::GetEntry(Place place) const
 	auto it = std::find(m_directory.begin(), m_directory.end(), place);
 	if (it == m_directory.end())
 	{
-		assert(false && "PlaceDirectory::GetEntry failure");
+		DbgAssert(false && "PlaceDirectory::GetEntry failure");
 		return 0;
 	}
 
@@ -54,7 +53,7 @@ void PlaceDirectory::AddPlace(Place place)
 	if (place == UNDEFINED_PLACE)
 		return;
 
-	assert(place < 1000);
+	DbgAssert(place < 1000);
 
 	if (IsKnown(place))
 		return;
@@ -70,7 +69,7 @@ Place PlaceDirectory::EntryToPlace(EntryType entry) const
 	unsigned int i = entry - 1;
 	if (i > m_directory.size())
 	{
-		assert(false && "PlaceDirectory::EntryToPlace: Invalid entry");
+		DbgAssert(false && "PlaceDirectory::EntryToPlace: Invalid entry");
 		return UNDEFINED_PLACE;
 	}
 

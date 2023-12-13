@@ -127,7 +127,7 @@ inline CBitVec<NUM_BITS> &CBitVec<NUM_BITS>::operator=(CBitVec<NUM_BITS> const &
 template<int NUM_BITS>
 inline CBitVecAccessor CBitVec<NUM_BITS>::operator[](int i)
 {
-	assert(i >= 0 && i < GetNumBits());
+	DbgAssert(i >= 0 && i < GetNumBits());
 	return CBitVecAccessor(m_DWords, i);
 }
 
@@ -152,13 +152,13 @@ inline bool CBitVec<NUM_BITS>::operator!=(CBitVec<NUM_BITS> const &other)
 template<int NUM_BITS>
 inline uint32 CBitVec<NUM_BITS>::GetDWord(int i)
 {
-	assert(i >= 0 && i < NUM_DWORDS);
+	DbgAssert(i >= 0 && i < NUM_DWORDS);
 	return m_DWords[i];
 }
 
 template<int NUM_BITS>
 inline void CBitVec<NUM_BITS>::SetDWord(int i, uint32 val)
 {
-	assert(i >= 0 && i < NUM_DWORDS);
+	DbgAssert(i >= 0 && i < NUM_DWORDS);
 	m_DWords[i] = val;
 }

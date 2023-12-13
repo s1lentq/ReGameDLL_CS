@@ -236,7 +236,7 @@ int AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	}
 
 	giAmmoIndex++;
-	assert(giAmmoIndex < MAX_AMMO_SLOTS);
+	DbgAssert(giAmmoIndex < MAX_AMMO_SLOTS);
 
 	if (giAmmoIndex >= MAX_AMMO_SLOTS)
 		giAmmoIndex = 1;

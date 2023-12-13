@@ -971,7 +971,7 @@ void CTriggerMultiple::Spawn()
 
 	InitTrigger();
 
-	assert(("trigger_multiple with health", pev->health == 0));
+	DbgAssertMsg(pev->health == 0, "trigger_multiple with health");
 
 	//UTIL_SetOrigin(pev, pev->origin);
 	//SET_MODEL(ENT(pev), STRING(pev->model));
