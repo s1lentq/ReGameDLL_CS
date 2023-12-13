@@ -12,7 +12,7 @@ server_studio_api_t IEngineStudio;
 studiohdr_t *g_pstudiohdr;
 
 float (*g_pRotationMatrix)[3][4];
-float (*g_pBoneTransform)[128][3][4];
+float (*g_pBoneTransform)[MAXSTUDIOBONES][3][4];
 
 int ExtractBbox(void *pmodel, int sequence, float *mins, float *maxs)
 {
@@ -244,6 +244,21 @@ void GetSequenceInfo(void *pmodel, entvars_t *pev, float *pflFrameRate, float *p
 	*pflFrameRate = pseqdesc->fps * 256.0f / (pseqdesc->numframes - 1);
 	*pflGroundSpeed = Q_sqrt(pseqdesc->linearmovement[0] * pseqdesc->linearmovement[0] + pseqdesc->linearmovement[1] * pseqdesc->linearmovement[1] + pseqdesc->linearmovement[2] * pseqdesc->linearmovement[2]);
 	*pflGroundSpeed = *pflGroundSpeed * pseqdesc->fps / (pseqdesc->numframes - 1);
+}
+
+float GetSequenceDuration(void *pmodel, entvars_t *pev)
+{
+	studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
+	if (!pstudiohdr)
+		return 0;  // model ptr is not valid
+
+	if (pev->sequence < 0 || pev->sequence >= pstudiohdr->numseq)
+		return 0;  // sequence is not valid
+
+	// get current sequence time
+	mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + int(pev->sequence);
+
+	return pseqdesc->numframes / pseqdesc->fps;
 }
 
 int GetSequenceFlags(void *pmodel, entvars_t *pev)
@@ -522,7 +537,7 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version, struct sv_blending_inte
 	IEngineStudio.Mod_Extradata = ((struct server_studio_api_s *)pstudio)->Mod_Extradata;
 
 	g_pRotationMatrix = (float (*)[3][4])rotationmatrix;
-	g_pBoneTransform = (float (*)[128][3][4])bonetransform;
+	g_pBoneTransform = (float (*)[MAXSTUDIOBONES][3][4])bonetransform;
 
 	return 1;
 }

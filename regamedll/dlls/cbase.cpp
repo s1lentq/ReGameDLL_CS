@@ -63,6 +63,10 @@ NEW_DLL_FUNCTIONS gNewDLLFunctions =
 	nullptr
 };
 
+#ifndef REGAMEDLL_API
+entvars_t *g_pevLastInflictor = nullptr;
+#endif
+
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
 
 int CaseInsensitiveHash(const char *string, int iBounds)
@@ -697,7 +701,11 @@ BOOL CBaseEntity::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	pev->health -= flDamage;
 	if (pev->health <= 0)
 	{
+#ifdef REGAMEDLL_FIXES
+		KilledInflicted(pevInflictor, pevAttacker, GIB_NORMAL);
+#else
 		Killed(pevAttacker, GIB_NORMAL);
+#endif
 		return FALSE;
 	}
 
@@ -866,6 +874,17 @@ BOOL CBaseEntity::IsInWorld()
 	}
 
 	// speed
+#ifdef REGAMEDLL_FIXES
+	float maxvel = g_psv_maxvelocity->value;
+	if (pev->velocity.x > maxvel || pev->velocity.y > maxvel || pev->velocity.z > maxvel)
+	{
+		return FALSE;
+	}
+	if (pev->velocity.x < -maxvel || pev->velocity.y < -maxvel || pev->velocity.z < -maxvel)
+	{
+		return FALSE;
+	}
+#else
 	if (pev->velocity.x >= 2000.0 || pev->velocity.y >= 2000.0 || pev->velocity.z >= 2000.0)
 	{
 		return FALSE;
@@ -874,6 +893,7 @@ BOOL CBaseEntity::IsInWorld()
 	{
 		return FALSE;
 	}
+#endif
 
 	return TRUE;
 }
@@ -1242,7 +1262,7 @@ bool EXT_FUNC IsPenetrableEntity_default(Vector &vecSrc, Vector &vecEnd, entvars
 
 
 LINK_HOOK_CLASS_CHAIN(VectorRef, CBaseEntity, FireBullets3, (VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand), vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand)
-	
+
 // Go to the trouble of combining multiple pellets into a single damage call.
 // This version is used by Players, uses the random seed generator to sync client and server side shots.
 VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
@@ -1340,6 +1360,7 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 
 	float flDamageModifier = 0.5;
 
+	int iStartPenetration = iPenetration;
 	while (iPenetration != 0)
 	{
 		ClearMultiDamage();
@@ -1400,9 +1421,11 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 		default:
 			break;
 		}
+
 		if (tr.flFraction != 1.0f)
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(tr.pHit);
+			int iPenetrationCur = iPenetration;
 			iPenetration--;
 
 			flCurrentDistance = tr.flFraction * flDistance;
@@ -1459,6 +1482,7 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 			flDistance = (flDistance - flCurrentDistance) * flDistanceModifier;
 			vecEnd = vecSrc + (vecDir * flDistance);
 
+			pEntity->SetDmgPenetrationLevel(iStartPenetration - iPenetrationCur);
 			pEntity->TraceAttack(pevAttacker, iCurrentDamage, vecDir, &tr, (DMG_BULLET | DMG_NEVERGIB));
 			iCurrentDamage *= flDamageModifier;
 		}

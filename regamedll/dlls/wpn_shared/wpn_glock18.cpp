@@ -295,7 +295,7 @@ void CGLOCK18::WeaponIdle()
 
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
-			SendWeaponAnim(GLOCK18_SHIELD_IDLE, UseDecrement() != FALSE);
+			SendWeaponAnim(GLOCK18_SHIELD_IDLE_UP, UseDecrement() != FALSE);
 		}
 	}
 	// only idle if the slid isn't back

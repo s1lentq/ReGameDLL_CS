@@ -43,8 +43,10 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->pev->deadflag = DEAD_DEAD;
 		pPlayer->pev->health = 0;
 
+		if (pPlayer->m_bHasC4)
+			pPlayer->DropPlayerItem("weapon_c4");
+
 		pPlayer->RemoveAllItems(TRUE);
-		pPlayer->m_bHasC4 = false;
 
 		pPlayer->m_iTeam = SPECTATOR;
 		pPlayer->m_iJoiningState = JOINED;
@@ -58,7 +60,7 @@ EXT_FUNC bool CCSPlayer::JoinTeam(TeamName team)
 		pPlayer->StartObserver(pentSpawnSpot->v.origin, pentSpawnSpot->v.angles);
 
 		// do we have fadetoblack on? (need to fade their screen back in)
-		if (fadetoblack.value)
+		if (fadetoblack.value == FADETOBLACK_STAY)
 		{
 			UTIL_ScreenFade(pPlayer, Vector(0, 0, 0), 0.001, 0, 0, FFADE_IN);
 		}
@@ -153,15 +155,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 			if (!pPlayer->m_bHasDefuser)
 				return false;
 
-			pPlayer->m_bHasDefuser = false;
-			pPlayer->pev->body = 0;
-
-			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pPlayer->pev);
-				WRITE_BYTE(STATUSICON_HIDE);
-				WRITE_STRING("defuser");
-			MESSAGE_END();
-
-			pPlayer->SendItemStatus();
+			pPlayer->RemoveDefuser();
 		}
 		// item_longjump
 		else if (FStrEq(pszItemName, "longjump"))
@@ -225,38 +219,20 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 					return true; // ammo was reduced, this will be considered a successful result
 			}
 
+			if (bRemoveAmmo) {
+				pPlayer->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+			}
+
 			if (pItem == pPlayer->m_pActiveItem) {
 				((CBasePlayerWeapon *)pItem)->RetireWeapon();
-			}
-
-			if (bRemoveAmmo) {
-				pPlayer->m_rgAmmo[ pItem->PrimaryAmmoIndex() ] = 0;
+				
+				if (pItem->CanHolster() && pItem != pPlayer->m_pActiveItem && !(pPlayer->pev->weapons &(1 << pItem->m_iId))) {
+					return true;
+				}
 			}
 		}
 
-		if (pPlayer->RemovePlayerItem(pItem))
-		{
-			if (FClassnameIs(pItem->pev, "weapon_c4")) {
-				pPlayer->m_bHasC4 = false;
-				pPlayer->pev->body = 0;
-				pPlayer->SetBombIcon(FALSE);
-				pPlayer->SetProgressBarTime(0);
-			}
-
-			pPlayer->pev->weapons &= ~(1 << pItem->m_iId);
-			// No more weapon
-			if ((pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
-				pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
-			}
-
-			pItem->Kill();
-
-			if (!pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
-				pPlayer->m_bHasPrimary = false;
-			}
-
-			return true;
-		}
+		return pItem->DestroyItem();
 	}
 
 	return false;
@@ -273,11 +249,13 @@ EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 
 	if (FStrEq(pszName, "weapon_c4")) {
 		pPlayer->m_bHasC4 = true;
-		pPlayer->SetBombIcon();
 
 		if (pPlayer->m_iTeam == TERRORIST) {
 			pPlayer->pev->body = 1;
 		}
+
+		pPlayer->SetBombIcon();
+
 	} else if (FStrEq(pszName, "weapon_shield")) {
 		pPlayer->DropPrimary();
 		pPlayer->DropPlayerItem("weapon_elite");
@@ -290,7 +268,7 @@ EXT_FUNC CBaseEntity *CCSPlayer::GiveNamedItemEx(const char *pszName)
 
 EXT_FUNC bool CCSPlayer::IsConnected() const
 {
-	return m_pContainingEntity->has_disconnected == false;
+	return BaseEntity()->has_disconnected == false;
 }
 
 EXT_FUNC void CCSPlayer::SetAnimation(PLAYER_ANIM playerAnim)
@@ -318,14 +296,14 @@ EXT_FUNC void CCSPlayer::GiveShield(bool bDeploy)
 	BasePlayer()->GiveShield(bDeploy);
 }
 
-EXT_FUNC void CCSPlayer::DropShield(bool bDeploy)
+EXT_FUNC CBaseEntity *CCSPlayer::DropShield(bool bDeploy)
 {
-	BasePlayer()->DropShield(bDeploy);
+	return BasePlayer()->DropShield(bDeploy);
 }
 
-EXT_FUNC void CCSPlayer::DropPlayerItem(const char *pszItemName)
+EXT_FUNC CBaseEntity *CCSPlayer::DropPlayerItem(const char *pszItemName)
 {
-	BasePlayer()->DropPlayerItem(pszItemName);
+	return BasePlayer()->DropPlayerItem(pszItemName);
 }
 
 EXT_FUNC bool CCSPlayer::RemoveShield()
@@ -574,10 +552,22 @@ void CCSPlayer::ResetVars()
 	m_bSpawnProtectionEffects = false;
 }
 
+// Resets all stats
+void CCSPlayer::ResetAllStats()
+{
+	// Resets the kill history for this player
+	for (int i = 0; i < MAX_CLIENTS; i++)
+	{
+		m_iNumKilledByUnanswered[i] = 0;
+		m_bPlayerDominated[i]       = false;
+	}
+}
+
 void CCSPlayer::OnSpawn()
 {
 	m_bGameForcingRespawn = false;
 	m_flRespawnPending = 0.0f;
+	m_DamageList.Clear();
 }
 
 void CCSPlayer::OnKilled()
@@ -594,4 +584,34 @@ void CCSPlayer::OnKilled()
 		BasePlayer()->RemoveSpawnProtection();
 	}
 #endif
+}
+
+void CCSPlayer::OnConnect()
+{
+	ResetVars();
+	m_iUserID = GETPLAYERUSERID(BasePlayer()->edict());
+}
+
+// Remember this amount of damage that we dealt for stats
+void CCSPlayer::RecordDamage(CBasePlayer *pAttacker, float flDamage, float flFlashDurationTime)
+{
+	if (!pAttacker || !pAttacker->IsPlayer())
+		return;
+
+	int attackerIndex = pAttacker->entindex() - 1;
+	if (attackerIndex < 0 || attackerIndex >= MAX_CLIENTS)
+		return;
+
+	CCSPlayer *pCSAttacker = pAttacker->CSPlayer();
+
+	// Accumulate damage
+	CDamageRecord_t &record = m_DamageList[attackerIndex];
+	if (record.flDamage > 0 && record.userId != pCSAttacker->m_iUserID)
+		record.flDamage = 0; // reset damage if attacker became another client
+
+	record.flDamage += flDamage;
+	record.userId    = pCSAttacker->m_iUserID;
+
+	if (flFlashDurationTime > 0)
+		record.flFlashDurationTime = gpGlobals->time + flFlashDurationTime;
 }

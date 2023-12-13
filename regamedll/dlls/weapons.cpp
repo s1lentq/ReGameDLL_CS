@@ -74,25 +74,31 @@ float GetBaseAccuracy(WeaponIdType id)
 	return 0.0f;
 }
 
+LINK_HOOK_VOID_CHAIN2(ClearMultiDamage)
+
 // Resets the global multi damage accumulator
-void ClearMultiDamage()
+void EXT_FUNC __API_HOOK(ClearMultiDamage)()
 {
 	gMultiDamage.pEntity = nullptr;
 	gMultiDamage.amount = 0;
 	gMultiDamage.type = 0;
 }
 
+LINK_HOOK_VOID_CHAIN(ApplyMultiDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker), pevInflictor, pevAttacker)
+
 // Inflicts contents of global multi damage register on gMultiDamage.pEntity
-void ApplyMultiDamage(entvars_t *pevInflictor, entvars_t *pevAttacker)
+void EXT_FUNC __API_HOOK(ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker)
 {
 	if (!gMultiDamage.pEntity)
 		return;
 
 	gMultiDamage.pEntity->TakeDamage(pevInflictor, pevAttacker, gMultiDamage.amount, gMultiDamage.type);
-
+	gMultiDamage.pEntity->ResetDmgPenetrationLevel();
 }
 
-void AddMultiDamage(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
+LINK_HOOK_VOID_CHAIN(AddMultiDamage, (entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType), pevInflictor, pEntity, flDamage, bitsDamageType)
+
+void EXT_FUNC __API_HOOK(AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	if (!pEntity)
 		return;
@@ -208,10 +214,16 @@ struct {
 #endif
 
 // Precaches the ammo and queues the ammo info for sending to clients
-void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
+int AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 {
+	// string validation
+	if (!szAmmoname || !szAmmoname[0])
+	{
+		return -1;
+	}
+
 	// make sure it's not already in the registry
-	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
+	for (int i = 1; i < MAX_AMMO_SLOTS; i++)
 	{
 		if (!CBasePlayerItem::m_AmmoInfoArray[i].pszName)
 			continue;
@@ -219,7 +231,7 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 		if (!Q_stricmp(CBasePlayerItem::m_AmmoInfoArray[i].pszName, szAmmoname))
 		{
 			// ammo already in registry, just quite
-			return;
+			return i;
 		}
 	}
 
@@ -227,7 +239,7 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 	assert(giAmmoIndex < MAX_AMMO_SLOTS);
 
 	if (giAmmoIndex >= MAX_AMMO_SLOTS)
-		giAmmoIndex = 0;
+		giAmmoIndex = 1;
 
 #ifdef REGAMEDLL_ADD
 	for (auto& ammo : ammoIndex)
@@ -246,6 +258,8 @@ void AddAmmoNameToAmmoRegistry(const char *szAmmoname)
 
 	// Yes, this info is redundant
 	CBasePlayerItem::m_AmmoInfoArray[giAmmoIndex].iId = giAmmoIndex;
+
+	return giAmmoIndex;
 }
 
 // Precaches the weapon and queues the weapon info for sending to clients
@@ -269,15 +283,8 @@ void UTIL_PrecacheOtherWeapon(const char *szClassname)
 		{
 			CBasePlayerItem::m_ItemInfoArray[info.iId] = info;
 
-			if (info.pszAmmo1 && info.pszAmmo1[0] != '\0')
-			{
-				AddAmmoNameToAmmoRegistry(info.pszAmmo1);
-			}
-
-			if (info.pszAmmo2 && info.pszAmmo2[0] != '\0')
-			{
-				AddAmmoNameToAmmoRegistry(info.pszAmmo2);
-			}
+			AddAmmoNameToAmmoRegistry(info.pszAmmo1);
+			AddAmmoNameToAmmoRegistry(info.pszAmmo2);
 		}
 	}
 
@@ -691,7 +698,9 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	return true;
 }
 
-void CBasePlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayerWeapon, KickBack, (float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change), up_base, lateral_base, up_modifier, lateral_modifier, up_max, lateral_max, direction_change)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(KickBack)(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
 {
 	real_t flKickUp;
 	float flKickLateral;
@@ -814,17 +823,25 @@ BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted)
 
 bool CBasePlayerWeapon::HasSecondaryAttack()
 {
+#ifdef REGAMEDLL_API
+	if (CSPlayerWeapon()->m_iStateSecondaryAttack != WEAPON_SECONDARY_ATTACK_NONE)
+	{
+		switch (CSPlayerWeapon()->m_iStateSecondaryAttack)
+		{
+			case WEAPON_SECONDARY_ATTACK_SET:
+				return true;
+			case WEAPON_SECONDARY_ATTACK_BLOCK:
+				return false;
+			default:
+				break;
+		}
+	}
+#endif
+
 	if (m_pPlayer && m_pPlayer->HasShield())
 	{
 		return true;
 	}
-
-#ifdef REGAMEDLL_API
-	if (CSPlayerWeapon()->m_bHasSecondaryAttack)
-	{
-		return true;
-	}
-#endif
 
 	switch (m_iId)
 	{
@@ -888,7 +905,9 @@ void CBasePlayerWeapon::HandleInfiniteAmmo()
 	}
 }
 
-void CBasePlayerWeapon::ItemPostFrame()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayerWeapon, ItemPostFrame)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(ItemPostFrame)()
 {
 	int usableButtons = m_pPlayer->pev->button;
 
@@ -1109,8 +1128,10 @@ void CBasePlayerWeapon::ItemPostFrame()
 	}
 }
 
-void CBasePlayerItem::DestroyItem()
+bool CBasePlayerItem::DestroyItem()
 {
+	bool success = false;
+
 	if (m_pPlayer)
 	{
 		// if attached to a player, remove.
@@ -1118,18 +1139,31 @@ void CBasePlayerItem::DestroyItem()
 		{
 
 #ifdef REGAMEDLL_FIXES
+			if (m_iId == WEAPON_C4) {
+				m_pPlayer->m_bHasC4 = false;
+				m_pPlayer->pev->body = 0;
+				m_pPlayer->SetBombIcon(FALSE);
+				m_pPlayer->SetProgressBarTime(0);
+			}
+
 			m_pPlayer->pev->weapons &= ~(1 << m_iId);
 
 			// No more weapon
 			if ((m_pPlayer->pev->weapons & ~(1 << WEAPON_SUIT)) == 0) {
 				m_pPlayer->m_iHideHUD |= HIDEHUD_WEAPONS;
 			}
-#endif
 
+			if (!m_pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+				m_pPlayer->m_bHasPrimary = false;
+			}
+#endif
+			success = true;
 		}
 	}
 
 	Kill();
+
+	return success;
 }
 
 int CBasePlayerItem::AddToPlayer(CBasePlayer *pPlayer)
@@ -1195,8 +1229,6 @@ void CBasePlayerWeapon::Spawn()
 	if (GetItemInfo(&info)) {
 		CSPlayerItem()->SetItemInfo(&info);
 	}
-
-	CSPlayerWeapon()->m_bHasSecondaryAttack = HasSecondaryAttack();
 #endif
 }
 
@@ -1279,7 +1311,9 @@ int CBasePlayerWeapon::UpdateClientData(CBasePlayer *pPlayer)
 	return 1;
 }
 
-void CBasePlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayerWeapon, SendWeaponAnim, (int iAnim, int skiplocal), iAnim, skiplocal)
+
+void EXT_FUNC CBasePlayerWeapon::__API_HOOK(SendWeaponAnim)(int iAnim, int skiplocal)
 {
 	m_pPlayer->pev->weaponanim = iAnim;
 
@@ -1821,7 +1855,12 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 	pPlayer->OnTouchingWeapon(this);
 
 	bool bRemove = true;
-	bool bEmitSound = false;
+
+#ifdef REGAMEDLL_FIXES 
+	CBasePlayerItem *givenItem = nullptr;
+#else
+	bool givenItem = false;
+#endif 
 
 	// go through my weapons and try to give the usable ones to the player.
 	// it's important the the player be given ammo first, so the weapons code doesn't refuse
@@ -1881,8 +1920,8 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				MESSAGE_END();
 
 				pPlayer->m_bHasC4 = true;
-				pPlayer->SetBombIcon(FALSE);
 				pPlayer->pev->body = 1;
+				pPlayer->SetBombIcon(FALSE);
 
 				CBaseEntity *pEntity = nullptr;
 				while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
@@ -1955,7 +1994,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 							if (pPlayer->AddPlayerItem(pItem))
 							{
 								pItem->AttachToPlayer(pPlayer);
-								bEmitSound = true;
+								givenItem = pItem;
 							}
 
 							// unlink this weapon from the box
@@ -1992,7 +2031,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 						// there we will see only get one grenade. Next step - pick it up, do check again `entity_dump`,
 						// but this time we'll see them x2.
 
-						bEmitSound = true;
+						givenItem = true;
 						pPlayer->GiveNamedItem(grenadeName);
 
 						// unlink this weapon from the box
@@ -2014,7 +2053,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				if (pPlayer->AddPlayerItem(pItem))
 				{
 					pItem->AttachToPlayer(pPlayer);
-					bEmitSound = true;
+#ifdef REGAMEDLL_FIXES
+					givenItem = pItem;
+#else 
+					givenItem = true;
+#endif
 				}
 
 				// unlink this weapon from the box
@@ -2048,9 +2091,21 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 		}
 	}
 
-	if (bEmitSound)
+	if (givenItem)
 	{
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
+
+#ifdef REGAMEDLL_FIXES 
+		// BUGBUG: weaponbox links gun to player, then ammo is given
+		// so FShouldSwitchWeapon's CanHolster (which checks ammo) check inside AddPlayerItem
+		// return FALSE, causing an unarmed player to not deploy any weaponbox grenade
+		if (pPlayer->m_pActiveItem != givenItem && CSGameRules()->FShouldSwitchWeapon(pPlayer, givenItem))
+		{
+			// This re-check is done after ammo is given 
+			// so it ensures player properly deploys grenade from floor
+			pPlayer->SwitchWeapon(givenItem);
+		}
+#endif
 	}
 
 	if (bRemove)
@@ -2656,3 +2711,4 @@ int CBasePlayerItem::iFlags() const
 {
 	return m_ItemInfoEx.iFlags;
 }
+

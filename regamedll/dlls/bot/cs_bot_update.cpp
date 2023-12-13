@@ -437,7 +437,6 @@ void CCSBot::Update()
 		}
 		else
 		{
-			const int dada = offsetof(CCSBot, m_visibleEnemyParts);
 			// check LOS to current enemy (chest & head), in case he's dead (GetNearestEnemy() only returns live players)
 			// note we're not checking FOV - once we've acquired an enemy (which does check FOV), assume we know roughly where he is
 			if (IsVisible(m_enemy, false, &m_visibleEnemyParts))

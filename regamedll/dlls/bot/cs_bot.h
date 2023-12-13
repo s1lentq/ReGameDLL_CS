@@ -42,9 +42,6 @@ enum
 	BOT_PROGGRESS_HIDE,     // hide status bar progress
 };
 
-extern int _navAreaCount;
-extern int _currentIndex;
-
 class CCSBot;
 class BotChatterInterface;
 
@@ -970,7 +967,6 @@ private:
 	const CNavNode *m_navNodeList;
 	CNavNode *m_currentNode;
 	NavDirType m_generationDir;
-	NavAreaList::iterator m_analyzeIter;
 
 	enum ProcessType
 	{

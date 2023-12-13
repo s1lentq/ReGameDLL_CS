@@ -540,6 +540,9 @@
     <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
       <Filter>dlls\API</Filter>
     </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
     <ClCompile Include="..\regamedll\public_amalgamation.cpp">
       <Filter>regamedll</Filter>
     </ClCompile>
@@ -1045,6 +1048,9 @@
     </ClInclude>
     <ClInclude Include="..\public\regamedll\API\CSPlayerItem.h">
       <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlarray.h">
+      <Filter>public</Filter>
     </ClInclude>
     <ClInclude Include="..\dlls\addons\trigger_random.h">
       <Filter>dlls\addons</Filter>

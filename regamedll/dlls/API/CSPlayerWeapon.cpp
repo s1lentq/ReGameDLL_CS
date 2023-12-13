@@ -28,17 +28,27 @@
 
 #include "precompiled.h"
 
-void CCSEntity::FireBullets(int iShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iBulletType, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+EXT_FUNC BOOL CCSPlayerWeapon::DefaultDeploy(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal)
 {
-	BaseEntity()->FireBullets(iShots, vecSrc, vecDirShooting, vecSpread, flDistance, iBulletType, iTracerFreq, iDamage, pevAttacker);
+	return BasePlayerWeapon()->DefaultDeploy(szViewModel, szWeaponModel, iAnim, szAnimExt, skiplocal);
 }
 
-void CCSEntity::FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker)
+EXT_FUNC int CCSPlayerWeapon::DefaultReload(int iClipSize, int iAnim, float fDelay)
 {
-	BaseEntity()->FireBuckshots(cShots, vecSrc, vecDirShooting, vecSpread, flDistance, iTracerFreq, iDamage, pevAttacker);
+	return BasePlayerWeapon()->DefaultReload(iClipSize, iAnim, fDelay);
 }
 
-Vector CCSEntity::FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand)
+EXT_FUNC bool CCSPlayerWeapon::DefaultShotgunReload(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2)
 {
-	return BaseEntity()->FireBullets3(vecSrc, vecDirShooting, vecSpread, flDistance, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bPistol, shared_rand);
+	return BasePlayerWeapon()->DefaultShotgunReload(iAnim, iStartAnim, fDelay, fStartDelay, pszReloadSound1, pszReloadSound2);
+}
+
+EXT_FUNC void CCSPlayerWeapon::KickBack(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change)
+{
+	BasePlayerWeapon()->KickBack(up_base, lateral_base, up_modifier, lateral_modifier, up_max, lateral_max, direction_change);
+}
+
+EXT_FUNC void CCSPlayerWeapon::SendWeaponAnim(int iAnim, int skiplocal)
+{
+	BasePlayerWeapon()->SendWeaponAnim(iAnim, skiplocal);
 }

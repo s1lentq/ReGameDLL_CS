@@ -297,6 +297,7 @@ bool UTIL_AreBotsAllowed();
 bool UTIL_IsBeta();
 bool UTIL_AreHostagesImprov();
 int UTIL_GetNumPlayers();
+int UTIL_CountEntities(const char *szName);
 bool UTIL_IsSpawnPointOccupied(CBaseEntity *pSpot);
 void MAKE_STRING_CLASS(const char *str, entvars_t *pev);
 void NORETURN Sys_Error(const char *error, ...);

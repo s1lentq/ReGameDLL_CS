@@ -82,8 +82,6 @@ const char *CDeadHEV::m_szPoses[] =
 	"deadtable"
 };
 
-entvars_t *g_pevLastInflictor;
-
 LINK_ENTITY_TO_CLASS(player, CBasePlayer, CCSPlayer)
 
 #ifdef REGAMEDLL_API
@@ -745,24 +743,30 @@ void EXT_FUNC CBasePlayer::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float
 	AddMultiDamage(pevAttacker, this, flDamage, bitsDamageType);
 }
 
-const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller)
+const char *CBasePlayer::GetKillerWeaponName(entvars_t *pevInflictor, entvars_t *pevKiller) const
 {
 	// by default, the player is killed by the world
 	const char *killer_weapon_name = "world";
 
 	// Is the killer a client?
-	if (pKiller->flags & FL_CLIENT)
+	if (pevKiller->flags & FL_CLIENT)
 	{
 		if (pevInflictor)
 		{
-			if (pevInflictor == pKiller)
+			if (pevInflictor == pevKiller)
 			{
-				// If the inflictor is the killer, then it must be their current weapon doing the damage
-				CBasePlayer *pAttacker = CBasePlayer::Instance(pKiller);
-				if (pAttacker && pAttacker->IsPlayer())
+#ifdef REGAMEDLL_FIXES
+				// Ignore the inflictor's weapon if victim killed self
+				if (pevKiller != pev)
+#endif
 				{
-					if (pAttacker->m_pActiveItem)
-						killer_weapon_name = pAttacker->m_pActiveItem->pszName();
+					// If the inflictor is the killer, then it must be their current weapon doing the damage
+					CBasePlayer *pAttacker = CBasePlayer::Instance(pevKiller);
+					if (pAttacker && pAttacker->IsPlayer())
+					{
+						if (pAttacker->m_pActiveItem)
+							killer_weapon_name = pAttacker->m_pActiveItem->pszName();
+					}
 				}
 			}
 			else
@@ -781,10 +785,11 @@ const char *GetWeaponName(entvars_t *pevInflictor, entvars_t *pKiller)
 	}
 
 	// strip the monster_* or weapon_* from the inflictor's classname
-	const char cut_weapon[] = "weapon_";
+	const char cut_weapon[]  = "weapon_";
 	const char cut_monster[] = "monster_";
-	const char cut_func[] = "func_";
+	const char cut_func[]    = "func_";
 
+	// replace the code names with the 'real' names
 	if (!Q_strncmp(killer_weapon_name, cut_weapon, sizeof(cut_weapon) - 1))
 		killer_weapon_name += sizeof(cut_weapon) - 1;
 
@@ -955,7 +960,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 				m_bKilledByGrenade = true;
 		}
 
-		LogAttack(pAttack, this, bTeamAttack, int(flDamage), armorHit, pev->health - flDamage, pev->armorvalue, GetWeaponName(pevInflictor, pevAttacker));
+		LogAttack(pAttack, this, bTeamAttack, int(flDamage), armorHit, pev->health - flDamage, pev->armorvalue, GetKillerWeaponName(pevInflictor, pevAttacker));
 		bTookDamage = CBaseMonster::TakeDamage(pevInflictor, pevAttacker, int(flDamage), bitsDamageType);
 
 		if (bTookDamage)
@@ -970,9 +975,13 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 				CBasePlayer *pPlayerAttacker = CBasePlayer::Instance(pevAttacker);
 				if (pPlayerAttacker && !pPlayerAttacker->IsBot() && pPlayerAttacker->m_iTeam != m_iTeam)
 				{
-					TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
+					TheCareerTasks->HandleEnemyInjury(GetKillerWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 				}
 			}
+
+#ifdef REGAMEDLL_API
+			CSPlayer()->RecordDamage(pAttack, flDamage);
+#endif
 		}
 
 		{
@@ -1033,7 +1042,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 	pAttacker = GetClassPtr<CCSEntity>((CBaseEntity *)pevAttacker);
 
-	if (pAttacker->IsPlayer())
+	if (pAttacker->IsPlayer() && !(pAttacker == this && (bitsDamageType & DMG_FALL)))
 	{
 		pAttack = GetClassPtr<CCSPlayer>((CBasePlayer *)pevAttacker);
 
@@ -1075,16 +1084,18 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 
 					pAttack->m_flLastAttackedTeammate = gpGlobals->time;
 				}
-			}
 
 #ifdef REGAMEDLL_ADD
-			// bullets hurt teammates less
-			flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
-				ff_damage_reduction_bullets.value :
-				ff_damage_reduction_other.value), 0.0f, 1.0f);
-#else
-			flDamage *= 0.35;
+				// bullets hurt teammates less
+				flDamage *= clamp(((bitsDamageType & DMG_BULLET) ?
+					ff_damage_reduction_bullets.value :
+					ff_damage_reduction_other.value), 0.0f, 1.0f);
 #endif // #ifdef REGAMEDLL_ADD
+			}
+
+#ifndef REGAMEDLL_ADD
+			flDamage *= 0.35;
+#endif
 		}
 
 		if (pAttack->m_pActiveItem)
@@ -1153,9 +1164,6 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		}
 	}
 
-	// keep track of amount of damage last sustained
-	m_lastDamageAmount = flDamage;
-
 	// Armor
 	// armor doesn't protect against fall or drown damage!
 	if (pev->armorvalue != 0.0f && !(bitsDamageType & (DMG_DROWN | DMG_FALL)) && IsArmored(m_LastHitGroup))
@@ -1195,7 +1203,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		Pain(m_LastHitGroup, false);
 	}
 
-	LogAttack(pAttack, this, bTeamAttack, flDamage, armorHit, pev->health - flDamage, pev->armorvalue, GetWeaponName(pevInflictor, pevAttacker));
+	// keep track of amount of damage last sustained
+	m_lastDamageAmount = flDamage;
+
+	LogAttack(pAttack, this, bTeamAttack, flDamage, armorHit, pev->health - flDamage, pev->armorvalue, GetKillerWeaponName(pevInflictor, pevAttacker));
 
 	// this cast to INT is critical!!! If a player ends up with 0.5 health, the engine will get that
 	// as an int (zero) and think the player is dead! (this will incite a clientside screentilt, etc)
@@ -1213,9 +1224,13 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			CBasePlayer *pPlayerAttacker = CBasePlayer::Instance(pevAttacker);
 			if (pPlayerAttacker && !pPlayerAttacker->IsBot() && pPlayerAttacker->m_iTeam != m_iTeam)
 			{
-				TheCareerTasks->HandleEnemyInjury(GetWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
+				TheCareerTasks->HandleEnemyInjury(GetKillerWeaponName(pevInflictor, pevAttacker), pPlayerAttacker->HasShield(), pPlayerAttacker);
 			}
 		}
+
+#ifdef REGAMEDLL_API
+		CSPlayer()->RecordDamage(pAttack, flDamage);
+#endif
 	}
 
 	{
@@ -1276,7 +1291,7 @@ LINK_HOOK_CHAIN(CWeaponBox *, CreateWeaponBox, (CBasePlayerItem *pItem, CBasePla
 CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo)
 {
 	// create a box to pack the stuff into.
-	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", origin, angles, ENT(pPlayerOwner->pev));
+	CWeaponBox *pWeaponBox = (CWeaponBox *)CBaseEntity::Create("weaponbox", origin, angles, pPlayerOwner ? ENT(pPlayerOwner->pev) : nullptr);
 
 	if (pWeaponBox)
 	{
@@ -1290,7 +1305,7 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 
 		// pack the ammo
 		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
-		if (exhaustibleAmmo || packAmmo)
+		if ((exhaustibleAmmo || packAmmo) && pPlayerOwner)
 		{
 #ifndef REGAMEDLL_ADD
 			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -1415,12 +1430,12 @@ void CBasePlayer::PackDeadPlayerItems()
 		int nBestWeight = 0;
 		CBasePlayerItem *pBestItem = nullptr;
 
-#ifdef REGAMEDLL_ADD 
+#ifdef REGAMEDLL_ADD
 		int iGunsPacked = 0;
 
-		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE) 
+		if (iPackGun == GR_PLR_DROP_GUN_ACTIVE)
 		{
-			// check if we've just already dropped our active gun 
+			// check if we've just already dropped our active gun
 			if (!bSkipPrimSec && m_pActiveItem && m_pActiveItem->CanDrop() && m_pActiveItem->iItemSlot() < KNIFE_SLOT)
 			{
 				pBestItem = m_pActiveItem;
@@ -1429,7 +1444,7 @@ void CBasePlayer::PackDeadPlayerItems()
 			}
 
 			// are we allowing nade drop?
-			if ((int)nadedrops.value >= 1) 
+			if ((int)nadedrops.value >= 1)
 			{
 				// goto item loop but skip guns
 				iPackGun = GR_PLR_DROP_GUN_ALL;
@@ -1460,7 +1475,7 @@ void CBasePlayer::PackDeadPlayerItems()
 #endif
 							)
 						{
-#ifdef REGAMEDLL_ADD 
+#ifdef REGAMEDLL_ADD
 							if (iPackGun == GR_PLR_DROP_GUN_ALL)
 							{
 								CBasePlayerItem *pNext = pPlayerItem->m_pNext;
@@ -1469,10 +1484,10 @@ void CBasePlayer::PackDeadPlayerItems()
 								if (pWeaponBox)
 								{
 									// just push a few units in forward to separate them
-									pWeaponBox->pev->velocity = pWeaponBox->pev->velocity * (1.0 + (iGunsPacked * 0.2)); 
+									pWeaponBox->pev->velocity = pWeaponBox->pev->velocity * (1.0 + (iGunsPacked * 0.2));
 									iGunsPacked++;
 								}
-								
+
 								pPlayerItem = pNext;
 								continue;
 							}
@@ -1676,7 +1691,6 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 
 void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 {
-	bool bKillProgBar = false;
 	int i;
 
 #ifdef REGAMEDLL_FIXES
@@ -1690,33 +1704,17 @@ void CBasePlayer::RemoveAllItems(BOOL removeSuit)
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-		bKillProgBar = true;
 	}
 
 	if (m_bHasC4)
 	{
 		m_bHasC4 = false;
 		pev->body = 0;
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("c4");
-		MESSAGE_END();
-
-		bKillProgBar = true;
+		SetBombIcon(FALSE);
+		SetProgressBarTime(0);
 	}
 
 	RemoveShield();
-
-	if (bKillProgBar)
-		SetProgressBarTime(0);
 
 	if (m_pActiveItem)
 	{
@@ -2121,7 +2119,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 					if (IsBot() && IsBlind()) // dystopm: shouldn't be !IsBot() ?
 						wasBlind = true;
 
-					TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
+					TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, pAttacker, this); // last 2 param swapped to match function definition
 				}
 			}
 #endif
@@ -2152,7 +2150,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 				{
 					if (TheCareerTasks)
 					{
-						TheCareerTasks->HandleEnemyKill(wasBlind, GetWeaponName(g_pevLastInflictor, pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
+						TheCareerTasks->HandleEnemyKill(wasBlind, GetKillerWeaponName(GetLastInflictor(), pevAttacker), m_bHeadshotKilled, killerHasShield, this, pPlayer);
 					}
 				}
 			}
@@ -2162,7 +2160,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 	if (!m_bKilledByBomb)
 	{
-		g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
+		g_pGameRules->PlayerKilled(this, pevAttacker, GetLastInflictor());
 	}
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pev);
@@ -2292,6 +2290,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
 	}
 #else
+
+	float flDyingDuration = GetSequenceDuration() + CGameRules::GetDyingTime();
 	switch ((int)fadetoblack.value)
 	{
 	default:
@@ -2307,12 +2307,12 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 
 		break;
 	}
-	case 1:
+	case FADETOBLACK_STAY:
 	{
-		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, (FFADE_OUT | FFADE_STAYOUT));
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT | FFADE_STAYOUT));
 		break;
 	}
-	case 2:
+	case FADETOBLACK_AT_DYING:
 	{
 		pev->iuser1 = OBS_CHASE_FREE;
 		pev->iuser2 = ENTINDEX(edict());
@@ -2323,15 +2323,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, nullptr, pev);
 		MESSAGE_END();
 
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pObserver = UTIL_PlayerByIndex(i);
-
-			if (pObserver == this || (pObserver && pObserver->IsObservingPlayer(this)))
-			{
-				UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 1, 4, 255, (FFADE_OUT));
-			}
-		}
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 0.8f, flDyingDuration, 255, (FFADE_OUT));
 
 		break;
 	}
@@ -2402,8 +2394,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	}
 
 	SetSuitUpdate(nullptr, SUIT_SENTENCE, SUIT_REPEAT_OK);
-	m_iClientHealth = 0;
 
+	m_iClientHealth = 0;
 	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, nullptr, pev);
 		WRITE_BYTE(m_iClientHealth);
 	MESSAGE_END();
@@ -2431,31 +2423,18 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
 #ifdef REGAMEDLL_FIXES
-		CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", pev->origin, g_vecZero, ENT(pev));
-
-		pDefuser->SetThink(&CBaseEntity::SUB_Remove);
-		pDefuser->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
-		pDefuser->pev->spawnflags |= SF_NORESPAWN;
+		SpawnDefuser(pev->origin, ENT(pev));
 #else
 		GiveNamedItem("item_thighpack");
 #endif
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
 	}
 
-	if (m_bIsDefusing)
-	{
-		SetProgressBarTime(0);
-	}
-
+#ifndef REGAMEDLL_FIXES
+	// NOTE: moved to RemoveDefuser
 	m_bIsDefusing = false;
+#endif
+
 	BuyZoneIcon_Clear(this);
 
 #ifdef REGAMEDLL_ADD
@@ -3646,16 +3625,20 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 			ResetMenu();
 			m_iJoiningState = SHOWTEAMSELECT;
 
+#ifndef REGAMEDLL_FIXES
+			// NOTE: client already clears StatusIcon on join
 			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
 				WRITE_BYTE(STATUSICON_HIDE);
 				WRITE_STRING("defuser");
 			MESSAGE_END();
 
-			m_bHasDefuser = false;
+			m_bHasDefuser = false; // set in ClientPutInServer
+#endif
 			m_fLastMovement = gpGlobals->time;
 			m_bMissionBriefing = false;
 
-			SendItemStatus();
+			SendItemStatus();  // NOTE: must be on UpdateClientData
+
 			break;
 		}
 		case READINGLTEXT:
@@ -3679,7 +3662,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(JoiningThink)()
 		}
 	}
 
-	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime)
+	if (m_pIntroCamera && gpGlobals->time >= m_fIntroCamTime
+#ifdef REGAMEDLL_FIXES 
+		&& m_fIntroCamTime > 0.0 // update only if cameras are available
+#endif
+		)
 	{
 		// find the next another camera
 		m_pIntroCamera = UTIL_FindEntityByClassname(m_pIntroCamera, "trigger_camera");
@@ -3774,18 +3761,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	else if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
-#ifndef REGAMEDLL_FIXES
+#ifdef REGAMEDLL_FIXES
+		SpawnDefuser(pev->origin, ENT(pev));
+#else
 		GiveNamedItem("item_thighpack");
 #endif
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-		SetProgressBarTime(0);
 	}
 
 	BuyZoneIcon_Clear(this);
@@ -3797,7 +3777,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Disappear)()
 	pev->angles.z = 0;
 }
 
-void CBasePlayer::PlayerDeathThink()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, PlayerDeathThink)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(PlayerDeathThink)()
 {
 	if (m_iJoiningState != JOINED)
 		return;
@@ -3857,7 +3839,7 @@ void CBasePlayer::PlayerDeathThink()
 	{
 		// if the player has been dead for one second longer than allowed by forcerespawn,
 		// forcerespawn isn't on. Send the player off to an intermission camera until they choose to respawn.
-		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(3.0f) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+		if (g_pGameRules->IsMultiplayer() && HasTimePassedSinceDeath(CGameRules::GetDyingTime()) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 		{
 			// Send message to everybody to spawn a corpse.
 			SpawnClientSideCorpse();
@@ -4113,11 +4095,10 @@ void CBasePlayer::PlayerUse()
 			if (pTrain && pTrain->Classify() == CLASS_VEHICLE)
 			{
 #ifdef REGAMEDLL_ADD
-				if (legacy_vehicle_block.value)
-					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
-#else
-				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+				if (legacy_vehicle_block.value == 0)
+					return;
 #endif
+				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
 			}
 			return;
 		}
@@ -4659,12 +4640,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			{
 				m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 				m_iTrain = (TRAIN_NEW | TRAIN_OFF);
-#ifdef REGAMEDLL_ADD
-				if (legacy_vehicle_block.value)
-					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
-#else
-				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+
+#ifdef REGAMEDLL_FIXES
+				if (pTrain && pTrain->Classify() == CLASS_VEHICLE) // ensure func_vehicle's m_pDriver assignation
 #endif
+				{
+#ifdef REGAMEDLL_ADD
+					if (legacy_vehicle_block.value == 0)
+						return;
+#endif
+					((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+				}
 				return;
 			}
 		}
@@ -4673,12 +4659,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 			// Turn off the train if you jump, strafe, or the train controls go dead
 			m_afPhysicsFlags &= ~PFLAG_ONTRAIN;
 			m_iTrain = (TRAIN_NEW | TRAIN_OFF);
-#ifdef REGAMEDLL_ADD
-			if (legacy_vehicle_block.value)
-				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
-#else
-			((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+
+#ifdef REGAMEDLL_FIXES
+			if (pTrain->Classify() == CLASS_VEHICLE) // ensure func_vehicle's m_pDriver assignation
 #endif
+			{
+#ifdef REGAMEDLL_ADD
+				if (legacy_vehicle_block.value == 0)
+					return;
+#endif
+				((CFuncVehicle *)pTrain)->m_pDriver = nullptr;
+			}
 			return;
 		}
 
@@ -4784,6 +4775,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 #endif
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, CheckTimeBasedDamage)
+
 // If player is taking time based damage, continue doing damage to player -
 // this simulates the effect of being poisoned, gassed, dosed with radiation etc -
 // anything that continues to do damage even after the initial contact stops.
@@ -4792,7 +4785,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PreThink)()
 // The m_bitsDamageType bit MUST be set if any damage is to be taken.
 // This routine will detect the initial on value of the m_bitsDamageType
 // and init the appropriate counter.  Only processes damage every second.
-void CBasePlayer::CheckTimeBasedDamage()
+void EXT_FUNC CBasePlayer::__API_HOOK(CheckTimeBasedDamage)()
 {
 	int i;
 	byte bDuration = 0;
@@ -5173,7 +5166,17 @@ void EXT_FUNC CBasePlayer::__API_HOOK(PostThink)()
 #endif
 				{
 					m_LastHitGroup = HITGROUP_GENERIC;
-					TakeDamage(VARS(eoNullEntity), VARS(eoNullEntity), flFallDamage, DMG_FALL);
+
+					// FIXED: The player falling to the ground,
+					// the damage caused by the fall is initiated by himself (and not by the world)
+					entvars_t *pevAttacker =
+#ifdef REGAMEDLL_FIXES
+					pev;
+#else
+					VARS(eoNullEntity);
+#endif
+					TakeDamage(pevAttacker, pevAttacker, flFallDamage, DMG_FALL);
+
 					pev->punchangle.x = 0;
 					if (TheBots)
 					{
@@ -5359,7 +5362,9 @@ CBaseEntity *g_pLastSpawn;
 CBaseEntity *g_pLastCTSpawn;
 CBaseEntity *g_pLastTerroristSpawn;
 
-edict_t *CBasePlayer::EntSelectSpawnPoint()
+LINK_HOOK_CLASS_CHAIN2(edict_t *, CBasePlayer, EntSelectSpawnPoint)
+
+edict_t *EXT_FUNC CBasePlayer::__API_HOOK(EntSelectSpawnPoint)()
 {
 	CBaseEntity *pSpot;
 
@@ -5688,10 +5693,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	ReloadWeapons();
 #endif
 
-	if (m_bHasDefuser)
-		pev->body = 1;
-	else
-		pev->body = 0;
+	pev->body = m_bHasDefuser ? 1 : 0;
 
 	if (m_bMissionBriefing)
 	{
@@ -6003,6 +6005,8 @@ void CBasePlayer::Reset()
 	if (CSPlayer()->GetProtectionState() == CCSPlayer::ProtectionSt_Active) {
 		RemoveSpawnProtection();
 	}
+
+	CSPlayer()->ResetAllStats();
 #endif
 }
 
@@ -6378,6 +6382,11 @@ void CBasePlayer::ForceClientDllUpdate()
 #ifdef REGAMEDLL_FIXES
 	// fix for https://github.com/ValveSoftware/halflife/issues/1567
 	m_iClientHideHUD = -1;
+	m_flNextSBarUpdateTime = -1;
+	InitStatusBar();
+#ifdef BUILD_LATEST
+	m_tmNextAccountHealthUpdate = -1;
+#endif
 #endif
 
 	m_iClientHealth = -1;
@@ -6390,6 +6399,84 @@ void CBasePlayer::ForceClientDllUpdate()
 	// Now force all the necessary messages to be sent.
 	UpdateClientData();
 	HandleSignals();
+
+#ifdef REGAMEDLL_FIXES
+	// Update HUD backpack ammo
+	for (int i = 0; i < MAX_AMMO_SLOTS; i++)
+		m_rgAmmoLast[i] = -1;
+
+	// Force update server name
+	MESSAGE_BEGIN(MSG_ONE, gmsgServerName, nullptr, pev);
+		WRITE_STRING(CVAR_GET_STRING("hostname"));
+	MESSAGE_END();
+
+	MESSAGE_BEGIN(MSG_ONE, SVC_ROOMTYPE, nullptr, pev);
+		WRITE_SHORT(int(CVAR_GET_FLOAT("room_type")));
+	MESSAGE_END();
+
+	SendItemStatus();
+
+	// Loop through all active players and update their info to the client who started recording the demo
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer || FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (pPlayer->IsDormant())
+			continue;
+
+		if (pev->deadflag == DEAD_NO)
+		{
+			// NOTE: Don't use here PlayerRelationShip,
+			// because we have to send a radar message about the players in the team anyway,
+			// even if they are not teammates
+			bool sameTeam = pPlayer->m_iTeam == m_iTeam;
+			if (sameTeam)
+			{
+				const Vector &vecOrigin = CSGameRules()->IsFreeForAll() ?
+					g_vecZero : pPlayer->pev->origin;
+
+				MESSAGE_BEGIN(MSG_ONE, gmsgRadar, nullptr, pev);
+					WRITE_BYTE(pPlayer->entindex());
+					WRITE_COORD(vecOrigin.x);
+					WRITE_COORD(vecOrigin.y);
+					WRITE_COORD(vecOrigin.z);
+				MESSAGE_END();
+			}
+
+			// Update last location of players
+			if (sameTeam || pPlayer->m_iTeam == SPECTATOR)
+			{
+				if (pPlayer->m_lastLocation[0])
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgLocation, nullptr, pev);
+						WRITE_BYTE(pPlayer->entindex());
+						WRITE_STRING(pPlayer->m_lastLocation);
+					MESSAGE_END();
+				}
+			}
+		}
+
+		// Update team info
+		MESSAGE_BEGIN(MSG_ONE, gmsgTeamInfo, nullptr, pev);
+			WRITE_BYTE(pPlayer->entindex());
+			WRITE_STRING(GetTeamName(pPlayer->m_iTeam));
+		MESSAGE_END();
+
+		// Update score info Frags, Deaths, etc
+		MESSAGE_BEGIN(MSG_ONE, gmsgScoreInfo, nullptr, pev);
+			WRITE_BYTE(pPlayer->entindex());
+			WRITE_SHORT(int(pPlayer->pev->frags));
+			WRITE_SHORT(pPlayer->m_iDeaths);
+			WRITE_SHORT(0);
+			WRITE_SHORT(pPlayer->m_iTeam);
+		MESSAGE_END();
+
+		// Update player attributes DEAD, BOMB, VIP etc
+		pPlayer->SetScoreAttrib(this);
+	}
+#endif
 }
 
 LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, ImpulseCommands)
@@ -7363,7 +7450,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 
 			if (pEntity)
 			{
-				damageOrigin = pEntity->Center();
+				if (pEntity == this && (m_bitsDamageType & DMG_FALL))
+					damageOrigin = Vector(0, 0, 0); // do not show direction of damage caused by fall
+				else
+					damageOrigin = pEntity->Center();
 			}
 		}
 
@@ -8044,8 +8134,10 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		g_pGameRules->GetNextBestWeapon(this, pWeapon);
 		UTIL_MakeVectors(pev->angles);
 
+#ifndef REGAMEDLL_FIXES
 		if (pWeapon->iItemSlot() == PRIMARY_WEAPON_SLOT)
-			m_bHasPrimary = false;
+			m_bHasPrimary = false; // I may have more than just 1 primary weapon :)
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -8114,6 +8206,12 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 		{
 			return nullptr;
 		}
+
+#ifdef REGAMEDLL_FIXES
+		if (!m_rgpPlayerItems[PRIMARY_WEAPON_SLOT]) {
+			m_bHasPrimary = false; // ensure value assignation on successful weapon removal
+		}
+#endif
 
 		if (FClassnameIs(pWeapon->pev, "weapon_c4"))
 		{
@@ -8286,14 +8384,6 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
-		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
-			WRITE_BYTE(STATUSICON_HIDE);
-			WRITE_STRING("defuser");
-		MESSAGE_END();
-
-		SendItemStatus();
-		SetProgressBarTime(0);
 
 #ifndef REGAMEDLL_FIXES
 		// NOTE: unreachable code - Vaqtincha
@@ -8523,7 +8613,6 @@ void CStripWeapons::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 
 				if (slot == ALL_OTHER_ITEMS)
 				{
-					pPlayer->CSPlayer()->RemovePlayerItem("item_thighpack");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_longjump");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_assaultsuit");
 					pPlayer->CSPlayer()->RemovePlayerItem("item_kevlar");
@@ -8812,6 +8901,23 @@ int GetPlayerGaitsequence(const edict_t *pEdict)
 	return pPlayer->m_iGaitsequence;
 }
 
+float CBasePlayer::GetDyingAnimationDuration() const
+{
+	float animDuration = -1.0f;
+
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float flSequenceDuration = GetSequenceDuration();
+		if (flSequenceDuration > 0)
+			animDuration = flSequenceDuration;
+	}
+
+	if (animDuration <= 0)
+		animDuration = CGameRules::GetDyingTime(); // in case of failure
+
+	return animDuration;
+}
+
 void CBasePlayer::SpawnClientSideCorpse()
 {
 #ifdef REGAMEDLL_FIXES
@@ -8819,9 +8925,7 @@ void CBasePlayer::SpawnClientSideCorpse()
 	if (pev->effects & EF_NODRAW)
 		return;
 
-	// do not make a corpse if the player goes to respawn.
-	if (pev->deadflag == DEAD_RESPAWNABLE)
-		return;
+	// deadflag == DEAD_RESPAWNABLE already checked before
 #endif
 
 #ifdef REGAMEDLL_ADD
@@ -8831,6 +8935,27 @@ void CBasePlayer::SpawnClientSideCorpse()
 
 	char *infobuffer = GET_INFO_BUFFER(edict());
 	char *pModel = GET_KEY_VALUE(infobuffer, "model");
+	float timeDiff = pev->animtime - gpGlobals->time;
+
+#ifdef REGAMEDLL_ADD
+	if (CGameRules::GetDyingTime() < DEATH_ANIMATION_TIME) // a short time, timeDiff estimates to be small
+	{
+		float animDuration = GetDyingAnimationDuration();
+
+		// client receives a negative value
+		animDuration *= -1.0;
+
+		if (animDuration < timeDiff) // reasonable way to fix client side unfinished sequence bug
+		{
+			// by some reason, if client receives a value less
+			// than "(negative current sequence time) * 100"
+			// animation will play visually awkward
+			// at this function call time, player death animation
+			// has already finished so we can safely fake it
+			timeDiff = animDuration;
+		}
+	}
+#endif
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgSendCorpse);
 		WRITE_STRING(pModel);
@@ -8840,14 +8965,17 @@ void CBasePlayer::SpawnClientSideCorpse()
 		WRITE_COORD(pev->angles.x);
 		WRITE_COORD(pev->angles.y);
 		WRITE_COORD(pev->angles.z);
-		WRITE_LONG((pev->animtime - gpGlobals->time) * 100);
+		WRITE_LONG(timeDiff * 100);
 		WRITE_BYTE(pev->sequence);
 		WRITE_BYTE(pev->body);
 		WRITE_BYTE(m_iTeam);
 		WRITE_BYTE(entindex());
 	MESSAGE_END();
 
+#ifndef REGAMEDLL_FIXES
+	// already defined in StartDeathCam
 	m_canSwitchObserverModes = true;
+#endif
 
 	if (TheTutor)
 	{
@@ -9896,7 +10024,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 
 	const char *placeName = "";
 
-	if (pev->deadflag == DEAD_NO && AreRunningCZero())
+	if (pev->deadflag == DEAD_NO && AreBotsAllowed())
 	{
 		// search the place name where is located the player
 		Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
@@ -10096,10 +10224,61 @@ void CBasePlayer::RemoveBomb()
 	}
 }
 
+void CBasePlayer::GiveDefuser()
+{
+	m_bHasDefuser = true;
+	pev->body = 1;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		WRITE_BYTE(STATUSICON_SHOW);
+		WRITE_STRING("defuser");
+		WRITE_BYTE(0);
+		WRITE_BYTE(160);
+		WRITE_BYTE(0);
+	MESSAGE_END();
+
+	SendItemStatus();
+
+#if defined(REGAMEDLL_FIXES) || defined(BUILD_LATEST)
+	SetScoreboardAttributes();
+#endif
+}
+
 void CBasePlayer::RemoveDefuser()
 {
 	m_bHasDefuser = false;
 	pev->body = 0;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, nullptr, pev);
+		WRITE_BYTE(STATUSICON_HIDE);
+		WRITE_STRING("defuser");
+	MESSAGE_END();
+
+	SendItemStatus();
+
+#ifdef REGAMEDLL_FIXES
+	if (m_bIsDefusing)
+	{
+		SetProgressBarTime(0);
+		m_bIsDefusing = false;
+	}
+#else
+	SetProgressBarTime(0);
+#endif
+}
+
+CItemThighPack *SpawnDefuser(const Vector &vecOrigin, edict_t *pentOwner)
+{
+	CItemThighPack *pDefuser = (CItemThighPack *)CBaseEntity::Create("item_thighpack", vecOrigin, g_vecZero, pentOwner);
+
+	if (pDefuser)
+	{
+		pDefuser->SetThink(&CBaseEntity::SUB_Remove);
+		pDefuser->pev->nextthink = gpGlobals->time + CGameRules::GetItemKillDelay();
+		pDefuser->pev->spawnflags |= SF_NORESPAWN;
+	}
+
+	return pDefuser;
 }
 
 void CBasePlayer::Disconnect()
@@ -10174,8 +10353,8 @@ bool EXT_FUNC CBasePlayer::__API_HOOK(MakeBomber)()
 	}
 
 	m_bHasC4 = true;
-	SetBombIcon();
 	pev->body = 1;
+	SetBombIcon();
 
 	m_flDisplayHistory |= DHF_BOMB_RETRIEVED;
 	HintMessage("#Hint_you_have_the_bomb", FALSE, TRUE);
@@ -10409,10 +10588,10 @@ bool CBasePlayer::Kill()
 {
 	if (GetObserverMode() != OBS_NONE)
 		return false;
-	
+
 	if (m_iJoiningState != JOINED)
 		return false;
-	
+
 	m_LastHitGroup = HITGROUP_GENERIC;
 
 	// have the player kill himself
@@ -10421,6 +10600,6 @@ bool CBasePlayer::Kill()
 
 	if (CSGameRules()->m_pVIP == this)
 		CSGameRules()->m_iConsecutiveVIP = 10;
-	
+
 	return true;
 }

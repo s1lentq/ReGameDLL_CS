@@ -296,7 +296,7 @@ public:
 	virtual int iItemSlot() { return 0; }									// return 0 to MAX_ITEMS_SLOTS, used in hud
 
 public:
-	void EXPORT DestroyItem();
+	bool EXPORT DestroyItem();
 	void EXPORT DefaultTouch(CBaseEntity *pOther);
 	void EXPORT FallThink();
 	void EXPORT Materialize();
@@ -403,6 +403,9 @@ public:
 	BOOL DefaultDeploy_OrigFunc(char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal);
 	BOOL DefaultReload_OrigFunc(int iClipSize, int iAnim, float fDelay);
 	bool DefaultShotgunReload_OrigFunc(int iAnim, int iStartAnim, float fDelay, float fStartDelay, const char *pszReloadSound1, const char *pszReloadSound2);
+	void KickBack_OrigFunc(float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change);
+	void SendWeaponAnim_OrigFunc(int iAnim, int skiplocal);
+	void ItemPostFrame_OrigFunc();
 
 	CCSPlayerWeapon *CSPlayerWeapon() const;
 #endif
@@ -540,7 +543,7 @@ enum usp_shield_e
 	USP_SHIELD_SHOOT_EMPTY,
 	USP_SHIELD_RELOAD,
 	USP_SHIELD_DRAW,
-	USP_SHIELD_UP_IDLE,
+	USP_SHIELD_IDLE_UP,
 	USP_SHIELD_UP,
 	USP_SHIELD_DOWN,
 };
@@ -912,6 +915,19 @@ enum deagle_e
 	DEAGLE_DRAW,
 };
 
+enum deagle_shield_e
+{
+	DEAGLE_SHIELD_IDLE1,
+	DEAGLE_SHIELD_SHOOT,
+	DEAGLE_SHIELD_SHOOT2,
+	DEAGLE_SHIELD_SHOOT_EMPTY,
+	DEAGLE_SHIELD_RELOAD,
+	DEAGLE_SHIELD_DRAW,
+	DEAGLE_SHIELD_IDLE_UP,
+	DEAGLE_SHIELD_UP,
+	DEAGLE_SHIELD_DOWN,
+};
+
 class CDEAGLE: public CBasePlayerWeapon
 {
 public:
@@ -1077,7 +1093,7 @@ enum glock18_shield_e
 	GLOCK18_SHIELD_SHOOT_EMPTY,
 	GLOCK18_SHIELD_RELOAD,
 	GLOCK18_SHIELD_DRAW,
-	GLOCK18_SHIELD_IDLE,
+	GLOCK18_SHIELD_IDLE_UP,
 	GLOCK18_SHIELD_UP,
 	GLOCK18_SHIELD_DOWN,
 };
@@ -1192,7 +1208,7 @@ enum knife_shield_e
 	KNIFE_SHIELD_SLASH,
 	KNIFE_SHIELD_ATTACKHIT,
 	KNIFE_SHIELD_DRAW,
-	KNIFE_SHIELD_UPIDLE,
+	KNIFE_SHIELD_IDLE_UP,
 	KNIFE_SHIELD_UP,
 	KNIFE_SHIELD_DOWN,
 };
@@ -1870,6 +1886,19 @@ enum fiveseven_e
 	FIVESEVEN_DRAW,
 };
 
+enum fiveseven_shield_e
+{
+	FIVESEVEN_SHIELD_IDLE1,
+	FIVESEVEN_SHIELD_SHOOT,
+	FIVESEVEN_SHIELD_SHOOT2,
+	FIVESEVEN_SHIELD_SHOOT_EMPTY,
+	FIVESEVEN_SHIELD_RELOAD,
+	FIVESEVEN_SHIELD_DRAW,
+	FIVESEVEN_SHIELD_IDLE_UP,
+	FIVESEVEN_SHIELD_UP,
+	FIVESEVEN_SHIELD_DOWN,
+};
+
 class CFiveSeven: public CBasePlayerWeapon
 {
 public:
@@ -2148,7 +2177,13 @@ int DamageDecal(CBaseEntity *pEntity, int bitsDamageType);
 void DecalGunshot(TraceResult *pTrace, int iBulletType, bool ClientOnly, entvars_t *pShooter, bool bHitMetal);
 void EjectBrass(const Vector &vecOrigin, const Vector &vecLeft, const Vector &vecVelocity, float rotation, int model, int soundtype, int entityIndex);
 void EjectBrass2(const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype, entvars_t *pev);
-void AddAmmoNameToAmmoRegistry(const char *szAmmoname);
+int AddAmmoNameToAmmoRegistry(const char *szAmmoname);
 void UTIL_PrecacheOtherWeapon(const char *szClassname);
 BOOL CanAttack(float attack_time, float curtime, BOOL isPredicted);
 float GetBaseAccuracy(WeaponIdType id);
+
+#ifdef REGAMEDLL_API
+void ClearMultiDamage_OrigFunc();
+void ApplyMultiDamage_OrigFunc(entvars_t *pevInflictor, entvars_t *pevAttacker);
+void AddMultiDamage_OrigFunc(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType);
+#endif

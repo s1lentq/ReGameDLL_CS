@@ -4,7 +4,7 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 {
 	UTIL_ScreenFade(pPlayer, color, fadeTime, fadeHold, alpha, 0);
 
-	if (!fadetoblack.value)
+	if (fadetoblack.value != FADETOBLACK_STAY)
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
@@ -16,12 +16,23 @@ void PlayerBlind(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAt
 		}
 	}
 
-	pPlayer->Blind(fadeTime * 0.33, fadeHold, fadeTime, alpha);
+	float flDurationTime = fadeTime * 0.33;
+	pPlayer->Blind(flDurationTime, fadeHold, fadeTime, alpha);
 
 	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_PLAYER_BLINDED_BY_FLASHBANG, pPlayer);
 	}
+
+#if defined(REGAMEDLL_API) && defined(REGAMEDLL_ADD)
+	float flAdjustedDamage;
+	if (alpha > 200)
+		flAdjustedDamage = fadeTime / 3;
+	else
+		flAdjustedDamage = fadeTime / 1.75;
+
+	pPlayer->CSPlayer()->RecordDamage(CBasePlayer::Instance(pevAttacker), flAdjustedDamage * 16.0f, flDurationTime);
+#endif
 }
 
 void RadiusFlash_TraceLine_hook(CBasePlayer *pPlayer, entvars_t *pevInflictor, entvars_t *pevAttacker, Vector &vecSrc, Vector &vecSpot, TraceResult *tr)
@@ -90,6 +101,19 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 
 		if (tr2.flFraction >= 1.0)
 		{
+#ifdef REGAMEDLL_ADD
+			switch ((int)teamflash.value)
+			{
+			case 0:
+				if (pPlayer->pev != pevAttacker && g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
+					continue;
+				break;
+			case -1:
+				if (pPlayer->pev == pevAttacker || g_pGameRules->PlayerRelationship(pPlayer, CBaseEntity::Instance(pevAttacker)) == GR_TEAMMATE)
+					continue;
+				break;
+			}
+#endif
 			if (tr.fStartSolid)
 			{
 				tr.vecEndPos = vecSrc;
@@ -97,7 +121,6 @@ void RadiusFlash(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker,
 			}
 
 			flAdjustedDamage = flDamage - (vecSrc - tr.vecEndPos).Length() * falloff;
-
 			if (flAdjustedDamage < 0)
 				flAdjustedDamage = 0;
 
@@ -290,6 +313,8 @@ void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker
 
 					if (tr.flFraction != 1.0f)
 						flAdjustedDamage = 0.0f;
+					else
+						pEntity->SetDmgPenetrationLevel(1);
 				}
 #endif
 			}

@@ -318,25 +318,12 @@ enum AmmoBuyAmount
 	AMMO_SMOKEGRENADE_BUY = 1,
 };
 
-enum shieldgun_e
-{
-	SHIELDGUN_IDLE,
-	SHIELDGUN_SHOOT1,
-	SHIELDGUN_SHOOT2,
-	SHIELDGUN_SHOOT_EMPTY,
-	SHIELDGUN_RELOAD,
-	SHIELDGUN_DRAW,
-	SHIELDGUN_DRAWN_IDLE,
-	SHIELDGUN_UP,
-	SHIELDGUN_DOWN,
-};
-
 // custom
 enum shieldgren_e
 {
-	SHIELDREN_IDLE = 4,
-	SHIELDREN_UP,
-	SHIELDREN_DOWN
+	SHIELDGREN_IDLE = 4, // 3 is last grenade viewmodel sequence
+	SHIELDGREN_UP,
+	SHIELDGREN_DOWN
 };
 
 enum InventorySlotType
@@ -457,6 +444,8 @@ void WeaponInfoReset();
 
 WeaponInfoStruct *GetWeaponInfo(int weaponID);
 WeaponInfoStruct *GetWeaponInfo(const char *weaponName);
+
+WeaponInfoStruct *GetDefaultWeaponInfo(int weaponID);
 
 AmmoInfoStruct *GetAmmoInfo(AmmoType ammoID);
 AmmoInfoStruct *GetAmmoInfo(const char *ammoName);

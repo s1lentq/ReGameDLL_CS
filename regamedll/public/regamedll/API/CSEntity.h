@@ -33,8 +33,10 @@ class CCSEntity
 {
 public:
 	CCSEntity() :
-		m_pContainingEntity(nullptr)
+		m_pContainingEntity(nullptr),
+		m_pevLastInflictor(nullptr)
 	{
+		m_ucDmgPenetrationLevel = 0;
 	}
 
 	virtual ~CCSEntity() {}
@@ -42,13 +44,19 @@ public:
 	virtual void FireBuckshots(ULONG cShots, Vector &vecSrc, Vector &vecDirShooting, Vector &vecSpread, float flDistance, int iTracerFreq, int iDamage, entvars_t *pevAttacker);
 	virtual Vector FireBullets3(Vector &vecSrc, Vector &vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand);
 
+	CBaseEntity *BaseEntity() const;
+
 public:
 	CBaseEntity *m_pContainingEntity;
+	unsigned char m_ucDmgPenetrationLevel; // penetration level of the damage caused by the inflictor
+	entvars_t *m_pevLastInflictor;
 
 private:
 #if defined(_MSC_VER)
-#pragma region reserve_vfuncs_Region
+#pragma region reserve_data_Region
 #endif
+	char CCSEntity_Reserve[0x3FF7];
+
 	virtual void func_reserve1() {};
 	virtual void func_reserve2() {};
 	virtual void func_reserve3() {};
@@ -84,28 +92,71 @@ private:
 #endif
 };
 
+// Inlines
+inline CBaseEntity *CCSEntity::BaseEntity() const
+{
+	return this->m_pContainingEntity;
+}
+
+#ifdef REGAMEDLL_API
+inline void CBaseEntity::SetDmgPenetrationLevel(int iPenetrationLevel)
+{
+	CSEntity()->m_ucDmgPenetrationLevel = iPenetrationLevel;
+}
+
+inline void CBaseEntity::ResetDmgPenetrationLevel()
+{
+	CSEntity()->m_ucDmgPenetrationLevel = 0;
+}
+
+inline int CBaseEntity::GetDmgPenetrationLevel() const
+{
+	return CSEntity()->m_ucDmgPenetrationLevel;
+}
+
+inline void CBaseEntity::KilledInflicted(entvars_t *pevInflictor, entvars_t *pevAttacker, int iGib)
+{
+	CSEntity()->m_pevLastInflictor = pevInflictor;
+	Killed(pevAttacker, iGib);
+	CSEntity()->m_pevLastInflictor = nullptr;
+}
+
+inline entvars_t *CBaseEntity::GetLastInflictor()
+{
+	return CSEntity()->m_pevLastInflictor;
+}
+#endif
+
 class CCSDelay: public CCSEntity
 {
 public:
 
+private:
+	int CCSDelay_Reserve[0x100];
 };
 
 class CCSAnimating: public CCSDelay
 {
 public:
 
+private:
+	int CCSAnimating_Reserve[0x100];
 };
 
 class CCSToggle: public CCSAnimating
 {
 public:
 
+private:
+	int CCSToggle_Reserve[0x100];
 };
 
 class CCSMonster: public CCSToggle
 {
 public:
 
+private:
+	int CCSMonster_Reserve[0x100];
 };
 
-#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION002"
+#define CSENTITY_API_INTERFACE_VERSION "CSENTITY_API_INTERFACE_VERSION003"

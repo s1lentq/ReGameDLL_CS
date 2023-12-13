@@ -6,7 +6,7 @@ int __API_HOOK(GetForceCamera)(CBasePlayer *pObserver)
 {
 	int retVal;
 
-	if (!fadetoblack.value)
+	if (fadetoblack.value != FADETOBLACK_STAY)
 	{
 		retVal = int(CVAR_GET_FLOAT("mp_forcechasecam"));
 
@@ -51,7 +51,7 @@ void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)
 {
 	bool clearProgress = false;
 	bool clearBlindness = false;
-	bool blindnessOk = (fadetoblack.value == 0);
+	bool blindnessOk = (fadetoblack.value != FADETOBLACK_STAY);
 	bool clearNightvision = false;
 
 	if (pObserver->GetObserverMode() == OBS_IN_EYE)
@@ -478,10 +478,19 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 	// verify observer target again
 	if (m_hObserverTarget)
 	{
+#ifdef REGAMEDLL_FIXES
+		m_hObserverTarget = Observer_IsValidTarget( ENTINDEX(m_hObserverTarget->edict()), forcecamera != CAMERA_MODE_SPEC_ANYONE );
+#else 
 		CBasePlayer *pTarget = m_hObserverTarget;
 
-		if (pTarget == this || !pTarget || pTarget->has_disconnected || pTarget->GetObserverMode() != OBS_NONE || (pTarget->pev->effects & EF_NODRAW) || (forcecamera != CAMERA_MODE_SPEC_ANYONE && pTarget->m_iTeam != m_iTeam))
+		if (pTarget == this 
+			|| !pTarget 
+			|| pTarget->has_disconnected 
+			|| pTarget->GetObserverMode() != OBS_NONE 
+			|| (pTarget->pev->effects & EF_NODRAW) 
+			|| (forcecamera != CAMERA_MODE_SPEC_ANYONE && pTarget->m_iTeam != m_iTeam))
 			m_hObserverTarget = nullptr;
+#endif
 	}
 
 	// set spectator mode
@@ -532,7 +541,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 	m_bWasFollowing = false;
 }
 
-void CBasePlayer::Observer_Think()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, Observer_Think)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(Observer_Think)()
 {
 	Observer_HandleButtons();
 	Observer_CheckTarget();

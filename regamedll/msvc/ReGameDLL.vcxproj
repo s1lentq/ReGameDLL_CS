@@ -48,6 +48,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
       </ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Tests|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\dlls\basemonster.cpp" />
     <ClCompile Include="..\dlls\bmodels.cpp" />
     <ClCompile Include="..\dlls\bot\cs_bot.cpp">
@@ -785,6 +789,7 @@
     <ClInclude Include="..\public\regamedll\regamedll_api.h" />
     <ClInclude Include="..\public\tier0\dbg.h" />
     <ClInclude Include="..\public\tier0\platform.h" />
+    <ClInclude Include="..\public\utlarray.h" />
     <ClInclude Include="..\public\utlmemory.h" />
     <ClInclude Include="..\public\utlrbtree.h" />
     <ClInclude Include="..\public\utlsymbol.h" />
