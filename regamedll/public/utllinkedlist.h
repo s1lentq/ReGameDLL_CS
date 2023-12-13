@@ -248,14 +248,14 @@ inline I CUtlLinkedList<T, I>::Tail() const
 template <class T, class I>
 inline I CUtlLinkedList<T, I>::Previous(I i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return InternalElement(i).m_Previous;
 }
 
 template <class T, class I>
 inline I CUtlLinkedList<T, I>::Next(I i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return InternalElement(i).m_Next;
 }
 
@@ -319,7 +319,7 @@ I CUtlLinkedList<T, I>::AllocInternal(bool multilist)
 		if (m_TotalElements == m_Memory.NumAllocated())
 			m_Memory.Grow();
 
-		Assert(m_TotalElements != InvalidIndex());
+		DbgAssert(m_TotalElements != InvalidIndex());
 
 		elem = (I)m_TotalElements;
 		m_TotalElements++;
@@ -356,7 +356,7 @@ I CUtlLinkedList<T, I>::Alloc(bool multilist)
 template <class T, class I>
 void CUtlLinkedList<T, I>::Free(I elem)
 {
-	Assert(IsValidIndex(elem));
+	DbgAssert(IsValidIndex(elem));
 	Unlink(elem);
 
 	ListElem_t &internalElem = InternalElement(elem);
@@ -520,7 +520,7 @@ void CUtlLinkedList<T, I>::RemoveAll()
 template <class T, class I>
 void CUtlLinkedList<T, I>::LinkBefore(I before, I elem)
 {
-	Assert(IsValidIndex(elem));
+	DbgAssert(IsValidIndex(elem));
 
 	// Unlink it if it's in the list at the moment
 	Unlink(elem);
@@ -540,7 +540,7 @@ void CUtlLinkedList<T, I>::LinkBefore(I before, I elem)
 	{
 		// Here, we're not linking to the end. Set the prev pointer to point to
 		// the element we're linking.
-		Assert(IsInList(before));
+		DbgAssert(IsInList(before));
 		ListElem_t& beforeElem = InternalElement(before);
 		newElem.m_Previous = beforeElem.m_Previous;
 		beforeElem.m_Previous = elem;
@@ -559,7 +559,7 @@ void CUtlLinkedList<T, I>::LinkBefore(I before, I elem)
 template <class T, class I>
 void CUtlLinkedList<T, I>::LinkAfter(I after, I elem)
 {
-	Assert(IsValidIndex(elem));
+	DbgAssert(IsValidIndex(elem));
 
 	// Unlink it if it's in the list at the moment
 	if (IsInList(elem))
@@ -579,7 +579,7 @@ void CUtlLinkedList<T, I>::LinkAfter(I after, I elem)
 	{
 		// Here, we're not linking to the end. Set the next pointer to point to
 		// the element we're linking.
-		Assert(IsInList(after));
+		DbgAssert(IsInList(after));
 		ListElem_t& afterElem = InternalElement(after);
 		newElem.m_Next = afterElem.m_Next;
 		afterElem.m_Next = elem;
@@ -598,7 +598,7 @@ void CUtlLinkedList<T, I>::LinkAfter(I after, I elem)
 template <class T, class I>
 void CUtlLinkedList<T, I>::Unlink(I elem)
 {
-	Assert(IsValidIndex(elem));
+	DbgAssert(IsValidIndex(elem));
 	if (IsInList(elem))
 	{
 		ListElem_t *pBase = m_Memory.Base();

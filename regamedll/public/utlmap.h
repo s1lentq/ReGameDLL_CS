@@ -250,7 +250,7 @@ inline void CUtlMap<K, T, I>::PurgeAndDeleteElements()
 template <typename K, typename T, typename I>
 void DeepCopyMap(const CUtlMap<K, T, I> &pmapIn, CUtlMap<K, T, I> *out_pmapOut)
 {
-	Assert(out_pmapOut);
+	DbgAssert(out_pmapOut);
 
 	out_pmapOut->Purge();
 	FOR_EACH_MAP_FAST(pmapIn, i)

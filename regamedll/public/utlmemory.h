@@ -121,7 +121,7 @@ template <class T, class I>
 CUtlMemory<T, I>::CUtlMemory(int nGrowSize, int nInitSize) : m_pMemory(0),
 m_nAllocationCount(nInitSize), m_nGrowSize(nGrowSize)
 {
-	Assert((nGrowSize >= 0) && (nGrowSize != EXTERNAL_BUFFER_MARKER));
+	DbgAssert((nGrowSize >= 0) && (nGrowSize != EXTERNAL_BUFFER_MARKER));
 	if (m_nAllocationCount)
 	{
 		m_pMemory = (T *)malloc(m_nAllocationCount * sizeof(T));
@@ -149,7 +149,7 @@ void CUtlMemory<T,I>::Init(int nGrowSize, int nInitSize)
 
 	m_nGrowSize = nGrowSize;
 	m_nAllocationCount = nInitSize;
-	Assert(nGrowSize >= 0);
+	DbgAssert(nGrowSize >= 0);
 	if (m_nAllocationCount)
 	{
 		m_pMemory = (T *)malloc(m_nAllocationCount * sizeof(T));
@@ -174,28 +174,28 @@ void CUtlMemory<T, I>::SetExternalBuffer(T *pMemory, int numElements)
 template <class T, class I>
 inline T& CUtlMemory<T, I>::operator[](I i)
 {
-	Assert(IsIdxValid(i));
+	DbgAssert(IsIdxValid(i));
 	return m_pMemory[i];
 }
 
 template <class T, class I>
 inline T const& CUtlMemory<T, I>::operator[](I i) const
 {
-	Assert(IsIdxValid(i));
+	DbgAssert(IsIdxValid(i));
 	return m_pMemory[i];
 }
 
 template <class T, class I>
 inline T& CUtlMemory<T, I>::Element(I i)
 {
-	Assert(IsIdxValid(i));
+	DbgAssert(IsIdxValid(i));
 	return m_pMemory[i];
 }
 
 template <class T, class I>
 inline T const& CUtlMemory<T, I>::Element(I i) const
 {
-	Assert(IsIdxValid(i));
+	DbgAssert(IsIdxValid(i));
 	return m_pMemory[i];
 }
 
@@ -209,7 +209,7 @@ bool CUtlMemory<T, I>::IsExternallyAllocated() const
 template <class T, class I>
 void CUtlMemory<T, I>::SetGrowSize(int nSize)
 {
-	Assert((nSize >= 0) && (nSize != EXTERNAL_BUFFER_MARKER));
+	DbgAssert((nSize >= 0) && (nSize != EXTERNAL_BUFFER_MARKER));
 	m_nGrowSize = nSize;
 }
 
@@ -250,12 +250,12 @@ inline bool CUtlMemory<T, I>::IsIdxValid(I i) const
 template <class T, class I>
 void CUtlMemory<T, I>::Grow(int num)
 {
-	Assert(num > 0);
+	DbgAssert(num > 0);
 
 	if (IsExternallyAllocated())
 	{
 		// Can't grow a buffer whose memory was externally allocated
-		Assert(0);
+		DbgAssert(0);
 		return;
 	}
 
@@ -281,7 +281,7 @@ void CUtlMemory<T, I>::Grow(int num)
 		{
 			// Compute an allocation which is at least as big as a cache line...
 			m_nAllocationCount = (31 + sizeof(T)) / sizeof(T);
-			Assert(m_nAllocationCount != 0);
+			DbgAssert(m_nAllocationCount != 0);
 		}
 	}
 
@@ -305,7 +305,7 @@ inline void CUtlMemory<T, I>::EnsureCapacity(int num)
 	if (IsExternallyAllocated())
 	{
 		// Can't grow a buffer whose memory was externally allocated
-		Assert(0);
+		DbgAssert(0);
 		return;
 	}
 

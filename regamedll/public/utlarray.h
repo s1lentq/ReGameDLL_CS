@@ -144,28 +144,28 @@ inline const T *CUtlArray<T, MAX_SIZE>::Base() const
 template <typename T, size_t MAX_SIZE>
 inline T &CUtlArray<T, MAX_SIZE>::operator[](int i)
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <typename T, size_t MAX_SIZE>
 inline const T &CUtlArray<T, MAX_SIZE>::operator[](int i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <typename T, size_t MAX_SIZE>
 inline T &CUtlArray<T, MAX_SIZE>::Element(int i)
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
 template <typename T, size_t MAX_SIZE>
 inline const T &CUtlArray<T, MAX_SIZE>::Element(int i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 	return m_Memory[i];
 }
 
@@ -251,7 +251,7 @@ void CUtlArray<T, MAX_SIZE>::SortPredicate(F &&predicate)
 template <typename T, size_t MAX_SIZE>
 void CUtlArray<T, MAX_SIZE>::CopyArray(const T *pArray, size_t count)
 {
-	Assert(count < MAX_SIZE);
+	DbgAssert(count < MAX_SIZE);
 
 	for (size_t n = 0; n < count; n++)
 		m_Memory[n] = pArray[n];

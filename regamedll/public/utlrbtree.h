@@ -398,7 +398,7 @@ inline typename CUtlRBTree<T, I, L, M>::Links_t const &CUtlRBTree<T, I, L, M>::L
 template <class T, class I, typename L, class M>
 inline typename CUtlRBTree<T, I, L, M>::Links_t &CUtlRBTree<T, I, L, M>::Links(I i)
 {
-	Assert(i != InvalidIndex());
+	DbgAssert(i != InvalidIndex());
 	return *(Links_t *)&m_Elements[i];
 }
 
@@ -460,7 +460,7 @@ I CUtlRBTree<T, I, L, M>::NewNode()
 template <class T, class I, typename L, class M>
 void CUtlRBTree<T, I, L, M>::FreeNode(I i)
 {
-	Assert(IsValidIndex(i) && (i != InvalidIndex()));
+	DbgAssert(IsValidIndex(i) && (i != InvalidIndex()));
 	Destruct(&Element(i));
 	SetLeftChild(i, i); // indicates it's in not in the tree
 	SetRightChild(i, m_FirstFree);
@@ -624,7 +624,7 @@ void CUtlRBTree<T, I, L, M>::LinkToParent(I i, I parent, bool isLeft)
 
 	InsertRebalance(i);
 
-	Assert(IsValid());
+	DbgAssert(IsValid());
 }
 
 // Rebalance the tree after a deletion
@@ -872,7 +872,7 @@ I CUtlRBTree<T, I, L, M>::FirstInorder() const
 template <class T, class I, typename L, class M>
 I CUtlRBTree<T, I, L, M>::NextInorder(I i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 
 	if (RightChild(i) != InvalidIndex())
 	{
@@ -895,7 +895,7 @@ I CUtlRBTree<T, I, L, M>::NextInorder(I i) const
 template <class T, class I, typename L, class M>
 I CUtlRBTree<T, I, L, M>::PrevInorder(I i) const
 {
-	Assert(IsValidIndex(i));
+	DbgAssert(IsValidIndex(i));
 
 	if (LeftChild(i) != InvalidIndex())
 	{
@@ -953,7 +953,7 @@ I CUtlRBTree<T, I, L, M>::NextPreorder(I i) const
 template <class T, class I, typename L, class M>
 I CUtlRBTree<T, I, L, M>::PrevPreorder(I i) const
 {
-	Assert(0); // Not implemented yet
+	DbgAssert(0); // Not implemented yet
 	return InvalidIndex();
 }
 
@@ -1120,7 +1120,7 @@ void CUtlRBTree<T, I, L, M>::SetLessFunc(typename CUtlRBTree<T, I, L, M>::LessFu
 template <class T, class I, typename L, class M>
 void CUtlRBTree<T, I, L, M>::FindInsertionPosition(T const &insert, I &parent, bool &leftchild)
 {
-	Assert(m_LessFunc);
+	DbgAssert(m_LessFunc);
 
 	// Find where node belongs
 	I current = m_Root;
@@ -1167,7 +1167,7 @@ void CUtlRBTree<T, I, L, M>::Insert(const T *pArray, int nItems)
 template <class T, class I, typename L, class M>
 I CUtlRBTree<T, I, L, M>::Find(T const &search) const
 {
-	Assert(m_LessFunc);
+	DbgAssert(m_LessFunc);
 
 	I current = m_Root;
 	while (current != InvalidIndex())
