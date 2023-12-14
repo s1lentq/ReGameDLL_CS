@@ -58,7 +58,7 @@ CAPTION "Assert"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "File:",IDC_NOID,7,7,23,9
-    LTEXT           "c:/gsclient/src/blah.cpp",IDC_FILENAME_CONTROL,36,7,217,8
+    LTEXT           "c:/cstrike16/src/blah.cpp",IDC_FILENAME_CONTROL,36,7,217,8
     LTEXT           "Line:",IDC_NOID,7,18,23,9
     LTEXT           "45",IDC_LINE_CONTROL,36,18,217,8
     LTEXT           "Assert:",IDC_NOID,7,29,23,9
