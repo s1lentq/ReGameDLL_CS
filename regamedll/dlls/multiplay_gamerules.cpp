@@ -5264,7 +5264,7 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 			if (pVictim->GetDmgPenetrationLevel() > 0)
 				iRarity |= KILLRARITY_PENETRATED;
 
-			if (pKillerPlayer->IsBlind())
+			if (pKillerPlayer->IsFullyBlind())
 				iRarity |= KILLRARITY_KILLER_BLIND;
 
 			// The killer player kills the victim with a sniper rifle with no scope
