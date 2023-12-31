@@ -683,7 +683,7 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 		int ladderTopDir;
 		while (true)
 		{
-			CNavArea *newArea;
+			CNavArea *newArea = nullptr;
 			NavTraverseType how;
 			const CNavLadder *ladder = nullptr;
 
@@ -716,6 +716,11 @@ bool NavAreaBuildPath(CNavArea *startArea, CNavArea *goalArea, const Vector *goa
 				newArea = (*floorIter).area;
 				how = (NavTraverseType)dir;
 				floorIter++;
+
+				DbgAssert(newArea);
+
+				if (!newArea)
+					continue;
 			}
 			// search ladders
 			else

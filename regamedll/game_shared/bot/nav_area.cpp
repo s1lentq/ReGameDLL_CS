@@ -294,6 +294,8 @@ void CNavArea::OnDestroyNotify(CNavArea *dead)
 // Connect this area to given area in given direction
 void CNavArea::ConnectTo(CNavArea *area, NavDirType dir)
 {
+	DbgAssert(area);
+
 	// check if already connected
 	for (NavConnectList::iterator iter = m_connect[dir].begin(); iter != m_connect[dir].end(); iter++)
 	{
