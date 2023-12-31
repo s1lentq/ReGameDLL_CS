@@ -95,10 +95,15 @@ void HuntState::OnUpdate(CCSBot *me)
 		{
 			if (!me->IsRogue() && me->CanSeeLooseBomb())
 			{
+				CNavArea *looseBombArea = TheCSBots()->GetLooseBombArea();
+
 				// if we are near the loose bomb and can see it, hide nearby and guard it
 				me->SetTask(CCSBot::GUARD_LOOSE_BOMB);
-				me->Hide(TheCSBots()->GetLooseBombArea());
-				me->GetChatter()->AnnouncePlan("GoingToGuardLooseBomb", TheCSBots()->GetLooseBombArea()->GetPlace());
+				me->Hide(looseBombArea);
+
+				if (looseBombArea)
+					me->GetChatter()->AnnouncePlan("GoingToGuardLooseBomb", looseBombArea->GetPlace());
+
 				return;
 			}
 			else if (TheCSBots()->IsBombPlanted())
