@@ -4428,6 +4428,7 @@ inline bool IsAreaVisible(const Vector *pos, const CNavArea *area)
 // Determine the set of "approach areas".
 // An approach area is an area representing a place where players
 // move into/out of our local neighborhood of areas.
+// @todo Optimize by search from eye outward and modifying pathfinder to treat all links as bi-directional
 void CNavArea::ComputeApproachAreas()
 {
 	m_approachCount = 0;
@@ -4449,95 +4450,132 @@ void CNavArea::ComputeApproachAreas()
 	enum { MAX_PATH_LENGTH = 256 };
 	CNavArea *path[MAX_PATH_LENGTH];
 
-	// In order to enumerate all of the approach areas, we need to
-	// run the algorithm many times, once for each "far away" area
-	// and keep the union of the approach area sets
-	for (auto farArea : goodSizedAreaList)
+	enum SearchType
 	{
-		BlockedIDCount = 0;
+		FROM_EYE,		///< start search from our eyepoint outward to farArea
+		TO_EYE,			///< start search from farArea beack towards our eye
+		SEARCH_FINISHED
+	};
 
-		// if we can see 'farArea', try again - the whole point is to go "around the bend", so to speak
-		if (IsAreaVisible(&eye, farArea))
-			continue;
-
-		// make first path to far away area
-		ApproachAreaCost cost;
-		if (NavAreaBuildPath(this, farArea, nullptr, cost) == false)
-			continue;
-
-		//
-		// Keep building paths to farArea and blocking them off until we
-		// cant path there any more.
-		// As areas are blocked off, all exits will be enumerated.
-		//
-		while (m_approachCount < MAX_APPROACH_AREAS)
+	// In order to *completely* enumerate all of the approach areas, we
+	// need to search from our eyepoint outward, as well as from outwards
+	// towards our eyepoint
+	for (int searchType = FROM_EYE; searchType != SEARCH_FINISHED; searchType++)
+	{
+		// In order to enumerate all of the approach areas, we need to
+		// run the algorithm many times, once for each "far away" area
+		// and keep the union of the approach area sets
+		for (auto farArea : goodSizedAreaList)
 		{
-			// find number of areas on path
-			int count = 0;
-			CNavArea *area;
-			for (area = farArea; area; area = area->GetParent())
-				count++;
+			BlockedIDCount = 0;
 
-			if (count > MAX_PATH_LENGTH)
-				count = MAX_PATH_LENGTH;
+			// if we can see 'farArea', try again - the whole point is to go "around the bend", so to speak
+			if (IsAreaVisible(&eye, farArea))
+				continue;
 
-			// build path in correct order - from eye outwards
-			int i = count;
-			for (area = farArea; i && area; area = area->GetParent())
+			ApproachAreaCost cost;
+
+			//
+			// Keep building paths to farArea and blocking them off until we
+			// cant path there any more.
+			// As areas are blocked off, all exits will be enumerated.
+			//
+			while (m_approachCount < MAX_APPROACH_AREAS)
 			{
-				path[--i] = area;
-			}
+				CNavArea *from, *to;
 
-			// traverse path to find first area we cannot see (skip the first area)
-			for (i = 1; i < count; i++)
-			{
-				// if we see this area, continue on
-				if (IsAreaVisible(&eye, path[i]))
-					continue;
-
-				// we can't see this area.
-				// mark this area as "blocked" and unusable by subsequent approach paths
-				if (BlockedIDCount == MAX_BLOCKED_AREAS)
+				if (searchType == FROM_EYE)
 				{
-					CONSOLE_ECHO("Overflow computing approach areas for area #%d.\n", m_id);
-					return;
+					// find another path *to* 'farArea'
+					// we must pathfind from us in order to pick up one-way paths OUT OF our area
+					from = this;
+					to = farArea;
+				}
+				else // TO_EYE
+				{
+					// find another path *from* 'farArea'
+					// we must pathfind to us in order to pick up one-way paths INTO our area
+					from = farArea;
+					to = this;
 				}
 
-				// if the area to be blocked is actually farArea, block the one just prior
-				// (blocking farArea will cause all subsequent pathfinds to fail)
-				int block = (path[i] == farArea) ? i - 1 : i;
-
-				BlockedID[BlockedIDCount++] = path[block]->GetID();
-
-				if (block == 0)
+				// build the actual path
+				if (NavAreaBuildPath(from, to, NULL, cost) == false)
 					break;
 
-				// store new approach area if not already in set
-				int a;
-				for (a = 0; a < m_approachCount; a++)
-					if (m_approach[a].here.area == path[block - 1])
-						break;
+				// find number of areas on path
+				int count = 0;
+				CNavArea *area;
+				for (area = to; area; area = area->GetParent())
+					count++;
 
-				if (a == m_approachCount)
+				if (count > MAX_PATH_LENGTH)
+					count = MAX_PATH_LENGTH;
+
+				// if the path is only two areas long, there can be no approach points
+				if (count <= 2)
+					break;
+
+				// build path starting from eye
+				int i = 0;
+
+				if (searchType == FROM_EYE)
 				{
-					m_approach[m_approachCount].prev.area = (block >= 2) ? path[block-2] : nullptr;
-					m_approach[m_approachCount].here.area = path[block - 1];
-					m_approach[m_approachCount].prevToHereHow = path[block - 1]->GetParentHow();
-					m_approach[m_approachCount].next.area = path[block];
-					m_approach[m_approachCount].hereToNextHow = path[block]->GetParentHow();
-					m_approachCount++;
+					for(area = to; i < count && area; area = area->GetParent())
+					{
+						path[count - i - 1] = area;
+						++i;
+					}
+				}
+				else // TO_EYE
+				{
+					for(area = to; i < count && area; area = area->GetParent())
+						path[i++] = area;
 				}
 
-				// we are done with this path
-				break;
-			}
+				// traverse path to find first area we cannot see (skip the first area)
+				for (i = 1; i < count; i++)
+				{
+					// if we see this area, continue on
+					if (IsAreaVisible(&eye, path[i]))
+						continue;
 
-			// find another path to 'farArea'
-			ApproachAreaCost cost;
-			if (NavAreaBuildPath(this, farArea, nullptr, cost) == false)
-			{
-				// can't find a path to 'farArea' means all exits have been already tested and blocked
-				break;
+					// we can't see this area.
+					// mark this area as "blocked" and unusable by subsequent approach paths
+					if (BlockedIDCount == MAX_BLOCKED_AREAS)
+					{
+						CONSOLE_ECHO("Overflow computing approach areas for area #%d.\n", m_id);
+						return;
+					}
+
+					// if the area to be blocked is actually farArea, block the one just prior
+					// (blocking farArea will cause all subsequent pathfinds to fail)
+					int block = (path[i] == farArea) ? i - 1 : i;
+
+					if (block == 0)
+						continue;
+
+					BlockedID[BlockedIDCount++] = path[block]->GetID();
+
+					// store new approach area if not already in set
+					int a;
+					for (a = 0; a < m_approachCount; a++)
+						if (m_approach[a].here.area == path[block-1])
+							break;
+
+					if (a == m_approachCount)
+					{
+						m_approach[m_approachCount].prev.area = (block >= 2) ? path[block-2] : nullptr;
+						m_approach[m_approachCount].here.area = path[block - 1];
+						m_approach[m_approachCount].prevToHereHow = path[block - 1]->GetParentHow();
+						m_approach[m_approachCount].next.area = path[block];
+						m_approach[m_approachCount].hereToNextHow = path[block]->GetParentHow();
+						m_approachCount++;
+					}
+
+					// we are done with this path
+					break;
+				}
 			}
 		}
 	}
