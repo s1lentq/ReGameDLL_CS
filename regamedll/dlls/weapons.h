@@ -212,6 +212,9 @@ public:
 	void Explode3_OrigFunc(TraceResult *pTrace, int bitsDamageType);
 	void Explode2_OrigFunc(TraceResult *pTrace, int bitsDamageType);
 	void SG_Detonate_OrigFunc();
+
+	void EXPORT BounceTouch_OrigFunc(CBaseEntity *pOther);
+	void EXPORT TumbleThink_OrigFunc();
 #endif
 
 	void EXPORT Smoke();

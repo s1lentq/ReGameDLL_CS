@@ -745,6 +745,14 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainClassImpl<void, CBasePlayer> CReGameHook_CBasePlayer_Observer_Think;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBasePlayer_Observer_Think;
 
+// CGrenade::BounceTouch hook
+typedef IHookChainClassImpl<void, CGrenade, CBaseEntity *> CReGameHook_CGrenade_BounceTouch;
+typedef IHookChainRegistryClassImpl<void, CGrenade, CBaseEntity *> CReGameHookRegistry_CGrenade_BounceTouch;
+
+// CGrenade::TumbleThink hook
+typedef IHookChainClassImpl<void, CGrenade> CReGameHook_CGrenade_TumbleThink;
+typedef IHookChainRegistryClassImpl<void, CGrenade> CReGameHookRegistry_CGrenade_TumbleThink;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -906,6 +914,9 @@ public:
 	CReGameHookRegistry_CBasePlayer_PlayerDeathThink m_CBasePlayer_PlayerDeathThink;
 	CReGameHookRegistry_CBasePlayer_Observer_Think m_CBasePlayer_Observer_Think;
 
+	CReGameHookRegistry_CGrenade_BounceTouch m_CGrenade_BounceTouch;
+	CReGameHookRegistry_CGrenade_TumbleThink m_CGrenade_TumbleThink;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -1064,6 +1075,9 @@ public:
 
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink();
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think();
+
+	virtual IReGameHookRegistry_CGrenade_BounceTouch *CGrenade_BounceTouch();
+	virtual IReGameHookRegistry_CGrenade_TumbleThink *CGrenade_TumbleThink();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
