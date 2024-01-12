@@ -4341,6 +4341,9 @@ edict_t *EXT_FUNC CHalfLifeMultiplay::__API_HOOK(GetPlayerSpawnSpot)(CBasePlayer
 
 int CHalfLifeMultiplay::PlayerRelationship(CBasePlayer *pPlayer, CBaseEntity *pTarget)
 {
+	if (pPlayer == pTarget)
+		return GR_TEAMMATE;
+
 #ifdef REGAMEDLL_ADD
 	if (IsFreeForAll())
 	{
