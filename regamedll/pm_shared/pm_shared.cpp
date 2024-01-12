@@ -1437,11 +1437,13 @@ void PM_CategorizePosition()
 	PM_CheckWater();
 
 	// Do not stick to the ground of an OBSERVER or NOCLIP mode
+#ifdef REGAMEDLL_FIXES
 	if (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE)
 	{
 		pmove->onground = -1;
 		return;
 	}
+#endif
 
 	point[0] = pmove->origin[0];
 	point[1] = pmove->origin[1];
