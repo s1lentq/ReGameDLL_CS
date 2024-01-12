@@ -2063,6 +2063,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(RestartRound)()
 		GiveC4();
 	}
 
+#ifdef REGAMEDLL_ADD
+	if (m_bMapHasBombTarget && (int)defuser_allocation.value == DEFUSERALLOCATION_RANDOM)
+		GiveDefuserToRandomPlayer();
+#endif
+
 	if (TheBots)
 	{
 		TheBots->OnEvent(EVENT_BUY_TIME_START);
@@ -3837,6 +3842,10 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerSpawn)(CBasePlayer *pPlayer)
 #ifdef REGAMEDLL_ADD
 	if (respawn_immunitytime.value > 0)
 		pPlayer->SetSpawnProtection(respawn_immunitytime.value);
+
+	// remove any defusers left over from previous random if there is just one random one
+	if (m_bMapHasBombTarget && (int)defuser_allocation.value == DEFUSERALLOCATION_RANDOM)
+		pPlayer->RemoveDefuser();
 #endif
 }
 
@@ -5375,4 +5384,55 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 #endif
 
 	MESSAGE_END();
+}
+
+void CHalfLifeMultiplay::GiveDefuserToRandomPlayer()
+{
+	int iDefusersToGive = 2;
+	CUtlVector<CBasePlayer *> candidates;
+	candidates.EnsureCapacity(MAX_CLIENTS);
+
+	// add all CT candidates to a list
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (!pPlayer || FNullEnt(pPlayer->edict()))
+			continue;
+
+		if (!pPlayer->IsAlive() || pPlayer->m_iTeam != CT)
+			continue;
+
+		candidates.AddToTail(pPlayer);
+	}
+	
+	// randomly shuffle the list; this will keep the selection random in case of ties
+	for (int i = 0; i < candidates.Count(); i++) {
+		SWAP(candidates[i], candidates[RANDOM_LONG(0, candidates.Count() - 1)]);
+	}
+
+	// now sort the shuffled list into subgroups
+	candidates.Sort([](CBasePlayer *const *left, CBasePlayer *const *right) -> int {
+			// should we prioritize humans over bots?
+			if (cv_bot_defer_to_human.value != 0.0f)
+			{
+				if ((*left)->IsBot() && !(*right)->IsBot())
+					return 1;
+
+				if (!(*left)->IsBot() && (*right)->IsBot())
+					return -1;
+			}
+
+			return 0;
+		}
+	);
+
+	// give defusers to the first N candidates
+	for (int i = 0; i < iDefusersToGive && i < candidates.Count(); ++i)
+	{
+		CBasePlayer *pPlayer = candidates[i];
+		assert(pPlayer && pPlayer->m_iTeam == CT && pPlayer->IsAlive());
+
+		pPlayer->GiveDefuser();
+		ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Got_defuser");
+	}
 }
