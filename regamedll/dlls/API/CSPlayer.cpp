@@ -225,7 +225,7 @@ EXT_FUNC bool CCSPlayer::RemovePlayerItemEx(const char* pszItemName, bool bRemov
 
 			if (pItem == pPlayer->m_pActiveItem) {
 				((CBasePlayerWeapon *)pItem)->RetireWeapon();
-				
+
 				if (pItem->CanHolster() && pItem != pPlayer->m_pActiveItem && !(pPlayer->pev->weapons &(1 << pItem->m_iId))) {
 					return true;
 				}
@@ -561,6 +561,8 @@ void CCSPlayer::ResetAllStats()
 		m_iNumKilledByUnanswered[i] = 0;
 		m_bPlayerDominated[i]       = false;
 	}
+
+	m_DamageList.Clear();
 }
 
 void CCSPlayer::OnSpawn()
@@ -589,6 +591,7 @@ void CCSPlayer::OnKilled()
 void CCSPlayer::OnConnect()
 {
 	ResetVars();
+	ResetAllStats();
 	m_iUserID = GETPLAYERUSERID(BasePlayer()->edict());
 }
 
