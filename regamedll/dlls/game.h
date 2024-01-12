@@ -200,6 +200,7 @@ extern cvar_t deathmsg_flags;
 extern cvar_t assist_damage_threshold;
 extern cvar_t freezetime_duck;
 extern cvar_t freezetime_jump;
+extern cvar_t defuser_allocation;
 
 #endif
 

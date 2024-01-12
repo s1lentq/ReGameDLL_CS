@@ -115,6 +115,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_assist_damage_threshold         | 40      | 0   | 100          | Sets the percentage of damage needed to score an assist. |
 | mp_freezetime_duck                 | 1       | 0   | 1            | Allow players to duck during freezetime.<br/> `0` disabled<br/>`1` enabled |
 | mp_freezetime_jump                 | 1       | 0   | 1            | Allow players to jump during freezetime.<br/> `0` disabled<br/>`1` enabled |
+| mp_defuser_allocation              | 0       | 0   | 2            | Give defuser on player spawn.<br/> `0` disabled<br/>`1` Random players. <br/>`2` All players. |
 </details>
 
 ## How to install zBot for CS 1.6?

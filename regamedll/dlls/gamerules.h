@@ -255,6 +255,13 @@ enum KillRarity
 	KILLRARITY_REVENGE          = 0x100  // Revenge by the killer
 };
 
+enum
+{
+	DEFUSERALLOCATION_NONE      = 0,
+	DEFUSERALLOCATION_RANDOM    = 1,
+	DEFUSERALLOCATION_ALL       = 2,
+};
+
 class CItem;
 
 class CGameRules
@@ -737,6 +744,8 @@ public:
 	void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
 	int GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bFlashAssist);
 	CBasePlayer *CheckAssistsToKill(CBaseEntity *pKiller, CBasePlayer *pVictim, bool &bFlashAssist);
+
+	void GiveDefuserToRandomPlayer();
 
 private:
 	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int iTeam);
