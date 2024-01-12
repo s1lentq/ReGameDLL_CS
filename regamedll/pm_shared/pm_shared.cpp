@@ -1436,6 +1436,13 @@ void PM_CategorizePosition()
 	// water on each call, and the converse case will correct itself if called twice.
 	PM_CheckWater();
 
+	// Do not stick to the ground of an OBSERVER or NOCLIP mode
+	if (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE)
+	{
+		pmove->onground = -1;
+		return;
+	}
+
 	point[0] = pmove->origin[0];
 	point[1] = pmove->origin[1];
 	point[2] = pmove->origin[2] - 2;
@@ -3275,7 +3282,7 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	DbgAssert(pm_shared_initialized);
 
 	pmove = ppmove;
-	
+
 #ifdef REGAMEDLL_API
 	pmoveplayer = UTIL_PlayerByIndex(pmove->player_index + 1)->CSPlayer();
 #endif
