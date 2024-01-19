@@ -767,9 +767,15 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	flag = 0;
 #endif
 
+#ifdef REGAMEDLL_API
+	float flBaseDamage = CSPlayerWeapon()->m_flBaseDamage;
+#else
+	float flBaseDamage = bIsGlock ? GLOCK18_DAMAGE : FAMAS_DAMAGE;
+#endif
+
 	if (bIsGlock)
 	{
-		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
+		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, 0.05, 8192, 1, BULLET_PLAYER_9MM, flBaseDamage, 0.9, m_pPlayer->pev, true, m_pPlayer->random_seed);
 #ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_9mm;
 #endif
@@ -778,8 +784,7 @@ void CBasePlayerWeapon::FireRemaining(int &shotsFired, float &shootTime, BOOL bI
 	}
 	else
 	{
-
-		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
+		vecDir = m_pPlayer->FireBullets3(vecSrc, gpGlobals->v_forward, m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, flBaseDamage, 0.96, m_pPlayer->pev, false, m_pPlayer->random_seed);
 #ifndef REGAMEDLL_FIXES
 		--m_pPlayer->ammo_556nato;
 #endif
@@ -1856,11 +1861,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 
 	bool bRemove = true;
 
-#ifdef REGAMEDLL_FIXES 
+#ifdef REGAMEDLL_FIXES
 	CBasePlayerItem *givenItem = nullptr;
 #else
 	bool givenItem = false;
-#endif 
+#endif
 
 	// go through my weapons and try to give the usable ones to the player.
 	// it's important the the player be given ammo first, so the weapons code doesn't refuse
@@ -2055,7 +2060,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					pItem->AttachToPlayer(pPlayer);
 #ifdef REGAMEDLL_FIXES
 					givenItem = pItem;
-#else 
+#else
 					givenItem = true;
 #endif
 				}
@@ -2095,13 +2100,13 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 	{
 		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
 
-#ifdef REGAMEDLL_FIXES 
+#ifdef REGAMEDLL_FIXES
 		// BUGBUG: weaponbox links gun to player, then ammo is given
 		// so FShouldSwitchWeapon's CanHolster (which checks ammo) check inside AddPlayerItem
 		// return FALSE, causing an unarmed player to not deploy any weaponbox grenade
 		if (pPlayer->m_pActiveItem != givenItem && CSGameRules()->FShouldSwitchWeapon(pPlayer, givenItem))
 		{
-			// This re-check is done after ammo is given 
+			// This re-check is done after ammo is given
 			// so it ensures player properly deploys grenade from floor
 			pPlayer->SwitchWeapon(givenItem);
 		}
