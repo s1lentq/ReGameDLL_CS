@@ -1630,7 +1630,11 @@ int CBasePlayerWeapon::ExtractClipAmmo(CBasePlayerWeapon *pWeapon)
 	if (m_iClip == WEAPON_NOCLIP)
 	{
 		// guns with no clips always come empty if they are second-hand
+#ifdef REGAMEDLL_FIXES
+		iAmmo = IsGrenadeWeapon(m_iId) ? 1 : 0;
+#else
 		iAmmo = 0;
+#endif
 	}
 	else
 	{
