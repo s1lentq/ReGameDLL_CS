@@ -1259,8 +1259,18 @@ int CBasePlayerWeapon::AddToPlayer(CBasePlayer *pPlayer)
 	if (!m_iPrimaryAmmoType)
 	{
 		m_iPrimaryAmmoType = pPlayer->GetAmmoIndex(pszAmmo1());
+#ifndef REGAMEDLL_FIXES
+		m_iSecondaryAmmoType = pPlayer->GetAmmoIndex(pszAmmo2());
+#endif
+	}
+
+#ifdef REGAMEDLL_FIXES
+	// (3rd party support) if someone updates (or screws) the secondary ammo type later
+	if(!m_iSecondaryAmmoType)
+	{
 		m_iSecondaryAmmoType = pPlayer->GetAmmoIndex(pszAmmo2());
 	}
+#endif
 
 	if (AddWeapon())
 	{
@@ -1587,7 +1597,11 @@ int CBasePlayerWeapon::PrimaryAmmoIndex()
 
 int CBasePlayerWeapon::SecondaryAmmoIndex()
 {
+#ifdef REGAMEDLL_ADD
+	return m_iSecondaryAmmoType;
+#else
 	return -1;
+#endif
 }
 
 void CBasePlayerWeapon::Holster(int skiplocal)

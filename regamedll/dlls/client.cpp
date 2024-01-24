@@ -249,7 +249,7 @@ void WriteSigonMessages()
 
 #ifdef PLAY_GAMEDLL
 		// TODO: fix test demo
-		iFlags &= ~ITEM_FLAG_NOFIREUNDERWATER;
+		iFlags &= ~ITEM_FLAG_CUSTOM;
 #endif
 
 		MESSAGE_BEGIN(MSG_INIT, gmsgWeaponList);
@@ -4479,15 +4479,21 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 
 #ifdef REGAMEDLL_ADD
 	// don't send unhandled custom bits to client
-	state->effects &= ~(EF_FORCEVISIBILITY | EF_OWNER_VISIBILITY | EF_OWNER_NO_VISIBILITY);
-
+	state->effects &= ~EF_CUSTOM_BITS;
+	
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
 		state->skin = CONTENTS_EMPTY;
 	}
 #endif
 
-	if (!player && ent->v.animtime && !ent->v.velocity.x && !ent->v.velocity.y && !ent->v.velocity.z)
+	// add studio interpolation if non-player entity is moving (why?)
+	if (!player &&
+#ifdef REGAMEDLL_ADD		
+		// adds slerp (studio interpolation) if not set
+		!(ent->v.effects & EF_NOSLERP) &&
+#endif
+		ent->v.animtime && !ent->v.velocity.x && !ent->v.velocity.y && !ent->v.velocity.z)
 		state->eflags |= EFLAG_SLERP;
 
 	state->scale = ent->v.scale;
@@ -4513,8 +4519,22 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 
 	state->aiment = 0;
 
+	// following something
 	if (ent->v.aiment)
-		state->aiment = ENTINDEX(ent->v.aiment);
+	{
+#ifdef REGAMEDLL_ADD
+		// if set, it will still follow the player with a bit of "delay", still looks fine (experimental)
+		if(ent->v.effects & EF_FOLLOWKEEPRENDER)
+		{
+			// will keep the current render entity values if it's set
+			state->movetype = MOVETYPE_NONE;
+		}
+		else
+#endif	
+		{
+			state->aiment = ENTINDEX(ent->v.aiment);
+		}
+	}
 
 	state->owner = 0;
 	if (ent->v.owner)
