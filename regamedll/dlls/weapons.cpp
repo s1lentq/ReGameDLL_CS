@@ -1266,7 +1266,7 @@ int CBasePlayerWeapon::AddToPlayer(CBasePlayer *pPlayer)
 
 #ifdef REGAMEDLL_FIXES
 	// (3rd party support) if someone updates (or screws) the secondary ammo type later
-	if(!m_iSecondaryAmmoType)
+	if (!m_iSecondaryAmmoType)
 	{
 		m_iSecondaryAmmoType = pPlayer->GetAmmoIndex(pszAmmo2());
 	}

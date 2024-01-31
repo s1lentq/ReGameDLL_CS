@@ -1304,7 +1304,7 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
 		// player is the ammo source
-		if(pPlayerOwner)
+		if (pPlayerOwner)
 		{
 			// by removing ammo ONLY on exhaustible weapons (slot 4 and 5)
 			// you are allowing to duplicate ammo whenever:
@@ -1312,9 +1312,9 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 			// (2) you are dropping a weapon alive and pickup another (with same ammo type) without ammo
 			// and, logically, you throw your ammo with your gun with packing enabled
 			bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
-			
+
 			// pack the primary ammo
-			if(exhaustibleAmmo || packAmmo)
+			if (exhaustibleAmmo || packAmmo)
 			{
 #ifndef REGAMEDLL_ADD
 				pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
@@ -1329,15 +1329,15 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 					pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
 				}
 			}
-			
+
 			// (3rd party support) now that reapi can register custom ammo
 #ifdef REGAMEDLL_ADD
 			// use this flag if you don't want the player harvesting this kind of ammo from dropped weapons
 			bool exhaustSecondaryAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUST_SECONDARYAMMO) == ITEM_FLAG_EXHAUST_SECONDARYAMMO;
 			int iSecondaryAmmoIndex = pItem->SecondaryAmmoIndex();
-			
+
 			// pack secondary ammo now (must be valid too)
-			if((exhaustibleAmmo || exhaustSecondaryAmmo || packAmmo) && iSecondaryAmmoIndex != -1)
+			if ((exhaustibleAmmo || exhaustSecondaryAmmo || packAmmo) && iSecondaryAmmoIndex != -1)
 			{
 				pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[iSecondaryAmmoIndex], (char *)pItem->pszAmmo2(), pItem->iMaxAmmo2());
 

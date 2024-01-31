@@ -4480,7 +4480,7 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 #ifdef REGAMEDLL_ADD
 	// don't send unhandled custom bits to client
 	state->effects &= ~EF_CUSTOM_BITS;
-	
+
 	if  (ent->v.skin == CONTENTS_LADDER &&
 		(host->v.iuser3 & PLAYER_PREVENT_CLIMB) == PLAYER_PREVENT_CLIMB) {
 		state->skin = CONTENTS_EMPTY;
@@ -4489,7 +4489,7 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 
 	// add studio interpolation if non-player entity is moving (why?)
 	if (!player &&
-#ifdef REGAMEDLL_ADD		
+#ifdef REGAMEDLL_ADD
 		// adds slerp (studio interpolation) if not set
 		!(ent->v.effects & EF_NOSLERP) &&
 #endif
@@ -4524,13 +4524,13 @@ BOOL EXT_FUNC AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, e
 	{
 #ifdef REGAMEDLL_ADD
 		// if set, it will still follow the player with a bit of "delay", still looks fine (experimental)
-		if(ent->v.effects & EF_FOLLOWKEEPRENDER)
+		if (ent->v.effects & EF_FOLLOWKEEPRENDER)
 		{
 			// will keep the current render entity values if it's set
 			state->movetype = MOVETYPE_NONE;
 		}
 		else
-#endif	
+#endif
 		{
 			state->aiment = ENTINDEX(ent->v.aiment);
 		}
