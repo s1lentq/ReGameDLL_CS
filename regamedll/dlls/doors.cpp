@@ -1,5 +1,12 @@
 #include "precompiled.h"
 
+#if !defined(DOOR_ASSERT)
+#undef DbgAssert
+#undef DbgAssertMsg
+#define DbgAssert(_exp) ((void)0)
+#define DbgAssertMsg(_exp, _msg) ((void)0)
+#endif
+
 TYPEDESCRIPTION CBaseDoor::m_SaveData[] =
 {
 	DEFINE_FIELD(CBaseDoor, m_bHealthValue, FIELD_CHARACTER),
@@ -695,10 +702,7 @@ void CBaseDoor::DoorGoDown()
 		}
 	}
 
-#ifdef DOOR_ASSERT
 	DbgAssert(m_toggle_state == TS_AT_TOP);
-#endif
-
 	m_toggle_state = TS_GOING_DOWN;
 
 	SetMoveDone(&CBaseDoor::DoorHitBottom);

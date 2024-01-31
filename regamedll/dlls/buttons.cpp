@@ -1,5 +1,12 @@
 #include "precompiled.h"
 
+#if !defined(DOOR_ASSERT)
+#undef DbgAssert
+#undef DbgAssertMsg
+#define DbgAssert(_exp) ((void)0)
+#define DbgAssertMsg(_exp, _msg) ((void)0)
+#endif
+
 TYPEDESCRIPTION CEnvGlobal::m_SaveData[] =
 {
 	DEFINE_FIELD(CEnvGlobal, m_globalstate, FIELD_STRING),
