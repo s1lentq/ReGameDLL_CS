@@ -3082,11 +3082,16 @@ void CBasePlayer::WaterMove()
 		// not underwater
 
 		// play 'up for air' sound
-		if (pev->air_finished < gpGlobals->time)
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade1.wav", VOL_NORM, ATTN_NORM);
+#ifdef REGAMEDLL_FIXES
+		if (pev->flags & FL_INWATER)
+#endif
+		{
+			if (pev->air_finished < gpGlobals->time)
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade1.wav", VOL_NORM, ATTN_NORM);
 
-		else if (pev->air_finished < gpGlobals->time + 9)
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade2.wav", VOL_NORM, ATTN_NORM);
+			else if (pev->air_finished < gpGlobals->time + 9)
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade2.wav", VOL_NORM, ATTN_NORM);
+		}
 
 		pev->air_finished = gpGlobals->time + AIRTIME;
 		pev->dmg = 2;
