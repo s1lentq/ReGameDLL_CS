@@ -1345,26 +1345,26 @@ qboolean PM_InWater()
 // Sets pmove->waterlevel and pmove->watertype values.
 qboolean PM_CheckWater()
 {
-#ifdef REGAMEDLL_FIXES
-	// do not check for dead
-	if (pmove->dead || pmove->deadflag != DEAD_NO)
-		return FALSE;
-#endif
-
 	vec3_t point;
 	int cont;
 	int truecont;
 	float height;
 	float heightover2;
 
+	// Assume that we are not in water at all.
+	pmove->waterlevel = 0;
+	pmove->watertype = CONTENTS_EMPTY;
+
+#ifdef REGAMEDLL_FIXES
+	// do not check for dead
+	if (pmove->dead || pmove->deadflag != DEAD_NO)
+		return FALSE;
+#endif
+
 	// Pick a spot just above the players feet.
 	point[0] = pmove->origin[0] + (pmove->player_mins[pmove->usehull][0] + pmove->player_maxs[pmove->usehull][0]) * 0.5f;
 	point[1] = pmove->origin[1] + (pmove->player_mins[pmove->usehull][1] + pmove->player_maxs[pmove->usehull][1]) * 0.5f;
 	point[2] = pmove->origin[2] + pmove->player_mins[pmove->usehull][2] + 1;
-
-	// Assume that we are not in water at all.
-	pmove->waterlevel = 0;
-	pmove->watertype = CONTENTS_EMPTY;
 
 	// Grab point contents.
 	cont = pmove->PM_PointContents(point, &truecont);
