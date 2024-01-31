@@ -1449,7 +1449,11 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 				pEntity->pev->punchangle.x = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
 				pEntity->pev->punchangle.z = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
 
+#ifndef REGAMEDLL_FIXES
 				if (pEntity->pev->punchangle.x < 4)
+#else
+				if (pEntity->pev->punchangle.x < -4)
+#endif
 				{
 					pEntity->pev->punchangle.x = -4;
 				}
