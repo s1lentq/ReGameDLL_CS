@@ -1303,26 +1303,52 @@ CWeaponBox *EXT_FUNC __API_HOOK(CreateWeaponBox)(CBasePlayerItem *pItem, CBasePl
 		pWeaponBox->pev->nextthink = gpGlobals->time + lifeTime;
 		pWeaponBox->PackWeapon(pItem); // now pack all of the items in the lists
 
-		// pack the ammo
-		bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
-		if ((exhaustibleAmmo || packAmmo) && pPlayerOwner)
+		// player is the ammo source
+		if (pPlayerOwner)
 		{
-#ifndef REGAMEDLL_ADD
-			pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
-#else
-			pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
-#endif
-#ifndef REGAMEDLL_FIXES
 			// by removing ammo ONLY on exhaustible weapons (slot 4 and 5)
 			// you are allowing to duplicate ammo whenever:
 			// (1) you have 2 weapons sharing the same ammo type (e.g. mp5navy and glock)
 			// (2) you are dropping a weapon alive and pickup another (with same ammo type) without ammo
 			// and, logically, you throw your ammo with your gun with packing enabled
-			if (exhaustibleAmmo)
-#endif
+			bool exhaustibleAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUSTIBLE) == ITEM_FLAG_EXHAUSTIBLE;
+
+			// pack the primary ammo
+			if (exhaustibleAmmo || packAmmo)
 			{
-				pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+#ifndef REGAMEDLL_ADD
+				pWeaponBox->PackAmmo(MAKE_STRING(pItem->pszAmmo1()), pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()]);
+#else
+				pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()], (char *)pItem->pszAmmo1(), pItem->iMaxAmmo1());
+#endif
+
+#ifndef REGAMEDLL_FIXES
+				if (exhaustibleAmmo)
+#endif
+				{
+					pPlayerOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+				}
 			}
+
+			// (3rd party support) now that reapi can register custom ammo
+#ifdef REGAMEDLL_ADD
+			// use this flag if you don't want the player harvesting this kind of ammo from dropped weapons
+			bool exhaustSecondaryAmmo = (pItem->iFlags() & ITEM_FLAG_EXHAUST_SECONDARYAMMO) == ITEM_FLAG_EXHAUST_SECONDARYAMMO;
+			int iSecondaryAmmoIndex = pItem->SecondaryAmmoIndex();
+
+			// pack secondary ammo now (must be valid too)
+			if ((exhaustibleAmmo || exhaustSecondaryAmmo || packAmmo) && iSecondaryAmmoIndex != -1)
+			{
+				pWeaponBox->GiveAmmo(pPlayerOwner->m_rgAmmo[iSecondaryAmmoIndex], (char *)pItem->pszAmmo2(), pItem->iMaxAmmo2());
+
+#ifndef REGAMEDLL_FIXES
+				if (exhaustibleAmmo)
+#endif
+				{
+					pPlayerOwner->m_rgAmmo[iSecondaryAmmoIndex] = 0;
+				}
+			}
+#endif
 		}
 
 		pWeaponBox->SetModel(modelName);

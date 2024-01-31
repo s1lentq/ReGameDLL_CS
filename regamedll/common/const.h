@@ -158,6 +158,11 @@
 #define EF_FORCEVISIBILITY          BIT(11) // force visibility
 #define EF_OWNER_VISIBILITY         BIT(12) // visibility for owner
 #define EF_OWNER_NO_VISIBILITY      BIT(13) // no visibility for owner
+#define EF_NOSLERP					BIT(14) // no slerp flag for this entity (addtofullpack)
+#define EF_FOLLOWKEEPRENDER			BIT(15) // the entity following will not copy the render (like it follows nothing)
+
+// Custom flags that aren't handled by the client
+#define EF_CUSTOM_BITS (EF_FORCEVISIBILITY | EF_OWNER_VISIBILITY | EF_OWNER_NO_VISIBILITY | EF_NOSLERP | EF_FOLLOWKEEPRENDER)
 
 // state->eflags values
 #define EFLAG_SLERP                 1   // do studio interpolation of this entity

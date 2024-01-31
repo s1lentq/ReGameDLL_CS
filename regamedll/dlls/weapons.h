@@ -35,12 +35,16 @@ const float MAX_DIST_RELOAD_SOUND = 512.0f;
 
 #define MAX_WEAPONS                 32
 
-#define ITEM_FLAG_SELECTONEMPTY     BIT(0)
-#define ITEM_FLAG_NOAUTORELOAD      BIT(1)
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY BIT(2)
-#define ITEM_FLAG_LIMITINWORLD      BIT(3)
-#define ITEM_FLAG_EXHAUSTIBLE       BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
-#define ITEM_FLAG_NOFIREUNDERWATER  BIT(5)
+#define ITEM_FLAG_SELECTONEMPTY     		BIT(0)
+#define ITEM_FLAG_NOAUTORELOAD      		BIT(1)
+#define ITEM_FLAG_NOAUTOSWITCHEMPTY 		BIT(2)
+#define ITEM_FLAG_LIMITINWORLD      		BIT(3)
+#define ITEM_FLAG_EXHAUSTIBLE       		BIT(4) // A player can totally exhaust their ammo supply and lose this weapon
+#define ITEM_FLAG_NOFIREUNDERWATER  		BIT(5)
+#define ITEM_FLAG_EXHAUST_SECONDARYAMMO		BIT(6) // A player will exhaust weapon's secondary ammo supply if dropped (ITEM_FLAG_EXHAUSTIBLE does both)
+
+// if someone has an idea for another flag pack it here, so client prediction will not be screwed (or something) if PLAY_GAMEDLL is defined
+#define ITEM_FLAG_CUSTOM	(ITEM_FLAG_NOFIREUNDERWATER | ITEM_FLAG_EXHAUST_SECONDARYAMMO)
 
 #define WEAPON_IS_ONTARGET          0x40
 
