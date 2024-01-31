@@ -43,13 +43,6 @@ public:
 	CUtlVector(T *pMemory, int numElements);
 	~CUtlVector();
 
-	// features C++11 ranged based for
-	T *begin() { return &m_Memory[0]; }
-	T *end()   { return &m_Memory[m_Size]; }
-
-	T const *begin() const { return &m_Memory[0]; }
-	T const *end()   const { return &m_Memory[m_Size]; }
-
 	// Copy the array.
 	CUtlVector<T> &operator=(const CUtlVector<T> &other);
 
@@ -58,6 +51,13 @@ public:
 	T const &operator[](int i) const;
 	T &Element(int i);
 	T const &Element(int i) const;
+
+	// STL compatible member functions. These allow easier use of std::sort
+	// and they are forward compatible with the C++ 11 range-based for loops
+	T *begin()							{ return Base(); }
+	const T *begin() const				{ return Base(); }
+	T *end()							{ return Base() + Count(); }
+	const T *end() const				{ return Base() + Count(); }
 
 	// Gets the base address (can change when adding elements!)
 	T *Base();
@@ -583,13 +583,13 @@ void CUtlVector<T>::SetGrowSize(int size)
 template <class T>
 void CUtlVector<T>::Sort()
 {
-	std::sort(Base(), Base() + Count());
+	std::sort(begin(), end());
 }
 
 template <class T>
 void CUtlVector<T>::Sort(bool (*pfnLessFunc)(const T &src1, const T &src2))
 {
-	std::sort(Base(), Base() + Count(),
+	std::sort(begin(), end(),
 		[pfnLessFunc](const T &a, const T &b) -> bool
 		{
 			if (&a == &b)
@@ -628,5 +628,5 @@ template <class T>
 template <class F>
 void CUtlVector<T>::SortPredicate(F &&predicate)
 {
-	std::sort(Base(), Base() + Count(), predicate);
+	std::sort(begin(), end(), predicate);
 }
