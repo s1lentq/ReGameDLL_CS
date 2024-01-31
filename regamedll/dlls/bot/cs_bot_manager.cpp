@@ -408,10 +408,9 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 
 			if (pPlayer->IsBot())
 			{
+				CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
 				if (killThemAll || FStrEq(name, msg))
-				{
-					pPlayer->Kill();
-				}
+					pBot->Kill();
 			}
 		}
 	}

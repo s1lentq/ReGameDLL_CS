@@ -429,6 +429,20 @@ bool CCSBot::StayOnNavMesh()
 	return false;
 }
 
+#ifdef REGAMEDLL_FIXES
+void CCSBot::Kill()
+{
+	m_LastHitGroup = HITGROUP_GENERIC;
+
+	// have the player kill himself
+	pev->health = 0.0f;
+	Killed(VARS(eoNullEntity), GIB_NEVER);
+
+	if (CSGameRules()->m_pVIP == this)
+		CSGameRules()->m_iConsecutiveVIP = 10;
+}
+#endif
+
 void CCSBot::Panic(CBasePlayer *pEnemy)
 {
 	if (IsSurprised())

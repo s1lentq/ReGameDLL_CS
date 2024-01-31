@@ -375,6 +375,10 @@ public:
 
 	bool IsBuying() const;
 
+#ifdef REGAMEDLL_FIXES
+	void Kill();
+#endif
+
 	void Panic(CBasePlayer *pEnemy);					// look around in panic
 	void Follow(CBasePlayer *pPlayer);					// begin following given Player
 	void ContinueFollowing();							// continue following our leader after finishing what we were doing
