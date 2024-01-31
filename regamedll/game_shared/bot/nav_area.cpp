@@ -4674,6 +4674,11 @@ void CNavAreaGrid::RemoveNavArea(CNavArea *area)
 	m_areaCount--;
 }
 
+bool CNavAreaGrid::IsValid() const
+{
+	return m_grid && m_areaCount > 0;
+}
+
 // Given a position, return the nav area that IsOverlapping and is *immediately* beneath it
 CNavArea *CNavAreaGrid::GetNavArea(const Vector *pos, float beneathLimit) const
 {

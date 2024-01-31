@@ -1452,7 +1452,7 @@ void CCSBotManager::SetLooseBomb(CBaseEntity *bomb)
 	if (bomb)
 	{
 		m_looseBombArea = TheNavAreaGrid.GetNearestNavArea(&bomb->pev->origin);
-		DbgAssert(m_looseBombArea); // TODO: Need investigation and find out why it cannot find nearest area for a lost bomb, just catch it
+		DbgAssert(!TheNavAreaGrid.IsValid() || m_looseBombArea); // TODO: Need investigation and find out why it cannot find nearest area for a lost bomb, just catch it
 	}
 	else
 	{
