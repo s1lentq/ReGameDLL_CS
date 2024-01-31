@@ -3960,11 +3960,20 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerKilled)(CBasePlayer *pVictim,
 	}
 
 	FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
+
+#ifdef REGAMEDLL_FIXES
+	// Did the player die from a fall?
+	if (pVictim->m_bitsDamageType & DMG_FALL)
+	{
+		// do nothing
+	}
+	else
+#endif
 	// Did the player kill himself?
 	if (pVictim->pev == pKiller)
 	{
 		// Players lose a frag for killing themselves
-		pKiller->frags -= 1;
+		pVictim->pev->frags -= 1;
 	}
 	else if (peKiller && peKiller->IsPlayer())
 	{
@@ -5404,7 +5413,7 @@ void CHalfLifeMultiplay::GiveDefuserToRandomPlayer()
 
 		candidates.AddToTail(pPlayer);
 	}
-	
+
 	// randomly shuffle the list; this will keep the selection random in case of ties
 	for (int i = 0; i < candidates.Count(); i++) {
 		SWAP(candidates[i], candidates[RANDOM_LONG(0, candidates.Count() - 1)]);
