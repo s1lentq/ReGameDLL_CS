@@ -290,7 +290,7 @@ AmmoInfoStruct g_ammoInfo_default[] =
 
 AmmoInfoStruct g_ammoInfo[ARRAYSIZE(g_ammoInfo_default)];
 
-WeaponSlotInfo g_weaponSlotInfo[] = {
+WeaponSlotInfo g_weaponSlotInfo_default[] = {
 	{ WEAPON_C4,            C4_SLOT,                "weapon_c4"             },
 	{ WEAPON_KNIFE,         KNIFE_SLOT,             "weapon_knife"          },
 	{ WEAPON_P228,          PISTOL_SLOT,            "weapon_p228"           },
@@ -323,6 +323,8 @@ WeaponSlotInfo g_weaponSlotInfo[] = {
 	{ WEAPON_P90,           PRIMARY_WEAPON_SLOT,    "weapon_p90"            },
 	{ WEAPON_SHIELDGUN,     NONE_SLOT,              "weapon_shield"         },
 };
+
+WeaponSlotInfo g_weaponSlotInfo[ARRAYSIZE(g_weaponSlotInfo_default)];
 
 // Given an alias, return the associated weapon ID
 WeaponIdType AliasToWeaponID(const char *alias)
@@ -566,6 +568,7 @@ void WeaponInfoReset()
 {
 	Q_memcpy(g_weaponInfo, g_weaponInfo_default, sizeof(g_weaponInfo));
 	Q_memcpy(g_ammoInfo, g_ammoInfo_default, sizeof(g_ammoInfo));
+	Q_memcpy(g_weaponSlotInfo, g_weaponSlotInfo_default, sizeof(g_weaponSlotInfo));
 }
 
 WeaponSlotInfo *GetWeaponSlot(WeaponIdType weaponID)
