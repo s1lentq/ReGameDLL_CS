@@ -477,6 +477,9 @@ public:
 public:
 	BOOL IsEmpty();
 	int GiveAmmo(int iCount, char *szName, int iMax, int *pIndex = nullptr);
+	int GetAmmoIndex(const char *psz) const;
+	bool GiveAmmoToPlayer(CBasePlayer *pPlayer, CBasePlayerWeapon *pWeapon,
+		int iCurrentAmmo, const char *pszAmmo, int iMaxAmmo, CBasePlayerItem **pGivenItem = NULL);
 
 	void EXPORT Kill();
 	void EXPORT BombThink();
@@ -1269,7 +1272,7 @@ inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? m_flSwing
 inline float CKnife::KnifeStabDistance() const			{ return m_flStabDistance; }
 inline float CKnife::KnifeSwingDistance() const			{ return m_flSwingDistance; }
 inline float CKnife::KnifeBackStabMultiplier() const	{ return m_flBackStabMultiplier; }
-#else 
+#else
 inline float CKnife::KnifeStabDamage() const			{ return KNIFE_STAB_DAMAGE; }
 inline float CKnife::KnifeSwingDamage(bool fast) const	{ return fast ? KNIFE_SWING_DAMAGE_FAST : KNIFE_SWING_DAMAGE; }
 inline float CKnife::KnifeStabDistance() const			{ return KNIFE_STAB_DISTANCE; }
