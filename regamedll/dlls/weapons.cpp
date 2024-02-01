@@ -1631,7 +1631,7 @@ int CBasePlayerWeapon::ExtractAmmo(CBasePlayerWeapon *pWeapon)
 
 	if (pszAmmo2())
 	{
-		res = AddSecondaryAmmo(0, (char *)pszAmmo2(), iMaxAmmo2());
+		res = pWeapon->AddSecondaryAmmo(0, (char *)pszAmmo2(), iMaxAmmo2());
 	}
 
 	return res;
