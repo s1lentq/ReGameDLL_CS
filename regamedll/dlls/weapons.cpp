@@ -1852,39 +1852,72 @@ bool CWeaponBox::GiveAmmoToPlayer(CBasePlayer *pPlayer, CBasePlayerWeapon *pWeap
 		return false; // can't pickup more, these ammo are full in backpack
 
 	// If already have a weapon in backpack, just refill ammo for it
-	if (iCurrentAmmo > 0)
+	int iAmmoIndex = GetAmmoIndex(pszAmmo);
+	if (iAmmoIndex > 0)
 	{
-		int iAmmoIndex = GetAmmoIndex(pszAmmo);
-		if (iAmmoIndex > 0)
+		// How many weapon ammo can pick up?
+		int iAmmoPickup = min(m_rgAmmo[iAmmoIndex], iMaxAmmo - iCurrentAmmo);
+		if (iAmmoPickup > 0)
 		{
-			// how many gren ammo can pick up?
-			int iAmmoPickup = min(m_rgAmmo[iAmmoIndex], iMaxAmmo - iCurrentAmmo);
-			if (iAmmoPickup > 0)
+			if (iCurrentAmmo == 0 && !(pPlayer->pev->weapons & (1<<pWeapon->m_iId)) && (pWeapon->iFlags() & ITEM_FLAG_EXHAUSTIBLE))
 			{
-				if (!FStringNull(m_rgiszAmmo[iAmmoIndex]) &&
-					pPlayer->GiveAmmo(iAmmoPickup, STRING(m_rgiszAmmo[iAmmoIndex]), iMaxAmmo) != -1)
+				if (m_rgAmmo[iAmmoIndex] > iMaxAmmo)
 				{
-					m_rgAmmo[iAmmoIndex] -= iAmmoPickup;
+					// If ammo capacity of the dropped weapon exceeds the player's backpack capacity,
+					// make a copy of dropped weapon and give it to the player
+					CBasePlayerItem *copyItem = (CBasePlayerItem *)pPlayer->GiveCopyItem(pWeapon);
+					if (copyItem)
+					{
+						// The cloned weapon must inherit properties from a dropped weapon, such as Item Info
+#ifdef REGAMEDLL_API
+						ItemInfo info;
+						if (pWeapon->CSPlayerItem()->GetItemInfo(&info))
+							copyItem->CSPlayerItem()->SetItemInfo(&info);
+#endif
+						m_rgAmmo[iAmmoIndex]--;
+						iAmmoPickup--;
+					}
+				}
+				else
+				{
+					// If no weapon in backpack, then issue weapon
+					if (pPlayer->AddPlayerItem(pWeapon))
+					{
+						pWeapon->AttachToPlayer(pPlayer);
+						if (pGivenItem) *pGivenItem = pWeapon;
+					}
 
-					if (m_rgAmmo[iAmmoIndex] < 0)
-						m_rgAmmo[iAmmoIndex] = 0;
-
-					EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
+					// unlink this weapon from the box
+					return true;
 				}
 			}
 
-			// ammo exhausted, remove this weapon
-			if (m_rgAmmo[iAmmoIndex] <= 0)
+			Assert(iAmmoPickup != 0);
+			Assert(m_rgAmmo[iAmmoIndex] != 0);
+
+			if (!FStringNull(m_rgiszAmmo[iAmmoIndex]) &&
+				pPlayer->GiveAmmo(iAmmoPickup, STRING(m_rgiszAmmo[iAmmoIndex]), iMaxAmmo) != -1)
 			{
-				pWeapon->Kill();
+				m_rgAmmo[iAmmoIndex] -= iAmmoPickup;
 
-				// unlink this weapon from the box
-				return true;
+				if (m_rgAmmo[iAmmoIndex] < 0)
+					m_rgAmmo[iAmmoIndex] = 0;
+
+				EMIT_SOUND(pPlayer->edict(), CHAN_ITEM, "items/9mmclip1.wav", VOL_NORM, ATTN_NORM);
 			}
-
-			// ammo has not been exhausted yet, keep this weapon in weaponbox
-			return false;
 		}
+
+		// ammo exhausted, remove this weapon
+		if (m_rgAmmo[iAmmoIndex] <= 0)
+		{
+			pWeapon->Kill();
+
+			// unlink this weapon from the box
+			return true;
+		}
+
+		// ammo has not been exhausted yet, keep this weapon in weaponbox
+		return false;
 	}
 
 	// If no weapon in backpack, then issue weapon
@@ -2045,9 +2078,20 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 #ifdef REGAMEDLL_FIXES
 					CBasePlayerItem *pNext = m_rgpPlayerItems[i]->m_pNext;
 
+					// Determine the max ammo capacity for the picked-up grenade
+					int iMaxPickupAmmo = pGrenade->iMaxAmmo1();
+
+					// If the player already has the same weapon in inventory,
+					// prioritize the max ammo capacity value over the one from the dropped weapon
+					// When the pickup occurs, ammo will be granted up to
+					// the max ammo capacity of the weapon currently held by the player
+					CBasePlayerItem *pInventoryItem = (CBasePlayerItem *)pPlayer->GetItemById((WeaponIdType)pGrenade->m_iId);
+					if (pInventoryItem && !Q_stricmp(pInventoryItem->pszAmmo1(), pGrenade->pszAmmo1()))
+						iMaxPickupAmmo = pInventoryItem->iMaxAmmo1();
+
 					// Pickup grenade item or refill ammo
 					if (GiveAmmoToPlayer(pPlayer, pGrenade,
-						playerGrenades, pGrenade->pszAmmo1(), pGrenade->iMaxAmmo1(), &givenItem))
+						playerGrenades, pGrenade->pszAmmo1(), iMaxPickupAmmo, &givenItem))
 					{
 						// unlink this weapon from the box
 						m_rgpPlayerItems[i] = pItem = pNext;

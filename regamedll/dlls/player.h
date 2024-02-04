@@ -536,6 +536,7 @@ public:
 	void ItemPostFrame();
 	CBaseEntity *GiveNamedItem(const char *pszName);
 	CBaseEntity *GiveNamedItemEx(const char *pszName);
+	CBaseEntity *GiveCopyItem(CBaseEntity *pEntityBase);
 	void EnableControl(BOOL fControl);
 	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 	bool HintMessageEx(const char *pMessage, float duration = 6.0f, bool bDisplayIfPlayerDead = false, bool bOverride = false);
