@@ -984,6 +984,17 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 				continue;
 		}
 
+		// when allchat is 2,only dead player can see spectator's message
+		if (
+#ifdef REGAMEDLL_ADD
+			allchat.value == 2.0f &&
+#endif
+			(pPlayer->m_iTeam == UNASSIGNED || pPlayer->m_iTeam == SPECTATOR)
+		) {
+			if (pReceiver->pev->deadflag == DEAD_NO)
+				continue;
+		}
+
 		if ((pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && pReceiver->m_iTeam == pPlayer->m_iTeam)
 			|| pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
