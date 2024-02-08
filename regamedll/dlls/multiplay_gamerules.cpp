@@ -5384,7 +5384,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 
 		// Writes the index of the teammate who assisted in the kill
 		if (iDeathMessageFlags & PLAYERDEATH_ASSISTANT)
-			WRITE_BYTE(pAssister->entindex());
+			WRITE_BYTE((pAssister && pAssister->IsPlayer()) ? pAssister->entindex() : 0);
 
 		// Writes the rarity classification of the kill
 		if (iDeathMessageFlags & PLAYERDEATH_KILLRARITY)
