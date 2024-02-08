@@ -5357,7 +5357,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 	MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 		WRITE_BYTE((pKiller && pKiller->IsPlayer()) ? pKiller->entindex() : 0);	// the killer
 		WRITE_BYTE(pVictim->entindex());		// the victim
-		WRITE_BYTE(pVictim->m_bHeadshotKilled);	// is killed headshot
+		WRITE_BYTE((iRarityOfKill & KILLRARITY_HEADSHOT));	// is killed headshot
 		WRITE_STRING(killerWeaponName);			// what they were killed by (should this be a string?)
 
 #ifdef REGAMEDLL_ADD
