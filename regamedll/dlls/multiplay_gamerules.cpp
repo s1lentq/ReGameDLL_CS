@@ -4121,6 +4121,16 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 			iDeathMessageFlags |= PLAYERDEATH_KILLRARITY;
 		}
 
+#ifdef REGAMEDLL_ADD
+		iDeathMessageFlags &= UTIL_ReadFlags(deathmsg_flags.string); // leave only allowed bitsums for extra info
+
+		// Send the victim's death position only
+		// 1. if it is not a free for all mode
+		// 2. if the attacker is a player and they are not teammates
+		if (IsFreeForAll() || !pKiller || PlayerRelationship(pKiller, pVictim) == GR_TEAMMATE)
+			iDeathMessageFlags &= ~PLAYERDEATH_POSITION; // do not send a position
+#endif
+
 		SendDeathMessage(pKiller, pVictim, pAssister, pevInflictor, killer_weapon_name, iDeathMessageFlags, iRarityOfKill);
 
 		// Updates the stats of who has killed whom
@@ -5347,8 +5357,6 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, SendDeathMess
 //
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill)
 {
-	CBasePlayer *pKillerPlayer = (pKiller && pKiller->IsPlayer()) ? static_cast<CBasePlayer *>(pKiller) : nullptr;
-
 	MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 		WRITE_BYTE((pKiller && pKiller->IsPlayer()) ? pKiller->entindex() : 0);	// the killer
 		WRITE_BYTE(pVictim->entindex());		// the victim
@@ -5356,14 +5364,6 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKil
 		WRITE_STRING(killerWeaponName);			// what they were killed by (should this be a string?)
 
 #ifdef REGAMEDLL_ADD
-	iDeathMessageFlags &= UTIL_ReadFlags(deathmsg_flags.string); // leave only allowed bitsums for extra info
-
-	// Send the victim's death position only
-	// 1. if it is not a free for all mode
-	// 2. if the attacker is a player and they are not teammates
-	if (IsFreeForAll() || !pKillerPlayer || PlayerRelationship(pKillerPlayer, pVictim) == GR_TEAMMATE)
-		iDeathMessageFlags &= ~PLAYERDEATH_POSITION; // do not send a position
-
 	if (iDeathMessageFlags > 0)
 	{
 		WRITE_LONG(iDeathMessageFlags);
