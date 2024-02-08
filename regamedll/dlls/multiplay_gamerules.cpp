@@ -5308,6 +5308,10 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 		int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[iAttackerEntityIndex - 1] + 1;
 		if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION || pKillerPlayer->CSPlayer()->IsPlayerDominated(pVictim->entindex() - 1))
 		{
+			// Sets the beginning of domination over the victim until he takes revenge
+			if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION)
+				iRarity |= KILLRARITY_DOMINATION_BEGAN;
+
 			// this is the Nth unanswered kill between killer and victim, killer is now dominating victim
 			iRarity |= KILLRARITY_DOMINATION;
 
@@ -5344,15 +5348,6 @@ LINK_HOOK_CLASS_VOID_CUSTOM_CHAIN(CHalfLifeMultiplay, CSGameRules, SendDeathMess
 void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(SendDeathMessage)(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill)
 {
 	CBasePlayer *pKillerPlayer = (pKiller && pKiller->IsPlayer()) ? static_cast<CBasePlayer *>(pKiller) : nullptr;
-
-	// Only the player can dominate the victim
-	if ((iRarityOfKill & KILLRARITY_DOMINATION) && pKillerPlayer && pVictim != pKillerPlayer)
-	{
-		// Sets the beginning of domination over the victim until he takes revenge
-		int iKillsUnanswered = pVictim->CSPlayer()->m_iNumKilledByUnanswered[pKillerPlayer->entindex() - 1] + 1;
-		if (iKillsUnanswered == CS_KILLS_FOR_DOMINATION)
-			iRarityOfKill |= KILLRARITY_DOMINATION_BEGAN;
-	}
 
 	MESSAGE_BEGIN(MSG_ALL, gmsgDeathMsg);
 		WRITE_BYTE((pKiller && pKiller->IsPlayer()) ? pKiller->entindex() : 0);	// the killer
