@@ -267,6 +267,10 @@ void CHalfLifeMultiplay::EndRoundMessage(const char *sentence, ScenarioEventEndR
 	}
 
 	UTIL_LogPrintf("World triggered \"Round_End\"\n");
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_end", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 void CHalfLifeMultiplay::ReadMultiplayCvars()

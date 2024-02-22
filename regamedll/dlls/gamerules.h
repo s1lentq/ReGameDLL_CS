@@ -907,10 +907,6 @@ inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
 	m_iRoundWinStatus = iWinStatus;
 	m_flRestartRoundTime = gpGlobals->time + tmDelay;
 	m_bRoundTerminating = true;
-	
-#ifdef REGAMEDLL_ADD
-	FireTargets("game_round_end", nullptr, nullptr, USE_TOGGLE, 0.0);
-#endif
 }
 
 inline float CHalfLifeMultiplay::GetRoundRemainingTimeReal() const
