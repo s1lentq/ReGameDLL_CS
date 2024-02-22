@@ -2852,6 +2852,10 @@ void EXT_FUNC CHalfLifeMultiplay::OnRoundFreezeEnd()
 	{
 		TheCareerTasks->HandleEvent(EVENT_ROUND_START);
 	}
+
+#ifdef REGAMEDLL_ADD
+	FireTargets("game_round_freeze_end", nullptr, nullptr, USE_TOGGLE, 0.0);
+#endif
 }
 
 void CHalfLifeMultiplay::CheckFreezePeriodExpired()
