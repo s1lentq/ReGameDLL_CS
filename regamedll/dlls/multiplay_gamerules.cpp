@@ -648,6 +648,7 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CleanUpMap)()
 	UTIL_RestartOther("env_beam");
 	UTIL_RestartOther("env_laser");
 	UTIL_RestartOther("trigger_auto");
+	UTIL_RestartOther("trigger_multiple");
 #endif
 
 	// Remove grenades and C4
