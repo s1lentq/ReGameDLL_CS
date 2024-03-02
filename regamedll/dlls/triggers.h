@@ -204,6 +204,11 @@ public:
 	void EXPORT CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void InitTrigger();
+
+#ifdef REGAMEDLL_ADD
+	// For trigger_teleport TriggerTouch
+	int m_iszLandmarkName = 0;
+#endif
 };
 
 #define SF_TRIGGER_HURT_TARGETONCE      BIT(0) // Only fire hurt target once
@@ -393,6 +398,10 @@ class CTriggerTeleport: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
+
+#ifdef REGAMEDLL_ADD
+	virtual void KeyValue(KeyValueData *pkvd);
+#endif
 };
 
 class CBuyZone: public CBaseTrigger
