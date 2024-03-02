@@ -107,8 +107,14 @@ void EXT_FUNC __API_HOOK(AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *p
 
 	if (pEntity != gMultiDamage.pEntity)
 	{
-		// UNDONE: wrong attacker!
-		ApplyMultiDamage(pevInflictor, pevInflictor);
+#ifdef REGAMEDLL_FIXES
+		if (gMultiDamage.pEntity) // avoid api calls with null default pEntity
+#endif
+		{
+			// UNDONE: wrong attacker!
+			ApplyMultiDamage(pevInflictor, pevInflictor);
+		}
+
 		gMultiDamage.pEntity = pEntity;
 		gMultiDamage.amount = 0;
 	}
