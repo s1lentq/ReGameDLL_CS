@@ -741,7 +741,7 @@ public:
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
 
-	void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
+	VFUNC void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
 	int GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bFlashAssist);
 	CBasePlayer *CheckAssistsToKill(CBaseEntity *pKiller, CBasePlayer *pVictim, bool &bFlashAssist);
 
