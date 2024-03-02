@@ -624,6 +624,14 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer> IReGameHook_CBasePlayer_Observer_Think;
 typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBasePlayer_Observer_Think;
 
+// CGrenade::BounceTouch hook
+typedef IHookChainClass<void, class CGrenade, class CBaseEntity *> IReGameHook_CGrenade_BounceTouch;
+typedef IHookChainRegistryClass<void, class CGrenade, class CBaseEntity *> IReGameHookRegistry_CGrenade_BounceTouch;
+
+// CGrenade::TumbleThink hook
+typedef IHookChainClass<void, class CGrenade> IReGameHook_CGrenade_TumbleThink;
+typedef IHookChainRegistryClass<void, class CGrenade> IReGameHookRegistry_CGrenade_TumbleThink;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -785,6 +793,9 @@ public:
 
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
+
+	virtual IReGameHookRegistry_CGrenade_BounceTouch *CGrenade_BounceTouch() = 0;
+	virtual IReGameHookRegistry_CGrenade_TumbleThink *CGrenade_TumbleThink() = 0;
 };
 
 struct ReGameFuncs_t {

@@ -336,6 +336,9 @@ GAMEHOOK_REGISTRY(CSGameRules_SendDeathMessage);
 GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 
+GAMEHOOK_REGISTRY(CGrenade_BounceTouch);
+GAMEHOOK_REGISTRY(CGrenade_TumbleThink);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
