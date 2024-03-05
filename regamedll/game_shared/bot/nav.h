@@ -388,15 +388,21 @@ inline bool IsWalkableTraceLineClear(Vector &from, Vector &to, unsigned int flag
 {
 	TraceResult result;
 	edict_t *pEntIgnore = nullptr;
+	edict_t *pEntPrev = nullptr;
 	Vector useFrom = from;
 
-	while (true)
+	const int maxTries = 50;
+	for (int t = 0; t < maxTries; ++t)
 	{
 		UTIL_TraceLine(useFrom, to, ignore_monsters, pEntIgnore, &result);
 
 		// if we hit a walkable entity, try again
 		if (result.flFraction != 1.0f && (result.pHit && IsEntityWalkable(VARS(result.pHit), flags)))
 		{
+			if (result.pHit == pEntPrev)
+				return false; // deadlock, give up
+
+			pEntPrev = pEntIgnore;
 			pEntIgnore = result.pHit;
 
 			// start from just beyond where we hit to avoid infinite loops
