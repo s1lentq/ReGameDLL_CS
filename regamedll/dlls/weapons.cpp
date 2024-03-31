@@ -1974,6 +1974,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 		if (!m_rgpPlayerItems[i])
 			continue;
 
+		CBasePlayerItem *pPrev = NULL;
 		CBasePlayerItem *pItem = m_rgpPlayerItems[i];
 
 		// have at least one weapon in this slot
@@ -2070,13 +2071,13 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			}
 			else if (i == GRENADE_SLOT)
 			{
-				CBasePlayerWeapon *pGrenade = static_cast<CBasePlayerWeapon *>(m_rgpPlayerItems[i]);
+				CBasePlayerWeapon *pGrenade = static_cast<CBasePlayerWeapon *>(pItem);
 				if (pGrenade && pGrenade->IsWeapon())
 				{
 					int playerGrenades = pPlayer->m_rgAmmo[pGrenade->m_iPrimaryAmmoType];
 
 #ifdef REGAMEDLL_FIXES
-					CBasePlayerItem *pNext = m_rgpPlayerItems[i]->m_pNext;
+					CBasePlayerItem *pNext = pItem->m_pNext;
 
 					// Determine the max ammo capacity for the picked-up grenade
 					int iMaxPickupAmmo = pGrenade->iMaxAmmo1();
@@ -2094,7 +2095,11 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 						playerGrenades, pGrenade->pszAmmo1(), iMaxPickupAmmo, &givenItem))
 					{
 						// unlink this weapon from the box
-						m_rgpPlayerItems[i] = pItem = pNext;
+						if (pPrev)
+							pPrev->m_pNext = pItem = pNext;
+						else
+							m_rgpPlayerItems[i] = pItem = pNext;
+
 						continue;
 					}
 #else
@@ -2143,7 +2148,8 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 			}
 			else
 			{
-				auto pNext = m_rgpPlayerItems[i]->m_pNext;
+				CBasePlayerItem *pNext = pItem->m_pNext;
+
 				if (pPlayer->AddPlayerItem(pItem))
 				{
 					pItem->AttachToPlayer(pPlayer);
@@ -2155,12 +2161,17 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 				}
 
 				// unlink this weapon from the box
-				m_rgpPlayerItems[i] = pItem = pNext;
+				if (pPrev)
+					pPrev->m_pNext = pNext;
+				else
+					m_rgpPlayerItems[i] = pItem = pNext;
+
 				continue;
 			}
 
 			bRemove = false;
-			pItem = m_rgpPlayerItems[i]->m_pNext;
+			pPrev = pItem;
+			pItem = pItem->m_pNext;
 		}
 	}
 
