@@ -10658,6 +10658,11 @@ bool CBasePlayer::Kill()
 
 	// have the player kill himself
 	pev->health = 0.0f;
+
+#ifdef REGAMEDLL_API
+	CSPlayer()->ResetAllStats(); // reset damage stats on killed himself or team change
+#endif
+
 	Killed(pev, GIB_NEVER);
 
 	if (CSGameRules()->m_pVIP == this)
