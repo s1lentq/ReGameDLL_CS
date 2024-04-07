@@ -85,7 +85,10 @@ void PlaceDirectory::Save(int fd)
 	// store entries
 	for (auto &id : m_directory)
 	{
-		auto placeName = TheBotPhrases->IDToName(id);
+		const char *placeName = TheBotPhrases->IDToName(id);
+
+		if (!TheBotPhrases->IsValid() && !placeName)
+			placeName = TheNavAreaGrid.IDToName(id);
 
 		// store string length followed by string itself
 		unsigned short len = (unsigned short)Q_strlen(placeName) + 1;
@@ -110,7 +113,11 @@ void PlaceDirectory::Load(SteamFile *file)
 		file->Read(&len, sizeof(unsigned short));
 		file->Read(placeName, len);
 
-		AddPlace(TheBotPhrases->NameToID(placeName));
+		Place place = TheBotPhrases->NameToID(placeName);
+		if (!TheBotPhrases->IsValid() && place == UNDEFINED_PLACE)
+			place = TheNavAreaGrid.NameToID(placeName);
+
+		AddPlace(place);
 	}
 }
 
@@ -652,7 +659,12 @@ void LoadLocationFile(const char *filename)
 				for (int i = 0; i < dirSize; i++)
 				{
 					locData = SharedParse(locData);
-					directory.push_back(TheBotPhrases->NameToID(SharedGetToken()));
+
+					Place place = TheBotPhrases->NameToID(SharedGetToken());
+					if (!TheBotPhrases->IsValid() && place == UNDEFINED_PLACE)
+						place = TheNavAreaGrid.NameToID(SharedGetToken());
+
+					directory.push_back(place);
 				}
 
 				// read places for each nav area

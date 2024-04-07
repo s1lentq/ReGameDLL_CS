@@ -255,6 +255,8 @@ public:
 	Place NameToID(const char *name) const;
 	const char *IDToName(Place id) const;
 
+	bool IsValid() const { return !m_placeList.empty(); }
+
 	// given a name, return the associated phrase collection
 	const BotPhrase *GetPhrase(const char *name) const;
 

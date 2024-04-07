@@ -415,7 +415,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			{
 				// search the place name where is located the player
 				const char *placeName = nullptr;
-				if (AreRunningCZero() && TheBotPhrases)
+				if ((
+#ifdef REGAMEDLL_ADD
+					location_area_info.value ||
+#endif
+					AreRunningCZero()) && TheBotPhrases)
 				{
 					Place playerPlace = TheNavAreaGrid.GetPlace(&pev->origin);
 					const BotPhraseList *placeList = TheBotPhrases->GetPlaceList();
@@ -427,7 +431,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 							break;
 						}
 					}
+
+					if (!placeName[0])
+						placeName = TheNavAreaGrid.IDToName(playerPlace);
 				}
+
 				if (placeName)
 					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
 				else
@@ -10100,6 +10108,9 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 				break;
 			}
 		}
+
+		if (!placeName[0])
+			placeName = TheNavAreaGrid.IDToName(playerPlace);
 	}
 
 	if (!placeName[0] || (m_lastLocation[0] && !Q_strcmp(placeName, &m_lastLocation[1])))

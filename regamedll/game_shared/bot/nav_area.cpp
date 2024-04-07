@@ -3815,6 +3815,9 @@ void EditNavAreas(NavEditCmdType cmd)
 				if (area->GetPlace())
 				{
 					const char *name = TheBotPhrases->IDToName(area->GetPlace());
+					if (!TheBotPhrases->IsValid() && !name)
+						name = TheNavAreaGrid.IDToName(area->GetPlace());
+
 					if (name)
 						Q_strcpy(locName, name);
 					else
@@ -4806,6 +4809,136 @@ Place CNavAreaGrid::GetPlace(const Vector *pos) const
 	if (area)
 	{
 		return area->GetPlace();
+	}
+
+	return UNDEFINED_PLACE;
+}
+
+static const char *g_pszDefaultPlaceNames[] =
+{
+	"BombsiteA",
+	"BombsiteB",
+	"BombsiteC",
+	"Hostages",
+	"HostageRescueZone",
+	"VipRescueZone",
+	"CTSpawn",
+	"TSpawn",
+	"Bridge",
+	"Middle",
+	"House",
+	"Apartment",
+	"Apartments",
+	"Market",
+	"Sewers",
+	"Tunnel",
+	"Ducts",
+	"Village",
+	"Roof",
+	"Upstairs",
+	"Downstairs",
+	"Basement",
+	"Crawlspace",
+	"Kitchen",
+	"Inside",
+	"Outside",
+	"Tower",
+	"WineCellar",
+	"Garage",
+	"Courtyard",
+	"Water",
+	"FrontDoor",
+	"BackDoor",
+	"SideDoor",
+	"BackWay",
+	"FrontYard",
+	"BackYard",
+	"SideYard",
+	"Lobby",
+	"Vault",
+	"Elevator",
+	"DoubleDoors",
+	"SecurityDoors",
+	"LongHall",
+	"SideHall",
+	"FrontHall",
+	"BackHall",
+	"MainHall",
+	"FarSide",
+	"Windows",
+	"Window",
+	"Attic",
+	"StorageRoom",
+	"ProjectorRoom",
+	"MeetingRoom",
+	"ConferenceRoom",
+	"ComputerRoom",
+	"BigOffice",
+	"LittleOffice",
+	"Dumpster",
+	"Airplane",
+	"Underground",
+	"Bunker",
+	"Mines",
+	"Front",
+	"Back",
+	"Rear",
+	"Side",
+	"Ramp",
+	"Underpass",
+	"Overpass",
+	"Stairs",
+	"Ladder",
+	"Gate",
+	"GateHouse",
+	"LoadingDock",
+	"GuardHouse",
+	"Entrance",
+	"VendingMachines",
+	"Loft",
+	"Balcony",
+	"Alley",
+	"BackAlley",
+	"SideAlley",
+	"FrontRoom",
+	"BackRoom",
+	"SideRoom",
+	"Crates",
+	"Truck",
+	"Bedroom",
+	"FamilyRoom",
+	"Bathroom",
+	"LivingRoom",
+	"Den",
+	"Office",
+	"Atrium",
+	"Entryway",
+	"Foyer",
+	"Stairwell",
+	"Fence",
+	"Deck",
+	"Porch",
+	"Patio",
+	"Wall"
+};
+
+// Return fallback place name for given place id
+const char *CNavAreaGrid::IDToName(Place place) const
+{
+	if (place <= 0 || place > ARRAYSIZE(g_pszDefaultPlaceNames))
+		return nullptr;
+
+	return g_pszDefaultPlaceNames[place - 1];
+}
+
+// Return place id for given place name
+Place CNavAreaGrid::NameToID(const char *name) const
+{
+	for (unsigned int place = 0; place < ARRAYSIZE(g_pszDefaultPlaceNames); place++)
+	{
+		const char *placeName = g_pszDefaultPlaceNames[place];
+		if (!Q_stricmp(placeName, name))
+			return place + 1;
 	}
 
 	return UNDEFINED_PLACE;

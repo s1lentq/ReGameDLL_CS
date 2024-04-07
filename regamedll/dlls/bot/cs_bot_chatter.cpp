@@ -540,7 +540,12 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 					else if (!Q_stricmp("UNDEFINED", token))
 						placeCriteria = UNDEFINED_PLACE;
 					else
+					{
 						placeCriteria = TheBotPhrases->NameToID(token);
+
+						if (!TheBotPhrases->IsValid() && placeCriteria == UNDEFINED_PLACE)
+							placeCriteria = TheNavAreaGrid.NameToID(token);
+					}
 
 					continue;
 				}
