@@ -116,6 +116,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_freezetime_duck                 | 1       | 0   | 1            | Allow players to duck during freezetime.<br/> `0` disabled<br/>`1` enabled |
 | mp_freezetime_jump                 | 1       | 0   | 1            | Allow players to jump during freezetime.<br/> `0` disabled<br/>`1` enabled |
 | mp_defuser_allocation              | 0       | 0   | 2            | Give defuser on player spawn.<br/> `0` disabled<br/>`1` Random players. <br/>`2` All players. |
+| mp_location_area_info              | 0       | 0   | 1            | Enable location area info.<br/> `0` disabled<br/>`1` enabled.<br/>Usually displayed in HUDs below radar or in radio chat as a prefix.<br/>`NOTE`: Navigation `maps/.nav` file required and should contain place names |
 </details>
 
 ## How to install zBot for CS 1.6?
