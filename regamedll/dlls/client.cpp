@@ -836,7 +836,11 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	// team only
 	if (teamonly)
 	{
-		if (AreRunningCZero() && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
+		if ((
+#ifdef REGAMEDLL_ADD
+			location_area_info.value >= 2 ||
+#endif
+			AreRunningCZero()) && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
 		{
 			// search the place name where is located the player
 			Place playerPlace = TheNavAreaGrid.GetPlace(&pPlayer->pev->origin);
@@ -850,7 +854,16 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 					break;
 				}
 			}
+
+			if (!placeName)
+				placeName = TheNavAreaGrid.IDToName(playerPlace);
 		}
+
+		bool bUseLocFallback = false;
+#ifdef REGAMEDLL_ADD
+		if (chat_loc_fallback.value)
+			bUseLocFallback = true;
+#endif
 
 		if (pPlayer->m_iTeam == CT)
 		{
@@ -861,7 +874,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			}
 			else if (placeName)
 			{
-				pszFormat = "#Cstrike_Chat_CT_Loc";
+				pszFormat = bUseLocFallback ? "\x1(Counter-Terrorist) \x3%s1\x1 @ \x4%s3\x1 :  %s2" : "#Cstrike_Chat_CT_Loc";
 				pszConsoleFormat = "*(Counter-Terrorist) %s @ %s : %s";
 				consoleUsesPlaceName = true;
 			}
@@ -880,7 +893,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			}
 			else if (placeName)
 			{
-				pszFormat = "#Cstrike_Chat_T_Loc";
+				pszFormat = bUseLocFallback ? "\x1(Terrorist) \x3%s1\x1 @ \x4%s3\x1 :  %s2" : "#Cstrike_Chat_T_Loc";
 				pszConsoleFormat = "(Terrorist) %s @ %s : %s";
 				consoleUsesPlaceName = true;
 			}

@@ -417,7 +417,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 				const char *placeName = nullptr;
 				if ((
 #ifdef REGAMEDLL_ADD
-					location_area_info.value ||
+					location_area_info.value >= 2 ||
 #endif
 					AreRunningCZero()) && TheBotPhrases)
 				{
@@ -432,14 +432,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 						}
 					}
 
-					if (!placeName[0])
+					if (!placeName)
 						placeName = TheNavAreaGrid.IDToName(playerPlace);
 				}
 
-				if (placeName)
-					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
+				if (placeName && placeName[0])
+				{
+					bool bUseLocFallback = false;
+#ifdef REGAMEDLL_ADD
+					if (chat_loc_fallback.value)
+						bUseLocFallback = true;
+#endif
+
+					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), bUseLocFallback ? "\x3%s1\x1 @ \x4%s2\x1 (RADIO): %s3" : "#Game_radio_location", STRING(pev->netname), placeName, msg_verbose);
+				}
 				else
+				{
 					ClientPrint(pEntity->pev, HUD_PRINTRADIO, NumAsString(entindex()), "#Game_radio", STRING(pev->netname), msg_verbose);
+				}
 			}
 
 			// icon over the head for teammates
@@ -10089,11 +10099,11 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 	if (!forceUpdate && m_flLastUpdateTime >= gpGlobals->time + 2.0f)
 		return;
 
-	const char *placeName = "";
+	const char *placeName = nullptr;
 
 	if (pev->deadflag == DEAD_NO && (
 #ifdef REGAMEDLL_ADD
-		location_area_info.value ||
+		(location_area_info.value == 1 || location_area_info.value == 3) ||
 #endif
 		AreBotsAllowed()))
 	{
@@ -10109,7 +10119,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 			}
 		}
 
-		if (!placeName[0])
+		if (!placeName)
 			placeName = TheNavAreaGrid.IDToName(playerPlace);
 	}
 

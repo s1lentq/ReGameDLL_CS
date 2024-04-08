@@ -202,6 +202,7 @@ extern cvar_t freezetime_duck;
 extern cvar_t freezetime_jump;
 extern cvar_t defuser_allocation;
 extern cvar_t location_area_info;
+extern cvar_t chat_loc_fallback;
 
 #endif
 
