@@ -829,7 +829,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		return;
 
 	const char *placeName = nullptr;
-	char *pszFormat = nullptr;
+	const char *pszFormat = nullptr;
 	char *pszConsoleFormat = nullptr;
 	bool consoleUsesPlaceName = false;
 
