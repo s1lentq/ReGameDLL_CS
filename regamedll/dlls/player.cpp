@@ -10113,7 +10113,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 			placeName = TheNavAreaGrid.IDToName(playerPlace);
 	}
 
-	if (!placeName[0] || (m_lastLocation[0] && !Q_strcmp(placeName, &m_lastLocation[1])))
+	if (!placeName || !placeName[0] || (m_lastLocation[0] && !Q_strcmp(placeName, &m_lastLocation[1])))
 	{
 		return;
 	}
