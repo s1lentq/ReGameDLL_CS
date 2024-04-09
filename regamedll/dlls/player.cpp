@@ -411,7 +411,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			MESSAGE_END();
 
 			// radio message icon
-			if (msg_verbose)
+			if (msg_verbose
+#ifdef REGAMEDLL_FIXES
+					&& Q_strlen(msg_verbose) > 0
+#endif
+				)
 			{
 				// search the place name where is located the player
 				const char *placeName = nullptr;
