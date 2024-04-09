@@ -382,7 +382,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 				continue;
 
 			// is this player on our team? (even dead players hear our radio calls)
-			if (pPlayer->m_iTeam == m_iTeam)
+			if (g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE)
 				bSend = true;
 		}
 		// this means we're a spectator
@@ -396,7 +396,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
-			if (pPlayer->m_hObserverTarget && pPlayer->m_hObserverTarget->m_iTeam == m_iTeam)
+			if (pPlayer->m_hObserverTarget && g_pGameRules->PlayerRelationship(this, pPlayer->m_hObserverTarget) == GR_TEAMMATE)
 			{
 				bSend = true;
 			}
