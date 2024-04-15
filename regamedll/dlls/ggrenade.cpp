@@ -670,7 +670,9 @@ void CGrenade::DangerSoundThink()
 	}
 }
 
-void CGrenade::BounceTouch(CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CGrenade, BounceTouch, (CBaseEntity *pOther), pOther)
+
+void CGrenade::__API_HOOK(BounceTouch)(CBaseEntity *pOther)
 {
 	// don't hit the guy that launched this grenade
 	if (pOther->edict() == pev->owner)
@@ -770,7 +772,9 @@ void CGrenade::BounceSound()
 	}
 }
 
-void CGrenade::TumbleThink()
+LINK_HOOK_CLASS_VOID_CHAIN2(CGrenade, TumbleThink)
+
+void CGrenade::__API_HOOK(TumbleThink)()
 {
 #ifdef REGAMEDLL_FIXES
 	if (pev->velocity.IsLengthGreaterThan(g_psv_maxvelocity->value))
