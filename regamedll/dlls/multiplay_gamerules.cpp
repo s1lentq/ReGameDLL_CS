@@ -5290,7 +5290,6 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 	if (pVictim->m_bHeadshotKilled)
 		iRarity |= KILLRARITY_HEADSHOT;
 
-	// The killer player was blind
 	CBasePlayer *pKillerPlayer = static_cast<CBasePlayer *>(pKiller);
 	if (pKillerPlayer && pKillerPlayer->IsPlayer())
 	{
@@ -5304,6 +5303,7 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 			if (pVictim->GetDmgPenetrationLevel() > 0)
 				iRarity |= KILLRARITY_PENETRATED;
 
+			// The killer player was blind
 			if (pKillerPlayer->IsFullyBlind())
 				iRarity |= KILLRARITY_KILLER_BLIND;
 
