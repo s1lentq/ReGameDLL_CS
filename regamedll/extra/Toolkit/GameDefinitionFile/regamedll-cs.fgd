@@ -1934,6 +1934,7 @@
 	bombradius(integer) : "Bomb Radius" : 500
 ]
 
+@PointClass base(Targetname) iconsprite("sprites/CS/info_target.spr") = info_landmark : "Transition/Relative teleport Landmark" []
 @PointClass base(Targetname) iconsprite("sprites/CS/info_target.spr") = info_null : "info_null (spotlight target)" []
 @PointClass iconsprite("sprites/CS/info_player_deathmatch.spr") base(PlayerClass) = info_player_deathmatch : "Terrorist start" []
 @PointClass iconsprite("sprites/CS/info_player_start.spr") base(PlayerClass) = info_player_start : "Counter-terrorist start" []
@@ -2264,6 +2265,7 @@
 
 @SolidClass base(Trigger) = trigger_teleport : "Trigger teleport" 
 [
+	landmark(string) : "Landmark name"
 	spawnflags(flags) =
 	[
 		256: "Keep angles" : 0
