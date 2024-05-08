@@ -5291,13 +5291,12 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 		iRarity |= KILLRARITY_HEADSHOT;
 
 	CBasePlayer *pKillerPlayer = static_cast<CBasePlayer *>(pKiller);
-	if (pKillerPlayer && pKillerPlayer->IsPlayer())
+	if (pKillerPlayer && pKillerPlayer->IsPlayer() && pKillerPlayer != pVictim)
 	{
 		WeaponClassType weaponClass = AliasToWeaponClass(killerWeaponName);
-		if (pKillerPlayer != pVictim
-			&& weaponClass != WEAPONCLASS_NONE
-			&& weaponClass != WEAPONCLASS_KNIFE
-			&& weaponClass != WEAPONCLASS_GRENADE)
+		if (weaponClass != WEAPONCLASS_NONE &&
+			weaponClass != WEAPONCLASS_KNIFE &&
+			weaponClass != WEAPONCLASS_GRENADE)
 		{
 			// The killer player kills the victim through the walls
 			if (pVictim->GetDmgPenetrationLevel() > 0)
