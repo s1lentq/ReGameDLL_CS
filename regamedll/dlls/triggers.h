@@ -283,6 +283,10 @@ class CTriggerMultiple: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
 };
 
 // Variable sized trigger. Triggers once, then removes itself. You must set the key "target" to the name of another object in the level that has a matching

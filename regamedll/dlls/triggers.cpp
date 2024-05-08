@@ -996,6 +996,14 @@ void CTriggerMultiple::Spawn()
 	}
 }
 
+#ifdef REGAMEDLL_FIXES
+void CTriggerMultiple::Restart()
+{
+	pev->nextthink = -1;
+	Spawn();
+}
+#endif
+
 LINK_ENTITY_TO_CLASS(trigger_once, CTriggerOnce, CCSTriggerOnce)
 
 void CTriggerOnce::Spawn()
