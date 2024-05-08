@@ -398,10 +398,7 @@ class CTriggerTeleport: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
-
-#ifdef REGAMEDLL_ADD
 	virtual void KeyValue(KeyValueData *pkvd);
-#endif
 };
 
 class CBuyZone: public CBaseTrigger
