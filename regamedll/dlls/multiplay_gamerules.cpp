@@ -5314,6 +5314,10 @@ int CHalfLifeMultiplay::GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVict
 			const Vector inEyePos = pKillerPlayer->EyePosition();
 			if (TheCSBots()->IsLineBlockedBySmoke(&inEyePos, &pVictim->pev->origin))
 				iRarity |= KILLRARITY_THRUSMOKE;
+
+			// The killer player kills the victim while in air
+			if (!(pKillerPlayer->pev->flags & FL_ONGROUND))
+				iRarity |= KILLRARITY_INAIR;
 		}
 
 		// Calculate # of unanswered kills between killer & victim

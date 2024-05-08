@@ -252,7 +252,8 @@ enum KillRarity
 	KILLRARITY_ASSISTEDFLASH    = 0x020, // Assister helped with a flash
 	KILLRARITY_DOMINATION_BEGAN = 0x040, // Killer player began dominating the victim (NOTE: this flag is set once)
 	KILLRARITY_DOMINATION       = 0x080, // Continues domination by the killer
-	KILLRARITY_REVENGE          = 0x100  // Revenge by the killer
+	KILLRARITY_REVENGE          = 0x100, // Revenge by the killer
+	KILLRARITY_INAIR            = 0x200  // Killer was in the air (skill to deal with high inaccuracy)
 };
 
 enum
