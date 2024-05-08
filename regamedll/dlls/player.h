@@ -448,6 +448,7 @@ public:
 	edict_t *EntSelectSpawnPoint_OrigFunc();
 	void PlayerDeathThink_OrigFunc();
 	void Observer_Think_OrigFunc();
+	void RemoveAllItems_OrigFunc(BOOL removeSuit);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API

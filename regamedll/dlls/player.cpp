@@ -1733,7 +1733,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 #endif
 }
 
-void CBasePlayer::RemoveAllItems(BOOL removeSuit)
+LINK_HOOK_CLASS_VOID_CHAIN(CBasePlayer, RemoveAllItems, (BOOL removeSuit), removeSuit)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(RemoveAllItems)(BOOL removeSuit)
 {
 	int i;
 
