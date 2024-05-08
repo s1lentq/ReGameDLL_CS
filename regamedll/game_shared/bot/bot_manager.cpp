@@ -147,6 +147,8 @@ void CBotManager::StartFrame()
 			ActiveGrenade *ag = (*iter);
 
 			// lazy validation
+			ag->CheckOnEntityGone();
+
 			if (!ag->IsValid())
 			{
 				delete ag;
@@ -203,6 +205,8 @@ void CBotManager::StartFrame()
 			pBot->BotThink();
 		}
 	}
+
+	ValidateActiveGrenades();
 }
 
 // Return the filename for this map's "nav map" file
@@ -278,12 +282,15 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 }
 
 // Destroy any invalid active grenades
-NOXREF void CBotManager::ValidateActiveGrenades()
+void CBotManager::ValidateActiveGrenades()
 {
 	auto iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = (*iter);
+
+		// lazy validation
+		ag->CheckOnEntityGone();
 
 		if (!ag->IsValid())
 		{
@@ -314,6 +321,8 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
+		ag->CheckOnEntityGone();
+
 		if (!ag->IsValid())
 		{
 			delete ag;
@@ -358,6 +367,8 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
+		ag->CheckOnEntityGone();
+
 		if (!ag->IsValid())
 		{
 			delete ag;

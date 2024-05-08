@@ -491,9 +491,15 @@ void ActiveGrenade::OnEntityGone()
 	m_entity = nullptr;
 }
 
+void ActiveGrenade::CheckOnEntityGone()
+{
+	if (m_dieTimestamp == 0 && !m_entity.IsValid())
+		OnEntityGone();
+}
+
 bool ActiveGrenade::IsValid() const
 {
-	if (!m_entity)
+	if (!m_entity.IsValid())
 	{
 		if (gpGlobals->time > m_dieTimestamp)
 			return false;
@@ -502,7 +508,7 @@ bool ActiveGrenade::IsValid() const
 	return true;
 }
 
-const Vector *ActiveGrenade::GetPosition() const
+const Vector *ActiveGrenade::GetPosition()
 {
 	return &m_entity->pev->origin;
 }

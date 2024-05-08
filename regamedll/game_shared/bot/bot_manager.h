@@ -42,16 +42,17 @@ public:
 	ActiveGrenade(int weaponID, CGrenade *grenadeEntity);
 
 	void OnEntityGone();
+	void CheckOnEntityGone();
 	bool IsValid() const;
 
-	bool IsEntity(CGrenade *grenade) const { return (grenade == m_entity) ? true : false; }
+	bool IsEntity(CGrenade *grenade) const { return grenade == m_entity; }
 	int GetID() const { return m_id; }
 	const Vector *GetDetonationPosition() const { return &m_detonationPosition; }
-	const Vector *GetPosition() const;
+	const Vector *GetPosition();
 
 private:
 	int m_id;
-	CGrenade *m_entity;
+	EntityHandle<CGrenade> m_entity;
 	Vector m_detonationPosition;
 	float m_dieTimestamp;
 };
