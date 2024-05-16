@@ -821,7 +821,7 @@ void LogAttack(CBasePlayer *pAttacker, CBasePlayer *pVictim, int teamAttack, int
 	}
 }
 
-float GetWeaponRatio(int iGunType) {
+float GetWeaponArmorRatio(int iGunType) {
 	float flRatio = 1.0;
 
 	switch (iGunType)
@@ -1144,7 +1144,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 			iGunType = pAttack->m_pActiveItem->m_iId;
 			flRatio += flShieldRatio;
 
-			flRatio *= GetWeaponRatio(iGunType);
+			flRatio *= GetWeaponArmorRatio(iGunType);
 		}
 
 		if (!ShouldDoLargeFlinch(m_LastHitGroup, iGunType))
