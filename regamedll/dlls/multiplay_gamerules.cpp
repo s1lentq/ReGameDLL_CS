@@ -2612,7 +2612,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(Think)()
 	}
 }
 
-bool CHalfLifeMultiplay::CheckGameOver()
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(BOOL, CHalfLifeMultiplay, CSGameRules, CheckGameOver)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckGameOver)()
 {
 	// someone else quit the game already
 	if (m_bGameOver)
@@ -2649,7 +2651,9 @@ bool CHalfLifeMultiplay::CheckGameOver()
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckTimeLimit()
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(BOOL, CHalfLifeMultiplay, CSGameRules, CheckTimeLimit)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckTimeLimit)()
 {
 	if (timelimit.value < 0)
 	{
@@ -2687,7 +2691,9 @@ bool CHalfLifeMultiplay::CheckTimeLimit()
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckMaxRounds()
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(BOOL, CHalfLifeMultiplay, CSGameRules, CheckMaxRounds)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckMaxRounds)()
 {
 	if (m_iMaxRounds != 0 && m_iTotalRoundsPlayed >= m_iMaxRounds)
 	{
@@ -2699,7 +2705,9 @@ bool CHalfLifeMultiplay::CheckMaxRounds()
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckWinLimit()
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(BOOL, CHalfLifeMultiplay, CSGameRules, CheckWinLimit)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckWinLimit)()
 {
 	// has one team won the specified number of rounds?
 	if (m_iMaxRoundsWon != 0 && (m_iNumCTWins >= m_iMaxRoundsWon || m_iNumTerroristWins >= m_iMaxRoundsWon))
@@ -2715,7 +2723,9 @@ bool CHalfLifeMultiplay::CheckWinLimit()
 	return false;
 }
 
-bool CHalfLifeMultiplay::CheckFragLimit()
+LINK_HOOK_CLASS_CUSTOM_CHAIN2(BOOL, CHalfLifeMultiplay, CSGameRules, CheckFragLimit)
+
+BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(CheckFragLimit)()
 {
 #ifdef REGAMEDLL_ADD
 	int fragsRemaining = 0;
