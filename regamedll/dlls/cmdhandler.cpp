@@ -37,7 +37,10 @@ void SV_Continue_f()
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (pPlayer && !pPlayer->IsBot())
+			if (!UTIL_IsValidPlayer(pPlayer))
+				continue;
+
+			if (!pPlayer->IsBot())
 			{
 				// at the end of the round is showed window with the proposal surrender or continue
 				// now of this time HUD is completely hidden
@@ -96,7 +99,7 @@ void SV_Career_EndRound_f()
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer || FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			if (pPlayer->IsBot() && pPlayer->m_iTeam == pLocalPlayer->m_iTeam)

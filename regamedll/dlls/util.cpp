@@ -506,7 +506,11 @@ void UTIL_ScreenShake(const Vector &center, float amplitude, float frequency, fl
 	for (i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer || !(pPlayer->pev->flags & FL_ONGROUND))
+
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		if (!(pPlayer->pev->flags & FL_ONGROUND))
 			continue;
 
 		localAmplitude = 0;
@@ -552,7 +556,10 @@ void UTIL_ScreenFadeBuild(ScreenFade &fade, const Vector &color, float fadeTime,
 
 void UTIL_ScreenFadeWrite(const ScreenFade &fade, CBaseEntity *pEntity)
 {
-	if (!pEntity || !pEntity->IsNetClient())
+	if (!UTIL_IsValidPlayer(pEntity))
+		return;
+
+	if (!pEntity->IsNetClient())
 		return;
 
 	MESSAGE_BEGIN(MSG_ONE, gmsgFade, nullptr, pEntity->edict());
@@ -634,10 +641,11 @@ void UTIL_HudMessageAll(const hudtextparms_t &textparms, const char *pMessage)
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
-		{
-			UTIL_HudMessage(pPlayer, textparms, pMessage);
-		}
+
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		UTIL_HudMessage(pPlayer, textparms, pMessage);
 	}
 }
 
@@ -843,8 +851,11 @@ void UTIL_ShowMessageAll(const char *pString, bool isHint)
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
-			UTIL_ShowMessage(pString, pPlayer, isHint);
+
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		UTIL_ShowMessage(pString, pPlayer, isHint);
 	}
 }
 
@@ -1749,10 +1760,11 @@ int UTIL_GetNumPlayers()
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer)
-		{
-			nNumPlayers++;
-		}
+
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		nNumPlayers++;
 	}
 
 	return nNumPlayers;
@@ -1837,7 +1849,10 @@ int UTIL_CountPlayersInBrushVolume(bool bOnlyAlive, CBaseEntity *pBrushEntity, i
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer || !pPlayer->IsInWorld())
+			if (!UTIL_IsValidPlayer(pPlayer))
+				continue;
+
+			if (!pPlayer->IsInWorld())
 				continue;
 
 			if (bOnlyAlive && !pPlayer->IsAlive())

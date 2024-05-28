@@ -358,10 +358,7 @@ bool CHostageImprov::IsFriendInTheWay(const Vector &goalPos) const
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (!pPlayer->IsAlive() || pPlayer->m_iTeam == TERRORIST)
@@ -675,10 +672,7 @@ void CHostageImprov::UpdateVision()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))

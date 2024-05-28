@@ -2029,7 +2029,7 @@ void CEscapeZone::EscapeTouch(CBaseEntity *pOther)
 			{
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-				if (!pPlayer || FNullEnt(pPlayer->pev))
+				if (!UTIL_IsValidPlayer(pPlayer))
 					continue;
 
 				if (pPlayer->m_iTeam == pEscapee->m_iTeam)

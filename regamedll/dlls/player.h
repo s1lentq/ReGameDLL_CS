@@ -986,6 +986,19 @@ inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
 	return GET_PRIVATE<CBasePlayer>(INDEXENT(playerIndex));
 }
 
+// return true if the given player is valid
+inline bool UTIL_IsValidPlayer(CBaseEntity *pPlayer)
+{
+	return pPlayer && !FNullEnt(pPlayer->pev) && !pPlayer->IsDormant();
+}
+
+#else
+
+inline bool UTIL_IsValidPlayer(CBaseEntity *pPlayer)
+{
+	return pPlayer && !FNullEnt(pPlayer->pev);
+}
+
 #endif
 
 inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)

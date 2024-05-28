@@ -1460,8 +1460,11 @@ void CBasePlayerWeapon::ReloadSound()
 	CBasePlayer *pPlayer = nullptr;
 	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")))
 	{
-		if (pPlayer->IsDormant())
+		if (FNullEnt(pPlayer->edict()))
 			break;
+
+		if (pPlayer->IsDormant())
+			continue;
 
 		if (pPlayer == m_pPlayer)
 			continue;
@@ -2043,7 +2046,7 @@ void CWeaponBox::Touch(CBaseEntity *pOther)
 					if (!pEntity->IsPlayer())
 						continue;
 
-					if (pEntity->pev->flags == FL_DORMANT)
+					if (pEntity->IsDormant())
 						continue;
 
 					CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);

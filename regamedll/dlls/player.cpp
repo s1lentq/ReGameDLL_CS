@@ -332,7 +332,10 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer)
 				continue;
 
 			CBasePlayer *pTarget = CBasePlayer::Instance(pPlayer->m_hObserverTarget->pev);
-			if (pTarget && pTarget->m_iTeam == m_iTeam)
+			if (!pTarget || pTarget->IsDormant())
+				continue;
+
+			if (pTarget->m_iTeam == m_iTeam)
 			{
 				bSend = true;
 			}
@@ -365,6 +368,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 		if (FNullEnt(pEntity->edict()))
 			break;
 
+		if (pEntity->IsDormant())
+			continue;
+
 		bool bSend = false;
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
@@ -396,7 +402,11 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Radio)(const char *msg_id, const char *msg
 			if (FNullEnt(pPlayer->m_hObserverTarget))
 				continue;
 
-			if (pPlayer->m_hObserverTarget && g_pGameRules->PlayerRelationship(this, pPlayer->m_hObserverTarget) == GR_TEAMMATE)
+			CBasePlayer *pTarget = CBasePlayer::Instance(pPlayer->m_hObserverTarget->pev);
+			if (!pTarget || pTarget->IsDormant())
+				continue;
+
+			if (g_pGameRules->PlayerRelationship(this, pTarget) == GR_TEAMMATE)
 			{
 				bSend = true;
 			}
@@ -1029,7 +1039,10 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer || pPlayer->m_hObserverTarget != this)
+			if (!UTIL_IsValidPlayer(pPlayer))
+				continue;
+
+			if (pPlayer->m_hObserverTarget != this)
 				continue;
 
 			MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth, nullptr, pPlayer->edict());
@@ -1091,6 +1104,9 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 					{
 						if (FNullEnt(pEntity->edict()))
 							break;
+
+						if (pEntity->IsDormant())
+							continue;
 
 						CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
@@ -1278,7 +1294,7 @@ BOOL EXT_FUNC CBasePlayer::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entva
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->m_hObserverTarget == this)
@@ -1876,6 +1892,9 @@ void CBasePlayer::SetProgressBarTime(int time)
 		if (FNullEnt(pEntity->edict()))
 			break;
 
+		if (pEntity->IsDormant())
+			continue;
+
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pPlayer->GetObserverMode() == OBS_IN_EYE && pPlayer->pev->iuser2 == playerIndex)
@@ -1915,6 +1934,9 @@ void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)
 	{
 		if (FNullEnt(pEntity->edict()))
 			break;
+
+		if (pEntity->IsDormant())
+			continue;
 
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
@@ -2188,7 +2210,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			{
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-				if (!pPlayer)
+				if (!UTIL_IsValidPlayer(pPlayer))
 					continue;
 
 				bool killedByHumanPlayer = (!pPlayer->IsBot() && pPlayer->pev == pevAttacker && pPlayer->m_iTeam != m_iTeam);
@@ -2219,7 +2241,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 	{
 		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
-		if (!pObserver)
+		if (!UTIL_IsValidPlayer(pObserver))
 			continue;
 
 		if (pObserver->IsObservingPlayer(this))
@@ -4443,7 +4465,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(AddPointsToTeam)(int score, BOOL bAllowNeg
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer && i != index)
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		if (i != index)
 		{
 			if (g_pGameRules->PlayerRelationship(this, pPlayer) == GR_TEAMMATE)
 			{
@@ -5830,7 +5855,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 	{
 		CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
 
-		if (pObserver && pObserver->IsObservingPlayer(this))
+		if (!UTIL_IsValidPlayer(pObserver))
+			continue;
+
+		if (pObserver->IsObservingPlayer(this))
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, nullptr, pObserver->pev);
 				WRITE_BYTE(0);
@@ -5959,8 +5987,10 @@ void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (pPlayer && !FNullEnt(pPlayer->edict()))
-			SetScoreboardAttributes(pPlayer);
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		SetScoreboardAttributes(pPlayer);
 	}
 }
 
@@ -6509,10 +6539,8 @@ void CBasePlayer::ForceClientDllUpdate()
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer || FNullEnt(pPlayer->edict()))
-			continue;
 
-		if (pPlayer->IsDormant())
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pev->deadflag == DEAD_NO)
@@ -7663,13 +7691,13 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 			{
 				CBaseEntity *pEntity = UTIL_PlayerByIndex(i);
 
-				if (!pEntity || i == entindex())
+				if (!UTIL_IsValidPlayer(pEntity))
+					continue;
+
+				if (i == entindex())
 					continue;
 
 				CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
-
-				if (pPlayer->pev->flags == FL_DORMANT)
-					continue;
 
 				if (pPlayer->pev->deadflag != DEAD_NO)
 					continue;
@@ -7704,15 +7732,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(UpdateClientData)()
 		{
 			CBaseEntity *pEntity = UTIL_PlayerByIndex(playerIndex);
 
-			if (!pEntity)
+			if (!UTIL_IsValidPlayer(pEntity))
 				continue;
 
 			CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
-
-#ifdef REGAMEDLL_FIXES
-			if (pPlayer->IsDormant())
-				continue;
-#endif // REGAMEDLL_FIXES
 
 #ifdef REGAMEDLL_FIXES
 			if (scoreboard_showhealth.value != -1.0f)
@@ -8237,24 +8260,21 @@ CBaseEntity *EXT_FUNC CBasePlayer::__API_HOOK(DropPlayerItem)(const char *pszIte
 					if (FNullEnt(pEntity->edict()))
 						break;
 
-					if (!pEntity->IsPlayer())
+					if (!pEntity->IsPlayer() || pEntity->IsDormant())
 						continue;
 
-					if (pEntity->pev->flags != FL_DORMANT)
+					CBasePlayer *pOther = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+
+					if (pOther->pev->deadflag == DEAD_NO && pOther->m_iTeam == TERRORIST)
 					{
-						CBasePlayer *pOther = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+						ClientPrint(pOther->pev, HUD_PRINTCENTER, "#Game_bomb_drop", STRING(pev->netname));
 
-						if (pOther->pev->deadflag == DEAD_NO && pOther->m_iTeam == TERRORIST)
-						{
-							ClientPrint(pOther->pev, HUD_PRINTCENTER, "#Game_bomb_drop", STRING(pev->netname));
-
-							MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pOther->pev);
-								WRITE_COORD(pev->origin.x);
-								WRITE_COORD(pev->origin.y);
-								WRITE_COORD(pev->origin.z);
-								WRITE_BYTE(BOMB_FLAG_DROPPED);
-							MESSAGE_END();
-						}
+						MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, nullptr, pOther->pev);
+							WRITE_COORD(pev->origin.x);
+							WRITE_COORD(pev->origin.y);
+							WRITE_COORD(pev->origin.z);
+							WRITE_BYTE(BOMB_FLAG_DROPPED);
+						MESSAGE_END();
 					}
 				}
 			}
@@ -10137,7 +10157,7 @@ void CBasePlayer::UpdateLocation(bool forceUpdate)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->m_iTeam == m_iTeam || pPlayer->m_iTeam == SPECTATOR)

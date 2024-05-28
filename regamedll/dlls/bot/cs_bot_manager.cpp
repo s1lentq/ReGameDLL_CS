@@ -337,6 +337,10 @@ void CCSBotManager::ClientDisconnect(CBasePlayer *pPlayer)
 	pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pevTemp);
 	AddEntityHashValue(pPlayer->pev, STRING(pPlayer->pev->classname), CLASSNAME);
 	pPlayer->pev->flags = FL_DORMANT;
+
+#ifdef REGAMEDLL_FIXES
+	pPlayer->has_disconnected = true;
+#endif
 }
 
 void PrintAllEntities()
@@ -396,10 +400,8 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-			if (!pPlayer)
-				continue;
 
-			if (FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			const char *name = STRING(pPlayer->pev->netname);
@@ -425,10 +427,8 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-			if (!pPlayer)
-				continue;
 
-			if (FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			const char *name = STRING(pPlayer->pev->netname);
@@ -665,6 +665,9 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 			CBaseEntity *pEntity = nullptr;
 			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
 			{
+				if (FNullEnt(pEntity->edict()))
+					break;
+
 				if (!pEntity->IsPlayer())
 					continue;
 
@@ -1580,7 +1583,8 @@ void CCSBotManager::OnFreeEntPrivateData(CBaseEntity *pEntity)
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer || pPlayer->IsDormant())
+
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->IsBot())

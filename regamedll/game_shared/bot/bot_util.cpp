@@ -11,10 +11,7 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -46,14 +43,12 @@ bool UTIL_IsNameTaken(const char *name, bool ignoreHumans)
 int UTIL_ClientsInGame()
 {
 	int iCount = 0;
+
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -68,14 +63,12 @@ int UTIL_ClientsInGame()
 int UTIL_ActivePlayersInGame()
 {
 	int iCount = 0;
+
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -102,10 +95,7 @@ int UTIL_HumansInGame(bool ignoreSpectators)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -138,12 +128,9 @@ int UTIL_SpectatorsInGame()
 
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(iIndex);
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -167,14 +154,12 @@ int UTIL_SpectatorsInGame()
 int UTIL_HumansOnTeam(int teamID, bool isAlive)
 {
 	int iCount = 0;
+
 	for (int iIndex = 1; iIndex <= gpGlobals->maxClients; iIndex++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -203,10 +188,7 @@ int UTIL_BotsInGame()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -230,10 +212,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		const char *name = STRING(pPlayer->pev->netname);
@@ -256,10 +235,7 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		const char *name = STRING(pPlayer->pev->netname);
@@ -283,17 +259,15 @@ bool UTIL_KickBotFromTeam(TeamName kickTeam)
 bool UTIL_IsTeamAllBots(int team)
 {
 	int botCount = 0;
+
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->m_iTeam != team)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -403,10 +377,7 @@ bool UTIL_IsVisibleToTeam(const Vector &spot, int team, float maxRange)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -443,10 +414,7 @@ CBasePlayer *UTIL_GetLocalPlayer()
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(iIndex);
 
-			if (!pPlayer)
-				continue;
-
-			if (FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			if (FStrEq(STRING(pPlayer->pev->netname), ""))

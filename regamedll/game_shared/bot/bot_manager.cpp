@@ -196,7 +196,7 @@ void CBotManager::StartFrame()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->IsBot() && IsEntityValid(pPlayer))
@@ -229,10 +229,7 @@ void CBotManager::__API_HOOK(OnEvent)(GameEventType event, CBaseEntity* pEntity,
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))

@@ -545,7 +545,11 @@ void CCareerTaskManager::HandleDeath(int team, CBasePlayer *pAttacker)
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
-		if (pPlayer && pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
+
+		if (!UTIL_IsValidPlayer(pPlayer))
+			continue;
+
+		if (pPlayer->m_iTeam == enemyTeam && pPlayer->IsAlive())
 			numEnemies++;
 	}
 

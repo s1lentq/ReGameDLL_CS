@@ -1242,7 +1242,7 @@ void CHostage::SendHostagePositionMsg()
 		if (!pEntity->IsPlayer())
 			continue;
 
-		if (pEntity->pev->flags == FL_DORMANT)
+		if (pEntity->IsDormant())
 			continue;
 
 		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
@@ -1271,7 +1271,7 @@ void CHostage::SendHostageEventMsg()
 		if (!pEntity->IsPlayer())
 			continue;
 
-		if (pEntity->pev->flags == FL_DORMANT)
+		if (pEntity->IsDormant())
 			continue;
 
 		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);

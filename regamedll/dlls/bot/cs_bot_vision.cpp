@@ -253,7 +253,7 @@ bool CCSBot::IsVisible(CBasePlayer *pPlayer, bool testFOV, unsigned char *visPar
 	if ((pPlayer->pev->flags & FL_NOTARGET) || (pPlayer->pev->effects & EF_NODRAW))
 		return false;
 #endif
-	
+
 	Vector spot = pPlayer->pev->origin;
 	unsigned char testVisParts = NONE;
 
@@ -701,10 +701,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer)
-				continue;
-
-			if (FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			// is it a player?
