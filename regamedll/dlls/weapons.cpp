@@ -79,7 +79,7 @@ LINK_HOOK_VOID_CHAIN2(ClearMultiDamage)
 // Resets the global multi damage accumulator
 void EXT_FUNC __API_HOOK(ClearMultiDamage)()
 {
-	gMultiDamage.pEntity = nullptr;
+	gMultiDamage.hEntity = nullptr;
 	gMultiDamage.amount = 0;
 	gMultiDamage.type = 0;
 }
@@ -89,11 +89,15 @@ LINK_HOOK_VOID_CHAIN(ApplyMultiDamage, (entvars_t *pevInflictor, entvars_t *pevA
 // Inflicts contents of global multi damage register on gMultiDamage.pEntity
 void EXT_FUNC __API_HOOK(ApplyMultiDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker)
 {
-	if (!gMultiDamage.pEntity)
+	EntityHandle<CBaseEntity> hEnt = gMultiDamage.hEntity;
+	if (!hEnt)
 		return;
 
-	gMultiDamage.pEntity->TakeDamage(pevInflictor, pevAttacker, gMultiDamage.amount, gMultiDamage.type);
-	gMultiDamage.pEntity->ResetDmgPenetrationLevel();
+	hEnt->TakeDamage(pevInflictor, pevAttacker, gMultiDamage.amount, gMultiDamage.type);
+
+	// check again, the entity may be removed after taking damage
+	if (hEnt)
+		hEnt->ResetDmgPenetrationLevel();
 }
 
 LINK_HOOK_VOID_CHAIN(AddMultiDamage, (entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType), pevInflictor, pEntity, flDamage, bitsDamageType)
@@ -105,17 +109,17 @@ void EXT_FUNC __API_HOOK(AddMultiDamage)(entvars_t *pevInflictor, CBaseEntity *p
 
 	gMultiDamage.type |= bitsDamageType;
 
-	if (pEntity != gMultiDamage.pEntity)
+	if (pEntity != gMultiDamage.hEntity)
 	{
 #ifdef REGAMEDLL_FIXES
-		if (gMultiDamage.pEntity) // avoid api calls with null default pEntity
+		if (gMultiDamage.hEntity) // avoid api calls with null default pEntity
 #endif
 		{
 			// UNDONE: wrong attacker!
 			ApplyMultiDamage(pevInflictor, pevInflictor);
 		}
 
-		gMultiDamage.pEntity = pEntity;
+		gMultiDamage.hEntity = pEntity;
 		gMultiDamage.amount = 0;
 	}
 
