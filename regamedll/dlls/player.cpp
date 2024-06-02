@@ -10717,3 +10717,12 @@ bool CBasePlayer::Kill()
 
 	return true;
 }
+
+const usercmd_t *CBasePlayer::GetLastUserCommand() const
+{
+#ifdef REGAMEDLL_API
+	return CSPlayer()->GetLastUserCommand();
+#else
+	return nullptr;
+#endif
+}

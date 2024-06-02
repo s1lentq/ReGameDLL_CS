@@ -261,6 +261,18 @@ void CBot::ExecuteCommand()
 	// Adjust msec to command time interval
 	adjustedMSec = ThrottledMsec();
 
+	// Run mimic command
+	usercmd_t botCmd;
+	if (!RunMimicCommand(botCmd))
+	{
+		botCmd.forwardmove = m_forwardSpeed;
+		botCmd.sidemove    = m_strafeSpeed;
+		botCmd.upmove      = m_verticalSpeed;
+		botCmd.buttons     = m_buttonFlags;
+		botCmd.impulse     = 0;
+		botCmd.viewangles  = pev->v_angle;
+	}
+
 	// player model is "munged"
 	pev->angles = pev->v_angle;
 	pev->angles.x /= -3.0f;
@@ -283,7 +295,49 @@ void CBot::ExecuteCommand()
 #endif
 
 	// Run the command
-	PLAYER_RUN_MOVE(edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec);
+	PLAYER_RUN_MOVE(edict(), botCmd.viewangles, botCmd.forwardmove, botCmd.sidemove, botCmd.upmove, botCmd.buttons, 0, adjustedMSec);
+}
+
+bool CBot::RunMimicCommand(usercmd_t &botCmd)
+{
+#ifdef REGAMEDLL_ADD
+	if (cv_bot_mimic.value <= 0)
+		return false;
+
+	if (cv_bot_mimic.value > gpGlobals->maxClients)
+		return false;
+
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(cv_bot_mimic.value);
+	if (!pPlayer)
+		return false;
+
+	if (!UTIL_IsValidPlayer(pPlayer))
+		return false;
+
+	if (!pPlayer->IsAlive())
+		return false;
+
+	if (pPlayer->IsBot())
+		return false;
+
+	const usercmd_t *ucmd = pPlayer->GetLastUserCommand();
+	if (!ucmd)
+		return false;
+
+	botCmd = *ucmd;
+	botCmd.viewangles[YAW] += cv_bot_mimic_yaw_offset.value;
+
+	float mult = 8.0f;
+	botCmd.forwardmove *= mult;
+	botCmd.sidemove *= mult;
+	botCmd.upmove *= mult;
+
+	pev->fixangle = 0;
+
+	return true;
+#else
+	return false;
+#endif
 }
 
 void CBot::ResetCommand()

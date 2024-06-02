@@ -259,6 +259,8 @@ private:
 	void ResetCommand();
 	byte ThrottledMsec() const;
 
+	bool RunMimicCommand(usercmd_t &botCmd);
+
 	// returns current movement speed (for walk/run)
 	float GetMoveSpeed();
 

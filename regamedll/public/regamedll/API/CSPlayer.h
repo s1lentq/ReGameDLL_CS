@@ -141,6 +141,16 @@ public:
 	EProtectionState GetProtectionState() const;
 	bool CheckActivityInGame();
 
+	const usercmd_t *GetLastUserCommand() const
+	{
+		return &m_LastCmd;
+	}
+
+	void SetLastUserCommand(const usercmd_t &ucmd)
+	{
+		m_LastCmd = ucmd;
+	}
+
 public:
 	char m_szModel[32];
 	bool m_bForceShowMenu;
@@ -175,6 +185,7 @@ public:
 	bool m_bPlayerDominated[MAX_CLIENTS]; // [0-31] array of state per other player whether player is dominating other players
 
 	int m_iGibDamageThreshold; // negative health to reach to gib player
+	usercmd_t m_LastCmd;
 };
 
 // Inlines

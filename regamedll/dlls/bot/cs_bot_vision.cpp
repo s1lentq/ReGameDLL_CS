@@ -61,6 +61,12 @@ void CCSBot::UpdateLookAngles()
 	float stiffness;
 	float damping;
 
+#ifdef REGAMEDLL_ADD
+	// If mimicing the player, don't modify the view angles
+	if (cv_bot_mimic.value > 0)
+		return;
+#endif
+
 	// springs are stiffer when attacking, so we can track and move between targets better
 	if (IsAttacking())
 	{

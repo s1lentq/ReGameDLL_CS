@@ -3300,6 +3300,11 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	{
 		pmove->friction = 1.0f;
 	}
+
+#ifdef REGAMEDLL_API
+	// save the last usercmd
+	pmoveplayer->SetLastUserCommand(pmove->cmd);
+#endif
 }
 
 NOXREF int PM_GetVisEntInfo(int ent)

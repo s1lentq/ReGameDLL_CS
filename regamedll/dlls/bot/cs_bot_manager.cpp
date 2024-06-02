@@ -758,6 +758,23 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 
 BOOL CCSBotManager::ClientCommand(CBasePlayer *pPlayer, const char *pcmd)
 {
+#ifdef REGAMEDLL_ADD
+	if (pPlayer->IsBot())
+		return FALSE;
+
+	if (cv_bot_mimic.value == pPlayer->entindex())
+	{
+		// Bots mimic our client commands
+		ForEachPlayer([pPlayer, pcmd](CBasePlayer *bot)
+		{
+			if (pPlayer != bot && bot->IsBot())
+				bot->ClientCommand(pcmd, CMD_ARGV_(1));
+
+			return true;
+		});
+	}
+#endif
+
 	return FALSE;
 }
 
