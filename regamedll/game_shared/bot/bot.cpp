@@ -261,6 +261,20 @@ void CBot::ExecuteCommand()
 	// Adjust msec to command time interval
 	adjustedMSec = ThrottledMsec();
 
+	if (IsCrouching())
+	{
+		m_buttonFlags |= IN_DUCK;
+	}
+
+#ifdef REGAMEDLL_FIXES
+	// don't move if frozen state present
+	if (pev->flags & FL_FROZEN)
+	{
+		adjustedMSec = 0;
+		ResetCommand();
+	}
+#endif
+
 	// Run mimic command
 	usercmd_t botCmd;
 	if (!RunMimicCommand(botCmd))
@@ -279,20 +293,6 @@ void CBot::ExecuteCommand()
 
 	// save the command time
 	m_flPreviousCommandTime = gpGlobals->time;
-
-	if (IsCrouching())
-	{
-		m_buttonFlags |= IN_DUCK;
-	}
-
-#ifdef REGAMEDLL_FIXES
-	// don't move if frozen state present
-	if (pev->flags & FL_FROZEN)
-	{
-		adjustedMSec = 0;
-		ResetCommand();
-	}
-#endif
 
 	// Run the command
 	PLAYER_RUN_MOVE(edict(), botCmd.viewangles, botCmd.forwardmove, botCmd.sidemove, botCmd.upmove, botCmd.buttons, 0, adjustedMSec);
