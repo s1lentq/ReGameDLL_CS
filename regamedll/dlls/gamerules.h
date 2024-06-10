@@ -679,11 +679,11 @@ public:
 	bool Hostage_NotRescued(float tmDelay);
 
 	// Check various conditions to end the map.
-	VFUNC BOOL CheckGameOver();
-	VFUNC BOOL CheckTimeLimit();
-	VFUNC BOOL CheckFragLimit();
-	VFUNC BOOL CheckMaxRounds();
-	VFUNC BOOL CheckWinLimit();
+	BOOL CheckGameOver();
+	BOOL CheckTimeLimit();
+	BOOL CheckFragLimit();
+	BOOL CheckMaxRounds();
+	BOOL CheckWinLimit();
 
 	void CheckFreezePeriodExpired();
 	void CheckRoundTimeExpired();
