@@ -8033,7 +8033,9 @@ void CBasePlayer::InitStatusBar()
 	m_SbarString0[0] = '\0';
 }
 
-void CBasePlayer::UpdateStatusBar()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, UpdateStatusBar)
+
+void EXT_FUNC CBasePlayer::__API_HOOK(UpdateStatusBar)()
 {
 	int newSBarState[SBAR_END];
 	char sbuf0[MAX_SBAR_STRING];
