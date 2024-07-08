@@ -408,6 +408,11 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 			if (FStrEq(name, ""))
 				continue;
 
+#ifdef REGAMEDLL_FIXES
+			if (pPlayer->pev->deadflag != DEAD_NO)
+				continue;
+#endif
+
 			if (pPlayer->IsBot())
 			{
 				CCSBot *pBot = static_cast<CCSBot *>(pPlayer);
