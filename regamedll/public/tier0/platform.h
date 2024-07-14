@@ -41,7 +41,7 @@
 #endif
 
 // Used to step into the debugger
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 	#define DebuggerBreak() __asm__ __volatile__("int3;")
 #else
 	#define DebuggerBreak() __asm { int 3 }
