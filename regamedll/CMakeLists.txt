@@ -22,6 +22,7 @@ project(regamedll CXX)
 
 option(DEBUG "Build with debug information." OFF)
 option(USE_STATIC_LIBSTDC "Enables static linking libstdc++." OFF)
+option(USE_LEGACY_LIBC "Enables linking against legacy libc (<= 2.15) for compat with older distros (Debian 8/Ubuntu 16.04/Centos 7)." OFF)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -32,6 +33,7 @@ set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 
 set(COMPILE_FLAGS "-m32 -U_FORTIFY_SOURCE")
 set(LINK_FLAGS "-m32 -s")
+set(LINK_LIBS dl aelf32)
 
 set(COMPILE_FLAGS "${COMPILE_FLAGS} -Wall -fno-exceptions -fno-builtin -Wno-unknown-pragmas")
 
@@ -362,12 +364,13 @@ target_sources(regamedll PRIVATE
 	${UNITTESTS_SRCS}>
 )
 
-target_link_libraries(regamedll PRIVATE
-	dl
-	aelf32
+if (CMAKE_BUILD_TYPE MATCHES Unittests)
+	list(APPEND LINK_LIBS cppunitlite)
+elseif (USE_LEGACY_LIBC)
+	list(APPEND LINK_LIBS libc-2.15.so)
+endif()
 
-	$<$<CONFIG:Unittests>:cppunitlite>
-)
+target_link_libraries(regamedll PRIVATE ${LINK_LIBS})
 
 if (USE_STATIC_LIBSTDC)
 	target_compile_definitions(regamedll PRIVATE BUILD_STATIC_LIBSTDC)
