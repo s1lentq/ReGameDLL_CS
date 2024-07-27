@@ -133,7 +133,7 @@ jobs:
 
   linux:
     name: 'Linux'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
@@ -174,7 +174,7 @@ jobs:
 
       - name: Build using Clang C++ Compiler
         run: |
-          rm -rf build && CC=clang CXX=clang++ cmake -DUSE_LEGACY_LIBC=ON -B build && cmake --build build -j8
+          rm -rf build && CC=clang CXX=clang++ cmake -B build && cmake --build build -j8
 
       - name: Prepare CSSDK
         run: |
