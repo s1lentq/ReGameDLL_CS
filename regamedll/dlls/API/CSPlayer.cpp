@@ -412,6 +412,11 @@ EXT_FUNC void CCSPlayer::Observer_SetMode(int iMode)
 	BasePlayer()->Observer_SetMode(iMode);
 }
 
+EXT_FUNC void CCSPlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
+{
+	BasePlayer()->Observer_FindNextPlayer(bReverse, name);
+}
+
 EXT_FUNC bool CCSPlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot)
 {
 	return BasePlayer()->SelectSpawnSpot(pEntClassName, pSpot);
