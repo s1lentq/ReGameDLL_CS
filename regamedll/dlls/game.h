@@ -204,6 +204,8 @@ extern cvar_t defuser_allocation;
 extern cvar_t location_area_info;
 extern cvar_t chat_loc_fallback;
 
+extern cvar_t scoreboard_fix;
+
 #endif
 
 extern cvar_t scoreboard_showmoney;

@@ -181,6 +181,8 @@ cvar_t defuser_allocation      = { "mp_defuser_allocation", "0", 0, 0.0f, nullpt
 cvar_t location_area_info      = { "mp_location_area_info", "0", 0, 0.0f, nullptr };
 cvar_t chat_loc_fallback       = { "mp_chat_loc_fallback", "1", 1, 0.0f, nullptr };
 
+cvar_t scoreboard_fix = { "mp_scoreboard_fix", "0", FCVAR_SERVER, 0.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -445,6 +447,8 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&defuser_allocation);
 	CVAR_REGISTER(&location_area_info);
 	CVAR_REGISTER(&chat_loc_fallback);
+
+	CVAR_REGISTER(&scoreboard_fix);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
