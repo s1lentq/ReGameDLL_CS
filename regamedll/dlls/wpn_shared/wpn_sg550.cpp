@@ -188,8 +188,15 @@ void CSG550::SG550Fire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
 
+#ifdef REGAMEDLL_ADD
+	m_iDirection = 1; // force positive Y addition
+	KickBack(UTIL_SharedRandomFloat(m_pPlayer->random_seed + 4, 0.75, 1.75) + m_pPlayer->pev->punchangle.x * 0.25, 
+		UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75), 
+		0.0, 0.0, 0.0, 0.0, 0);
+#else
 	m_pPlayer->pev->punchangle.x -= UTIL_SharedRandomFloat(m_pPlayer->random_seed + 4, 0.75, 1.25) + m_pPlayer->pev->punchangle.x * 0.25;
 	m_pPlayer->pev->punchangle.y += UTIL_SharedRandomFloat(m_pPlayer->random_seed + 5, -0.75, 0.75);
+#endif
 }
 
 void CSG550::Reload()

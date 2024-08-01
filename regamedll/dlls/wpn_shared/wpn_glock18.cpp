@@ -253,6 +253,9 @@ void CGLOCK18::GLOCK18Fire(float flSpread, float flCycleTime, BOOL bFireBurst)
 		m_flGlock18Shoot = gpGlobals->time + 0.1f;
 	}
 
+#ifdef REGAMEDLL_ADD
+	KickBack(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0); // dummy call, API useful
+#endif
 	ResetPlayerShieldAnim();
 }
 
