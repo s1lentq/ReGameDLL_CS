@@ -4221,7 +4221,11 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(PlayerGotWeapon)(CBasePlayer *pPlay
 // What is the time in the future at which this weapon may spawn?
 float CHalfLifeMultiplay::FlWeaponRespawnTime(CBasePlayerItem *pWeapon)
 {
+#ifdef REGAMEDLL_ADD
+	return gpGlobals->time + weapon_respawn_time.value;
+#else
 	return gpGlobals->time + WEAPON_RESPAWN_TIME;
+#endif
 }
 
 // Returns 0 if the weapon can respawn now,
@@ -4289,7 +4293,11 @@ int CHalfLifeMultiplay::ItemShouldRespawn(CItem *pItem)
 // At what time in the future may this Item respawn?
 float CHalfLifeMultiplay::FlItemRespawnTime(CItem *pItem)
 {
+#ifdef REGAMEDLL_ADD;
+	return gpGlobals->time + item_respawn_time.value;
+#else
 	return gpGlobals->time + ITEM_RESPAWN_TIME;
+#endif
 }
 
 // Where should this item respawn?
@@ -4321,7 +4329,11 @@ int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo *pAmmo)
 
 float CHalfLifeMultiplay::FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo)
 {
+#ifdef REGAMEDLL_ADD
+	return gpGlobals->time + ammo_respawn_time.value;
+#else
 	return gpGlobals->time + AMMO_RESPAWN_TIME;
+#endif
 }
 
 Vector CHalfLifeMultiplay::VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo)
