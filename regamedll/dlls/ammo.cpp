@@ -10,7 +10,11 @@ void CBasePlayerAmmo::Spawn()
 
 	SetTouch(&CBasePlayerAmmo::DefaultTouch);
 
-	if (g_pGameRules->IsMultiplayer())
+	if (g_pGameRules->IsMultiplayer()
+#ifdef REGAMEDLL_FIXES
+		&& g_pGameRules->AmmoShouldRespawn(this) == GR_AMMO_RESPAWN_NO
+#endif
+	)
 	{
 		SetThink(&CBaseEntity::SUB_Remove);
 		pev->nextthink = gpGlobals->time + 2.0f;
