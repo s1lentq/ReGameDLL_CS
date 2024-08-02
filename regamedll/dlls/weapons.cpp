@@ -583,6 +583,10 @@ CBaseEntity *CBasePlayerItem::Respawn()
 		// invisible for now
 		pNewWeapon->pev->effects |= EF_NODRAW;
 
+#ifdef REGAMEDLL_ADD
+		pNewWeapon->pev->spawnflags &= ~SF_NORESPAWN;
+#endif
+
 		// no touch
 		pNewWeapon->SetTouch(nullptr);
 		pNewWeapon->SetThink(&CBasePlayerItem::AttemptToMaterialize);
