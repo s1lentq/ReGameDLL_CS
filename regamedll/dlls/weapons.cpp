@@ -518,7 +518,11 @@ void CBasePlayerItem::Materialize()
 	UTIL_SetOrigin(pev, pev->origin);
 	SetTouch(&CBasePlayerItem::DefaultTouch);
 
-	if (g_pGameRules->IsMultiplayer())
+	if (g_pGameRules->IsMultiplayer()
+#ifdef REGAMEDLL_FIXES
+		&& g_pGameRules->WeaponShouldRespawn(this) == GR_WEAPON_RESPAWN_NO
+#endif
+	)
 	{
 		if (!CanDrop())
 		{
