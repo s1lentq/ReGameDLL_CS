@@ -4321,7 +4321,7 @@ int CHalfLifeMultiplay::AmmoShouldRespawn(CBasePlayerAmmo *pAmmo)
 
 float CHalfLifeMultiplay::FlAmmoRespawnTime(CBasePlayerAmmo *pAmmo)
 {
-	return gpGlobals->time + 20.0f;
+	return gpGlobals->time + AMMO_RESPAWN_TIME;
 }
 
 Vector CHalfLifeMultiplay::VecAmmoRespawnSpot(CBasePlayerAmmo *pAmmo)
