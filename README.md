@@ -117,6 +117,9 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_freezetime_jump                 | 1       | 0   | 1            | Allow players to jump during freezetime.<br/> `0` disabled<br/>`1` enabled |
 | mp_defuser_allocation              | 0       | 0   | 2            | Give defuser on player spawn.<br/> `0` disabled<br/>`1` Random players. <br/>`2` All players. |
 | mp_location_area_info              | 0       | 0   | 3            | Enable location area info.<br/> `0` disabled<br/>`1` show location below HUD radar.<br/>`2` show location in HUD chat. `NOT RECOMMENDED!` [:speech_balloon:](## "Not all client builds are compatible")<br/>`3` both displayed. `NOT RECOMMENDED!` [:speech_balloon:](## "Not all client builds are compatible")<br/><br/>`NOTE`: Navigation `maps/.nav` file required and should contain place names<br/>`NOTE`: If option `2` or `3` is enabled, be sure to enable `mp_chat_loc_fallback 1` |
+| mp_item_respawn_time               | 30      | 0.0 | -            | The respawn time for items (such as health packs, armor, etc.). |
+| mp_weapon_respawn_time             | 20      | 0.0 | -            | The respawn time for weapons. |
+| mp_ammo_respawn_time               | 20      | 0.0 | -            | The respawn time for ammunition. |
 </details>
 
 ## How to install zBot for CS 1.6?
