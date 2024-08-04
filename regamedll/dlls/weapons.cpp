@@ -518,7 +518,11 @@ void CBasePlayerItem::Materialize()
 	UTIL_SetOrigin(pev, pev->origin);
 	SetTouch(&CBasePlayerItem::DefaultTouch);
 
-	if (g_pGameRules->IsMultiplayer())
+	if (g_pGameRules->IsMultiplayer()
+#ifdef REGAMEDLL_FIXES
+		&& g_pGameRules->WeaponShouldRespawn(this) == GR_WEAPON_RESPAWN_NO
+#endif
+	)
 	{
 		if (!CanDrop())
 		{
@@ -555,8 +559,12 @@ void CBasePlayerItem::CheckRespawn()
 {
 	switch (g_pGameRules->WeaponShouldRespawn(this))
 	{
-		case GR_WEAPON_RESPAWN_YES:
+		case GR_WEAPON_RESPAWN_YES: {
+#ifdef REGAMEDLL_FIXES
+			Respawn();
+#endif
 			return;
+		}
 		case GR_WEAPON_RESPAWN_NO:
 			return;
 	}
@@ -574,6 +582,10 @@ CBaseEntity *CBasePlayerItem::Respawn()
 	{
 		// invisible for now
 		pNewWeapon->pev->effects |= EF_NODRAW;
+
+#ifdef REGAMEDLL_ADD
+		pNewWeapon->pev->spawnflags &= ~SF_NORESPAWN;
+#endif
 
 		// no touch
 		pNewWeapon->SetTouch(nullptr);

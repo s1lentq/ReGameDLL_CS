@@ -204,6 +204,10 @@ extern cvar_t defuser_allocation;
 extern cvar_t location_area_info;
 extern cvar_t chat_loc_fallback;
 
+extern cvar_t item_respawn_time;
+extern cvar_t weapon_respawn_time;
+extern cvar_t ammo_respawn_time;
+
 extern cvar_t scoreboard_fix;
 
 #endif
