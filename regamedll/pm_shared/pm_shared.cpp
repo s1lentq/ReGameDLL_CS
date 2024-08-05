@@ -1711,20 +1711,24 @@ void PM_SpectatorMove()
 		currentspeed = DotProduct(pmove->velocity, wishdir);
 
 		addspeed = wishspeed - currentspeed;
+
+#ifdef REGAMEDLL_FIXES
 		if (addspeed <= 0)
-		{
 			return;
-		}
-
-		accelspeed = pmove->movevars->accelerate * pmove->frametime * wishspeed;
-		if (accelspeed > addspeed)
+#else
+		if (addspeed > 0)
+#endif
 		{
-			accelspeed = addspeed;
-		}
+			accelspeed = pmove->movevars->accelerate * pmove->frametime * wishspeed;
+			if (accelspeed > addspeed)
+			{
+				accelspeed = addspeed;
+			}
 
-		for (i = 0; i < 3; i++)
-		{
-			pmove->velocity[i] += accelspeed * wishdir[i];
+			for (i = 0; i < 3; i++)
+			{
+				pmove->velocity[i] += accelspeed * wishdir[i];
+			}
 		}
 
 		// move
