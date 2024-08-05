@@ -58,13 +58,12 @@ jobs:
           move msvc\${{ env.buildRelease }}\mp.pdb publish\debug\mp.pdb
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: win32
           path: publish/*
 
   testdemos:
-    if: false # TODO: FIXME!!
     name: 'Test demos (FIXME)'
     runs-on: ubuntu-20.04
     container: s1lentq/testdemos:latest
@@ -73,6 +72,7 @@ jobs:
     env:
       WINEDEBUG: -all
       WINEDLLOVERRIDES: mshtml=
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     defaults:
       run:
@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: win32
 
@@ -146,12 +146,11 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update
-          sudo apt-get install -y clang
           sudo apt-get install -y gcc-multilib g++-multilib
 
       - name: Build and Run unittests
         run: |
-          rm -rf build && CC=clang CXX=clang++ cmake -DCMAKE_BUILD_TYPE=Unittests -B build && cmake --build build -j8
+          rm -rf build && CC=gcc CXX=g++ cmake -DCMAKE_BUILD_TYPE=Unittests -B build && cmake --build build -j8
           retVal=0
           ./build/regamedll/cs 2> /dev/null > result.log || retVal=$?
           while read line; do
@@ -172,9 +171,9 @@ jobs:
           fi
         shell: bash
 
-      - name: Build using Clang C++ Compiler
+      - name: Build
         run: |
-          rm -rf build && CC=clang CXX=clang++ cmake -B build && cmake --build build -j8
+          rm -rf build && CC=gcc CXX=g++ cmake -B build && cmake --build build -j8
 
       - name: Prepare CSSDK
         run: |
@@ -200,7 +199,7 @@ jobs:
         shell: bash
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3.1.1
         id: upload-job
         with:
           name: linux32
@@ -219,12 +218,12 @@ jobs:
 
     steps:
       - name: Deploying linux artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: linux32
 
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: win32
 
