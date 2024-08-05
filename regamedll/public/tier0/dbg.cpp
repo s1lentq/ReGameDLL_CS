@@ -141,7 +141,7 @@ SpewRetval_t _SpewMessageV(SpewType_t spewType, int level, const char *pMsgForma
 	assert(len < sizeof(szTempBuffer));
 
 	// Add \n for warning and assert
-	if ((spewType == SPEW_ASSERT))
+	if (spewType == SPEW_ASSERT)
 	{
 		len += Q_snprintf(&szTempBuffer[len], sizeof(szTempBuffer) - len, "\n");
 		Plat_OutputDebugString(szTempBuffer);

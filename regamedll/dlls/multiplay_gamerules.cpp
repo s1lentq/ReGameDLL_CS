@@ -4293,7 +4293,7 @@ int CHalfLifeMultiplay::ItemShouldRespawn(CItem *pItem)
 // At what time in the future may this Item respawn?
 float CHalfLifeMultiplay::FlItemRespawnTime(CItem *pItem)
 {
-#ifdef REGAMEDLL_ADD;
+#ifdef REGAMEDLL_ADD
 	return gpGlobals->time + item_respawn_time.value;
 #else
 	return gpGlobals->time + ITEM_RESPAWN_TIME;
