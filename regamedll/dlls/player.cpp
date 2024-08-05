@@ -6768,6 +6768,26 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 			break;
 		}
+#ifdef REGAMEDLL_ADD
+		// noclip with air acceleration
+		case 200:
+		{
+			if (pev->movetype == MOVETYPE_WALK)
+			{
+				pev->movetype = MOVETYPE_NOCLIP;
+				pev->fuser3 = MAX_PLAYER_RUN_MODIFIER_SPEED; // air acceleration increases xN times
+				ALERT(at_console, "noclip ON\n");
+			}
+			else
+			{
+				pev->movetype = MOVETYPE_WALK;
+				pev->fuser3 = 0;
+				ALERT(at_console, "noclip OFF\n");
+			}
+
+			break;
+		}
+#endif
 		case 202:
 		{
 			// Random blood splatter

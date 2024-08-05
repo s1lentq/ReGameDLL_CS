@@ -58,9 +58,10 @@ const int MAX_BUFFER_MENU_BRIEFING  = 50;
 const float SUIT_UPDATE_TIME        = 3.5f;
 const float SUIT_FIRST_UPDATE_TIME  = 0.1f;
 
-const float MAX_PLAYER_FATAL_FALL_SPEED = 1100.0f;
-const float MAX_PLAYER_SAFE_FALL_SPEED  = 500.0f;
-const float MAX_PLAYER_USE_RADIUS       = 64.0f;
+const float MAX_PLAYER_FATAL_FALL_SPEED   = 1100.0f;
+const float MAX_PLAYER_SAFE_FALL_SPEED    = 500.0f;
+const float MAX_PLAYER_USE_RADIUS         = 64.0f;
+const float MAX_PLAYER_RUN_MODIFIER_SPEED = 10.0f; // x10 speed run when IN_RUN button is pressed
 
 const float ARMOR_RATIO = 0.5f;			// Armor Takes 50% of the damage
 const float ARMOR_BONUS = 0.5f;			// Each Point of Armor is work 1/x points of health

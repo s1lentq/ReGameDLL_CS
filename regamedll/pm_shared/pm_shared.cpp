@@ -870,7 +870,7 @@ void PM_WalkMove()
 
 	vec3_t wishvel;
 	real_t spd;
-	float fmove, smove;
+	float fmove, smove, maxspeed;
 	vec3_t wishdir;
 	real_t wishspeed;
 
@@ -882,6 +882,7 @@ void PM_WalkMove()
 
 	pmtrace_t trace;
 
+	// jump penalty
 	if (pmove->fuser2 > 0.0)
 	{
 		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
@@ -893,6 +894,17 @@ void PM_WalkMove()
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
+	maxspeed = pmove->maxspeed;
+
+#ifdef REGAMEDLL_ADD
+	// Player can speed up the run if '+speed' button is pressed
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	{
+		fmove *= pmove->fuser3;
+		smove *= pmove->fuser3;
+		maxspeed *= 2.0f; // increase speed cap to x2 when running
+	}
+#endif
 
 	// Zero out z components of movement vectors
 	pmove->forward[2] = 0;
@@ -916,10 +928,10 @@ void PM_WalkMove()
 	wishspeed = VectorNormalize(wishdir);
 
 	// Clamp to server defined max speed
-	if (wishspeed > pmove->maxspeed)
+	if (wishspeed > maxspeed)
 	{
-		VectorScale(wishvel, pmove->maxspeed / wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		VectorScale(wishvel, maxspeed / wishspeed, wishvel);
+		wishspeed = maxspeed;
 	}
 
 	// Set pmove velocity
@@ -1636,7 +1648,7 @@ void PM_SpectatorMove()
 	real_t accelspeed;
 	int i;
 	vec3_t wishvel;
-	float fmove, smove;
+	float fmove, smove, spectatormaxspeed;
 	vec3_t wishdir;
 	real_t wishspeed;
 
@@ -1688,6 +1700,19 @@ void PM_SpectatorMove()
 		fmove = pmove->cmd.forwardmove;
 		smove = pmove->cmd.sidemove;
 
+		spectatormaxspeed = pmove->movevars->spectatormaxspeed;
+
+#ifdef REGAMEDLL_ADD
+		// Observer can accelerate in air if '+speed' button is pressed
+		if (pmove->cmd.buttons & IN_RUN)
+		{
+			float flAirAccelerate = (pmove->fuser3 > 0.0f) ? pmove->fuser3 : max(pmove->movevars->airaccelerate / 100.0f, 7.0f);
+			fmove *= flAirAccelerate;
+			smove *= flAirAccelerate;
+			spectatormaxspeed *= 2.0f; // increase speed cap to x2 when accelerating
+		}
+#endif
+
 		VectorNormalize(pmove->forward);
 		VectorNormalize(pmove->right);
 
@@ -1702,17 +1727,17 @@ void PM_SpectatorMove()
 		wishspeed = VectorNormalize(wishdir);
 
 		// clamp to server defined max speed
-		if (wishspeed > pmove->movevars->spectatormaxspeed)
+		if (wishspeed > spectatormaxspeed)
 		{
-			VectorScale(wishvel, pmove->movevars->spectatormaxspeed / wishspeed, wishvel);
-			wishspeed = pmove->movevars->spectatormaxspeed;
+			VectorScale(wishvel, spectatormaxspeed / wishspeed, wishvel);
+			wishspeed = spectatormaxspeed;
 		}
 
 		currentspeed = DotProduct(pmove->velocity, wishdir);
 
 		addspeed = wishspeed - currentspeed;
 
-#ifdef REGAMEDLL_FIXES
+#ifndef REGAMEDLL_FIXES
 		if (addspeed <= 0)
 			return;
 #else
@@ -2337,6 +2362,16 @@ void PM_NoClip()
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
+
+#ifdef REGAMEDLL_ADD
+	// Player with noclip can accelerate in air if '+speed' button is pressed
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	{
+		float flAirAccelerate = pmove->fuser3;
+		fmove *= flAirAccelerate;
+		smove *= flAirAccelerate;
+	}
+#endif
 
 	VectorNormalize(pmove->forward);
 	VectorNormalize(pmove->right);
