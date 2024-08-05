@@ -64,7 +64,7 @@ jobs:
           path: publish/*
 
   testdemos:
-    name: 'Test demos (FIXME)'
+    name: 'Test demos'
     runs-on: ubuntu-20.04
     container: s1lentq/testdemos:latest
     needs: [windows]
