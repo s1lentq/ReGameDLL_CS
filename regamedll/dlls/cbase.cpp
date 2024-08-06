@@ -1598,6 +1598,30 @@ void OnFreeEntPrivateData(edict_t *pEnt)
 	if (!pEntity)
 		return;
 
+#ifdef REGAMEDLL_FIXES
+	// FIXED: Ensure this item will be removed from the owner player's inventory 'm_rgpPlayerItems[]'
+	// to avoid dangling pointers
+	CBasePlayerItem *pItem = dynamic_cast<CBasePlayerItem *>(pEntity);
+	if (pItem)
+	{
+		CBasePlayer *pOwner = GET_PRIVATE<CBasePlayer>(pItem->pev->owner);
+		if (pOwner && pOwner->IsPlayer())
+		{
+			if (pOwner->m_pActiveItem == pItem && pItem->IsWeapon())
+				((CBasePlayerWeapon *)pItem)->RetireWeapon();
+
+			if (pOwner->RemovePlayerItem(pItem))
+			{
+				// Ammo must be dropped, otherwise grenades cannot be buy or picked up
+				if (IsGrenadeWeapon(pItem->m_iId) || pItem->m_iId == WEAPON_C4)
+					pOwner->m_rgAmmo[pItem->PrimaryAmmoIndex()] = 0;
+
+				pOwner->pev->weapons &= ~(1 << pItem->m_iId);
+			}
+		}
+	}
+#endif
+
 #ifdef REGAMEDLL_API
 	pEntity->OnDestroy();
 #endif
