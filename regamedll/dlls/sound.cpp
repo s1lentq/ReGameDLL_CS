@@ -182,12 +182,12 @@ void CAmbientGeneric::Restart()
 	pev->nextthink = gpGlobals->time + 0.1f;
 
 	if (!(pev->spawnflags & SF_AMBIENT_SOUND_NOT_LOOPING))
-	{
 		m_fLooping = TRUE;
-		m_fActive = TRUE;
-	}
 	else
 		m_fLooping = FALSE;
+
+	if (!(pev->spawnflags & SF_AMBIENT_SOUND_START_SILENT))
+		m_fActive = TRUE;
 
 	if (m_fActive)
 	{
