@@ -628,6 +628,18 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer, BOOL> IReGameHook_CBasePlayer_RemoveAllItems;
 typedef IHookChainRegistryClass<void, class CBasePlayer, BOOL> IReGameHookRegistry_CBasePlayer_RemoveAllItems;
 
+// CBreakable::Spawn hook
+typedef IHookChainClassImpl<void, CBreakable> CReGameHook_CBreakable_Spawn;
+typedef IHookChainRegistryClassImpl<void, CBreakable> IReGameHookRegistry_CBreakable_Spawn;
+
+// CBreakable::TakeDamage hook
+typedef IHookChainClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> CReGameHook_CBreakable_TakeDamage;
+typedef IHookChainRegistryClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> IReGameHookRegistry_CBreakable_TakeDamage;
+
+// CBreakable::TraceAttack hook
+typedef IHookChainClass<void, class CBreakable, struct entvars_s*, float, Vector&, struct TraceResult*, int> IReGameHook_CBreakable_TraceAttack;
+typedef IHookChainRegistryClass<void, class CBreakable, struct entvars_s*, float, Vector&, struct TraceResult*, int> IReGameHookRegistry_CBreakable_TraceAttack;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -790,6 +802,10 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_RemoveAllItems *CBasePlayer_RemoveAllItems() = 0;
+
+	virtual IReGameHookRegistry_CBreakable_Spawn *CBreakable_Spawn() = 0;
+	virtual IReGameHookRegistry_CBreakable_TraceAttack *CBreakable_TraceAttack() = 0;
+	virtual IReGameHookRegistry_CBreakable_TakeDamage *CBreakable_TakeDamage() = 0;
 };
 
 struct ReGameFuncs_t {

@@ -337,6 +337,10 @@ GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveAllItems);
 
+GAMEHOOK_REGISTRY(CBreakable_Spawn);
+GAMEHOOK_REGISTRY(CBreakable_TraceAttack);
+GAMEHOOK_REGISTRY(CBreakable_TakeDamage);
+
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
