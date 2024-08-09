@@ -629,11 +629,11 @@ typedef IHookChainClass<void, class CBasePlayer, BOOL> IReGameHook_CBasePlayer_R
 typedef IHookChainRegistryClass<void, class CBasePlayer, BOOL> IReGameHookRegistry_CBasePlayer_RemoveAllItems;
 
 // CBreakable::Spawn hook
-typedef IHookChainClassImpl<void, CBreakable> CReGameHook_CBreakable_Spawn;
+typedef IHookChainClassImpl<void, CBreakable> IReGameHook_CBreakable_Spawn;
 typedef IHookChainRegistryClassImpl<void, CBreakable> IReGameHookRegistry_CBreakable_Spawn;
 
 // CBreakable::TakeDamage hook
-typedef IHookChainClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> CReGameHook_CBreakable_TakeDamage;
+typedef IHookChainClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> IReGameHook_CBreakable_TakeDamage;
 typedef IHookChainRegistryClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> IReGameHookRegistry_CBreakable_TakeDamage;
 
 // CBreakable::TraceAttack hook
