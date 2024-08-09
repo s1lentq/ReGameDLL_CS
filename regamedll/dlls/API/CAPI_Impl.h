@@ -749,6 +749,34 @@ typedef IHookChainRegistryClassImpl<void, CBasePlayer> CReGameHookRegistry_CBase
 typedef IHookChainClassImpl<void, CBasePlayer, BOOL> CReGameHook_CBasePlayer_RemoveAllItems;
 typedef IHookChainRegistryClassImpl<void, CBasePlayer, BOOL> CReGameHookRegistry_CBasePlayer_RemoveAllItems;
 
+// CBreakable::Spawn hook
+typedef IHookChainClassImpl<void, CBreakable> CReGameHook_CBreakable_Spawn;
+typedef IHookChainRegistryClassImpl<void, CBreakable> CReGameHookRegistry_CBreakable_Spawn;
+
+// CBreakable::Spawn hook
+typedef IHookChainClassImpl<void, CBreakable> CReGameHook_CBreakable_Restart;
+typedef IHookChainRegistryClassImpl<void, CBreakable> CReGameHookRegistry_CBreakable_Restart;
+
+// CBreakable::TakeDamage hook
+typedef IHookChainClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> CReGameHook_CBreakable_TakeDamage;
+typedef IHookChainRegistryClassImpl<BOOL, CBreakable, entvars_t*, entvars_t*, float&, int> CReGameHookRegistry_CBreakable_TakeDamage;
+
+// CBasePlayer::TraceAttack hook
+typedef IHookChainClassImpl<void, CBreakable, entvars_t*, float, Vector&, TraceResult*, int> CReGameHook_CBreakable_TraceAttack;
+typedef IHookChainRegistryClassImpl<void, CBreakable, entvars_t*, float, Vector&, TraceResult*, int> CReGameHookRegistry_CBreakable_TraceAttack;
+
+// CBreakable::Use hook
+typedef IHookChainClassImpl<void, CBreakable, CBaseEntity*, CBaseEntity*, USE_TYPE, float&> CReGameHook_CBreakable_Use;
+typedef IHookChainRegistryClassImpl<void, CBreakable, CBaseEntity*, CBaseEntity*, USE_TYPE, float&> CReGameHookRegistry_CBreakable_Use;
+
+// CBreakable::Die hook
+typedef IHookChainClassImpl<void, CBreakable> CReGameHook_CBreakable_Die;
+typedef IHookChainRegistryClassImpl<void, CBreakable> CReGameHookRegistry_CBreakable_Die;
+
+// CBreakable::BreakTouch hook
+typedef IHookChainClassImpl<void, CBreakable, CBaseEntity*> CReGameHook_CBreakable_BreakTouch;
+typedef IHookChainRegistryClassImpl<void, CBreakable, CBaseEntity*> CReGameHookRegistry_CBreakable_BreakTouch;
+
 class CReGameHookchains: public IReGameHookchains {
 public:
 	// CBasePlayer virtual
@@ -911,6 +939,14 @@ public:
 	CReGameHookRegistry_CBasePlayer_Observer_Think m_CBasePlayer_Observer_Think;
 	CReGameHookRegistry_CBasePlayer_RemoveAllItems m_CBasePlayer_RemoveAllItems;
 
+	CReGameHookRegistry_CBreakable_Spawn m_CBreakable_Spawn;
+	CReGameHookRegistry_CBreakable_Restart m_CBreakable_Restart;
+	CReGameHookRegistry_CBreakable_TraceAttack m_CBreakable_TraceAttack;
+	CReGameHookRegistry_CBreakable_TakeDamage m_CBreakable_TakeDamage;
+	CReGameHookRegistry_CBreakable_Use m_CBreakable_Use;
+	CReGameHookRegistry_CBreakable_Die m_CBreakable_Die;
+	CReGameHookRegistry_CBreakable_BreakTouch m_CBreakable_BreakTouch;
+
 public:
 	virtual IReGameHookRegistry_CBasePlayer_Spawn *CBasePlayer_Spawn();
 	virtual IReGameHookRegistry_CBasePlayer_Precache *CBasePlayer_Precache();
@@ -1070,6 +1106,14 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink();
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think();
 	virtual IReGameHookRegistry_CBasePlayer_RemoveAllItems *CBasePlayer_RemoveAllItems();
+
+	virtual IReGameHookRegistry_CBreakable_Spawn* CBreakable_Spawn();
+	virtual IReGameHookRegistry_CBreakable_Restart* CBreakable_Restart();
+	virtual IReGameHookRegistry_CBreakable_TraceAttack* CBreakable_TraceAttack();
+	virtual IReGameHookRegistry_CBreakable_TakeDamage* CBreakable_TakeDamage();
+	virtual IReGameHookRegistry_CBreakable_Use* CBreakable_Use();
+	virtual IReGameHookRegistry_CBreakable_Die* CBreakable_Die();
+	virtual IReGameHookRegistry_CBreakable_BreakTouch* CBreakable_BreakTouch();
 };
 
 extern CReGameHookchains g_ReGameHookchains;
