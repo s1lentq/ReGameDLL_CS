@@ -819,13 +819,13 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_RemoveAllItems *CBasePlayer_RemoveAllItems() = 0;
 
-	virtual IReGameHookRegistry_CBreakable_Spawn* CBreakable_Spawn() = 0;
-	virtual IReGameHookRegistry_CBreakable_Restart* CBreakable_Restart() = 0;
-	virtual IReGameHookRegistry_CBreakable_TraceAttack* CBreakable_TraceAttack() = 0;
-	virtual IReGameHookRegistry_CBreakable_TakeDamage* CBreakable_TakeDamage() = 0;
-	virtual IReGameHookRegistry_CBreakable_Use* CBreakable_Use() = 0;
-	virtual IReGameHookRegistry_CBreakable_Die* CBreakable_Die() = 0;
-	virtual IReGameHookRegistry_CBreakable_BreakTouch* CBreakable_BreakTouch() = 0;
+	virtual IReGameHookRegistry_CBreakable_Spawn *CBreakable_Spawn() = 0;
+	virtual IReGameHookRegistry_CBreakable_Restart *CBreakable_Restart() = 0;
+	virtual IReGameHookRegistry_CBreakable_TraceAttack *CBreakable_TraceAttack() = 0;
+	virtual IReGameHookRegistry_CBreakable_TakeDamage *CBreakable_TakeDamage() = 0;
+	virtual IReGameHookRegistry_CBreakable_Use *CBreakable_Use() = 0;
+	virtual IReGameHookRegistry_CBreakable_Die *CBreakable_Die() = 0;
+	virtual IReGameHookRegistry_CBreakable_BreakTouch *CBreakable_BreakTouch() = 0;
 };
 
 struct ReGameFuncs_t {
