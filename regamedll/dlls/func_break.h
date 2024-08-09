@@ -58,29 +58,38 @@ enum Materials
 #define SF_BREAK_PRESSURE     BIT(2) // can be broken by a player standing on it
 #define SF_BREAK_CROWBAR      BIT(8) // instant break if hit with crowbar
 
-class CBreakable: public CBaseDelay
+class CBreakable : public CBaseDelay
 {
 public:
 	// basic functions
 	virtual void Spawn();
 	virtual void Precache();
 	virtual void Restart();
-	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int Save(CSave &save);
-	virtual int Restore(CRestore &restore);
+	virtual void KeyValue(KeyValueData* pkvd);
+	virtual int Save(CSave& save);
+	virtual int Restore(CRestore& restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
 	// To spark when hit
-	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	virtual void TraceAttack(entvars_t* pevAttacker, float flDamage, Vector vecDir, TraceResult* ptr, int bitsDamageType);
 
 	// breakables use an overridden takedamage
-	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	virtual BOOL TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
 
 	virtual int DamageDecal(int bitsDamageType);
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+#ifdef REGAMEDLL_API
+	void Spawn_OrigFunc();
+	void Restart_OrigFunc();
+	void TraceAttack_OrigFunc(entvars_t* pevAttacker, float flDamage, VectorRef vecDir, TraceResult* ptr, int bitsDamageType);
+	BOOL TakeDamage_OrigFunc(entvars_t* pevInflictor, entvars_t* pevAttacker, FloatRef flDamage, int bitsDamageType);
+	void Use_OrigFunc(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, FloatRef value);
+	void Die_OrigFunc();
+	void BreakTouch_OrigFunc(CBaseEntity* pOther);
+#endif // REGAMEDLL_API
 
 public:
-	void EXPORT BreakTouch(CBaseEntity *pOther);
+	void EXPORT BreakTouch(CBaseEntity* pOther);
 	void DamageSound();
 
 	BOOL IsBreakable();
@@ -94,15 +103,15 @@ public:
 	void ExplosionSetMagnitude(int magnitude) { pev->impulse = magnitude; }
 
 	static void MaterialSoundPrecache(Materials precacheMaterial);
-	static void MaterialSoundRandom(edict_t *pEdict, Materials soundMaterial, float volume);
-	static const char **MaterialSoundList(Materials precacheMaterial, int &soundCount);
+	static void MaterialSoundRandom(edict_t* pEdict, Materials soundMaterial, float volume);
+	static const char** MaterialSoundList(Materials precacheMaterial, int& soundCount);
 
-	static const char *m_pszSpawnObjects[32];
-	static const char *m_pszSoundsWood[3];
-	static const char *m_pszSoundsFlesh[6];
-	static const char *m_pszSoundsMetal[3];
-	static const char *m_pszSoundsConcrete[3];
-	static const char *m_pszSoundsGlass[3];
+	static const char* m_pszSpawnObjects[32];
+	static const char* m_pszSoundsWood[3];
+	static const char* m_pszSoundsFlesh[6];
+	static const char* m_pszSoundsMetal[3];
+	static const char* m_pszSoundsConcrete[3];
+	static const char* m_pszSoundsGlass[3];
 
 	static TYPEDESCRIPTION m_SaveData[];
 
@@ -118,25 +127,25 @@ public:
 
 #define SF_PUSH_BREAKABLE BIT(7) // func_pushable (it's also func_breakable, so don't collide with those flags)
 
-class CPushable: public CBreakable
+class CPushable : public CBreakable
 {
 public:
 	virtual void Spawn();
 	virtual void Precache();
-	virtual void KeyValue(KeyValueData *pkvd);
-	virtual int Save(CSave &save);
-	virtual int Restore(CRestore &restore);
+	virtual void KeyValue(KeyValueData* pkvd);
+	virtual int Save(CSave& save);
+	virtual int Restore(CRestore& restore);
 	virtual int ObjectCaps() { return (CBaseEntity::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_CONTINUOUS_USE | FCAP_MUST_RESET; }
-	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
-	virtual void Touch(CBaseEntity *pOther);
-	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual BOOL TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
+	virtual void Touch(CBaseEntity* pOther);
+	virtual void Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
 
 #ifdef REGAMEDLL_FIXES
 	virtual void Restart();
 #endif
 
 public:
-	void Move(CBaseEntity *pMover, int push);
+	void Move(CBaseEntity* pMover, int push);
 	void EXPORT StopSound()
 	{
 #if 0
@@ -150,7 +159,7 @@ public:
 
 public:
 	static TYPEDESCRIPTION m_SaveData[];
-	static const char *m_soundNames[];
+	static const char* m_soundNames[];
 
 	int m_lastSound;
 	float m_maxSpeed;
