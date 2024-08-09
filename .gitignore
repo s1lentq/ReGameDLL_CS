@@ -21,10 +21,3 @@
 regamedll/version/appversion.h
 regamedll/msvc/PublishPath*.txt
 publish
-/regamedll/msvc/ReGameDLL.vcxproj
-/regamedll/msvc/cpp.hint
-/regamedll/msvc/ReGameDLL.vcxproj.filters
-/regamedll/msvc/ReGameDLL.vcxproj
-/.gitignore
-/regamedll/msvc/ReGameDLL.vcxproj
-/regamedll/msvc/ReGameDLL.vcxproj.filters

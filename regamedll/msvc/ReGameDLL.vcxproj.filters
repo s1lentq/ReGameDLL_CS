@@ -1,0 +1,1073 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="engine">
+      <UniqueIdentifier>{eeaac718-712b-453f-9d34-4cefc9e0fe59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="version">
+      <UniqueIdentifier>{bcd7bb13-9910-4e5d-bb7a-b13b6b813fe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{fe7a8e81-b7d4-4540-ab5b-457ed93672ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public">
+      <UniqueIdentifier>{d74cb79e-afd5-4215-af0e-029e38925be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="unittests">
+      <UniqueIdentifier>{10ba586f-5f90-4a4b-940c-287810a7e9bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="regamedll">
+      <UniqueIdentifier>{a54a9aa9-f95b-4199-bdf0-9640fdb5590b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls">
+      <UniqueIdentifier>{73fb61d4-c4ca-4159-8967-0e98666e1d4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game_shared">
+      <UniqueIdentifier>{1d2d9bb7-4ba0-4fe6-a0d9-6fae9f96ec3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game_shared\bot">
+      <UniqueIdentifier>{23c0aa0d-b62d-48e6-8677-01d24ee9d10d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\wpn_shared">
+      <UniqueIdentifier>{7ae9fb2c-9461-4055-a739-10ae77aa5194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\bot">
+      <UniqueIdentifier>{f421c19f-cac0-41c3-bde8-728182676437}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pm_shared">
+      <UniqueIdentifier>{b9e4d175-16d0-4f51-8520-896826a345dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\client">
+      <UniqueIdentifier>{58f96e92-9d4b-4a0d-91e4-10f9cdc18ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\common">
+      <UniqueIdentifier>{93368d3b-4bb4-4922-91a2-a319c4d90b21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\common">
+      <UniqueIdentifier>{5b3411a4-0455-4c6f-ba83-e0faf0bdfb84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\hostage">
+      <UniqueIdentifier>{6983a983-71e2-4c14-a013-d4dc5e34d60c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\bot\states">
+      <UniqueIdentifier>{638174c7-80d2-415c-a335-54a8149d6add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\hostage\states">
+      <UniqueIdentifier>{d1cb44c6-0982-4410-a099-0b3666ace636}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\regamedll">
+      <UniqueIdentifier>{8f5a4004-ab6b-4802-a23b-091948576ad0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\tier0">
+      <UniqueIdentifier>{00d15c50-66d7-4210-9239-e8cd8fb9f052}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\addons">
+      <UniqueIdentifier>{cc40695f-5d17-4ee9-b410-1be65c49c099}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dlls\API">
+      <UniqueIdentifier>{23a8e38b-6719-4a8e-9861-12425a661001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="public\regamedll\API">
+      <UniqueIdentifier>{46ec2f1d-1feb-46e2-a801-0c87d1212c5c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\regamedll\precompiled.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\h_export.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\player.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\triggers.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\subs.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\combat.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\cbase.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\animating.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\shared_util.cpp">
+      <Filter>game_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\util.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\world.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\MemPool.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\sound.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\weapons.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_ak47.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_aug.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_awp.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_c4.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_deagle.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_elite.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_famas.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_fiveseven.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_flashbang.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_g3sg1.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_galil.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_glock18.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_hegrenade.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_knife.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_m3.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_m4a1.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_m249.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_mac10.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_mp5navy.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_p90.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_p228.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_scout.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_sg550.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_sg552.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_smokegrenade.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_tmp.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_ump45.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_usp.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\wpn_shared\wpn_xm1014.cpp">
+      <Filter>dlls\wpn_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\weapontype.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\debug.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\animation.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\skill.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\gamerules.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\game.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\training_gamerules.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\multiplay_gamerules.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\voice_gamemgr.cpp">
+      <Filter>game_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_manager.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\bot_manager.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_init.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_chatter.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\bot_util.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\client.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_debug.cpp">
+      <Filter>pm_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_math.cpp">
+      <Filter>pm_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_shared.cpp">
+      <Filter>pm_shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unittests\struct_offsets_tests.cpp">
+      <Filter>unittests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unittests\TestRunner.cpp">
+      <Filter>unittests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\utlsymbol.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\h_cycler.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\h_battery.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\bot_profile.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\nav_area.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\tutor_base_tutor.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\tutor_cs_tutor.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\tutor_base_states.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hintmessage.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\globals.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\unicode_strtools.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\interface.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\airtank.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\ggrenade.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\career_tasks.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_attack.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_buy.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_defuse_bomb.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_escape_from_bomb.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_fetch_bomb.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_follow.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_hide.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_hunt.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_idle.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_investigate_noise.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_move_to.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_plant_bomb.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\states\cs_bot_use_entity.cpp">
+      <Filter>dlls\bot\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_event.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_learn.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_listen.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_nav.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_pathfind.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_radio.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_statemachine.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_weapon.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\hostage.cpp">
+      <Filter>dlls\hostage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\hostage_improv.cpp">
+      <Filter>dlls\hostage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\hostage_localnav.cpp">
+      <Filter>dlls\hostage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\states\hostage_animate.cpp">
+      <Filter>dlls\hostage\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\states\hostage_escape.cpp">
+      <Filter>dlls\hostage\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\states\hostage_follow.cpp">
+      <Filter>dlls\hostage\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\states\hostage_idle.cpp">
+      <Filter>dlls\hostage\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\hostage\states\hostage_retreat.cpp">
+      <Filter>dlls\hostage\states</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\nav_node.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\nav_path.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\bot.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\bot\nav_file.cpp">
+      <Filter>game_shared\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\sse_mathfun.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unittests\animation_tests.cpp">
+      <Filter>unittests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\unittests\mathfun_tests.cpp">
+      <Filter>unittests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_update.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_bot_vision.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\tutor_cs_states.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\tutor.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bot\cs_gamestate.cpp">
+      <Filter>dlls\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\singleplay_gamerules.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\ammo.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\spectator.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\observer.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\effects.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\plats.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\buttons.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\maprules.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\soundent.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\pathcorner.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\vehicle.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\func_tank.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\func_break.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\doors.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\bmodels.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\items.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\explode.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\mortar.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\healthkit.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\lights.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\hookchains_impl.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\tier0\dbg.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\classes_dummy.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\regamedll.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\mapinfo.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\cmdhandler.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\basemonster.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\gib.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\addons\item_airbox.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\saverestore.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\revert_saved.cpp">
+      <Filter>dlls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CAPI_Impl.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSEntity.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayer.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerItem.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\API\CSPlayerWeapon.cpp">
+      <Filter>dlls\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\regamedll\public_amalgamation.cpp">
+      <Filter>regamedll</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\addons\trigger_random.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\dlls\addons\point_command.cpp">
+      <Filter>dlls\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\FileSystem.cpp">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\tier0\platform_win32.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\tier0\assert_dialog.cpp">
+      <Filter>public\tier0</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\version\version.h">
+      <Filter>version</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\archtypes.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\FileSystem.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\basetypes.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\commonmacros.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlrbtree.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\precompiled.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\activity.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\animation.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\basemonster.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\cbase.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\client.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\doors.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\effects.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\explode.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\extdll.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\func_break.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\gamerules.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\items.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\maprules.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\monsters.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\player.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\saverestore.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\skill.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\soundent.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\spectator.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\trains.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\util.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\vector.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\weapons.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\hintmessage.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot_util.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\dlls.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\triggers.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\subs.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\MemPool.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\GameEvent.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\training_gamerules.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\voice_gamemgr.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_manager.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\nav_area.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\steam_util.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot_profile.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot_manager.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_chatter.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_gamestate.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_debug.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_defs.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_info.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_materials.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_movevars.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_shared.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\cdll_int.h">
+      <Filter>engine\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\common.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\custom.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\customentity.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\maintypes.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\model.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\progs.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\shake.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\studio.h">
+      <Filter>engine\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\nodes.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\enginecallback.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\decals.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\cdll_dll.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\monsterevent.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\talkmonster.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\debug.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\shared_util.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlsymbol.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\h_cycler.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\h_battery.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\simple_checksum.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\tutor_base_tutor.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\tutor_cs_tutor.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\tutor_base_states.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pm_shared\pm_math.h">
+      <Filter>pm_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\unicode_strtools.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\interface.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlmemory.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\airtank.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\career_tasks.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\hostage\hostage.h">
+      <Filter>dlls\hostage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\hostage\hostage_improv.h">
+      <Filter>dlls\hostage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\hostage\hostage_localnav.h">
+      <Filter>dlls\hostage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\hostage\hostage_states.h">
+      <Filter>dlls\hostage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\improv.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\nav.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\nav_node.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\nav_path.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\simple_state_machine.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\nav_file.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\sse_mathfun.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\tutor_cs_states.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\tutor.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\globals.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlvector.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\ammo.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\observer.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\plats.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\buttons.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\unisignals.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bitvec.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\com_model.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\const.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\cvardef.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\entity_state.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\netadr.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\pmtrace.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\r_studioint.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\Sequence.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\studio_event.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\usercmd.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\weaponinfo.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\crc.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\event_flags.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\in_buttons.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\mathlib.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\screenfade.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winsani_in.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winsani_out.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\pathcorner.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\vehicle.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\func_tank.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bmodels.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\mortar.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\healthkit.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\lights.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\sound.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\cmd.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\game.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\world.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\hltv.h">
+      <Filter>dlls\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\schedule.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\weapontype.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\scriptevent.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\hookchains_impl.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\hookchains.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\regamedll_api.h">
+      <Filter>public\regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tier0\dbg.h">
+      <Filter>public\tier0</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tier0\platform.h">
+      <Filter>public\tier0</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\bot\bot_constants.h">
+      <Filter>game_shared\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\engine.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\regamedll\regamedll.h">
+      <Filter>regamedll</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\extdef.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\mapinfo.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\asmlib.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\counter.h">
+      <Filter>game_shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\revert_saved.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\cmdhandler.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\ehandle.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\gib.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\qstring.h">
+      <Filter>dlls</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\trigger_setorigin.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\item_airbox.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\bot\cs_bot_init.h">
+      <Filter>dlls\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\API\CAPI_Impl.h">
+      <Filter>dlls\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSEntity.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSInterfaces.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSPlayer.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\regamedll\API\CSPlayerItem.h">
+      <Filter>public\regamedll\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\trigger_random.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dlls\addons\point_command.h">
+      <Filter>dlls\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\utlarray.h">
+      <Filter>public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\tier0\resource.h">
+      <Filter>public\tier0</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\public\tier0\assert_dialog.rc">
+      <Filter>public\tier0</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
