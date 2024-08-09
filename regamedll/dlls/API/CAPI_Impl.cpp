@@ -30,18 +30,18 @@
 
 CReGameHookchains g_ReGameHookchains;
 
-void EXT_FUNC Regamedll_ChangeString_api(char*& dest, const char* source)
+void EXT_FUNC Regamedll_ChangeString_api(char *&dest, const char *source)
 {
 	size_t len = Q_strlen(source);
 	if (dest == nullptr || Q_strlen(dest) != len) {
-		delete[] dest;
-		dest = new char[len + 1];
+		delete [] dest;
+		dest = new char [len + 1];
 	}
 
 	Q_strcpy(dest, source);
 }
 
-void EXT_FUNC RadiusDamage_api(Vector vecSrc, entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
+void EXT_FUNC RadiusDamage_api(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, float flRadius, int iClassIgnore, int bitsDamageType)
 {
 	RadiusDamage(vecSrc, pevInflictor, pevAttacker, flDamage, flRadius, iClassIgnore, bitsDamageType);
 }
@@ -51,12 +51,12 @@ void EXT_FUNC ClearMultiDamage_api()
 	ClearMultiDamage();
 }
 
-void EXT_FUNC ApplyMultiDamage_api(entvars_t* pevInflictor, entvars_t* pevAttacker)
+void EXT_FUNC ApplyMultiDamage_api(entvars_t *pevInflictor, entvars_t *pevAttacker)
 {
 	ApplyMultiDamage(pevInflictor, pevAttacker);
 }
 
-void EXT_FUNC AddMultiDamage_api(entvars_t* pevInflictor, CBaseEntity* pEntity, float flDamage, int bitsDamageType)
+void EXT_FUNC AddMultiDamage_api(entvars_t *pevInflictor, CBaseEntity *pEntity, float flDamage, int bitsDamageType)
 {
 	AddMultiDamage(pevInflictor, pEntity, flDamage, bitsDamageType);
 }
@@ -66,27 +66,27 @@ int EXT_FUNC Cmd_Argc_api()
 	return CMD_ARGC_();
 }
 
-const char* EXT_FUNC Cmd_Argv_api(int i)
+const char *EXT_FUNC Cmd_Argv_api(int i)
 {
 	return CMD_ARGV_(i);
 }
 
-CGrenade* EXT_FUNC PlantBomb_api(entvars_t* pevOwner, Vector& vecStart, Vector& vecVelocity)
+CGrenade *EXT_FUNC PlantBomb_api(entvars_t *pevOwner, Vector &vecStart, Vector &vecVelocity)
 {
 	return CGrenade::ShootSatchelCharge(pevOwner, vecStart, vecVelocity);
 }
 
-CGib* EXT_FUNC SpawnHeadGib_api(entvars_t* pevVictim)
+CGib *EXT_FUNC SpawnHeadGib_api(entvars_t *pevVictim)
 {
 	return CGib::SpawnHeadGib(pevVictim);
 }
 
-void EXT_FUNC SpawnRandomGibs_api(entvars_t* pevVictim, int cGibs, int human)
+void EXT_FUNC SpawnRandomGibs_api(entvars_t *pevVictim, int cGibs, int human)
 {
 	CGib::SpawnRandomGibs(pevVictim, cGibs, human);
 }
 
-void EXT_FUNC UTIL_RestartOther_api(const char* szClassname)
+void EXT_FUNC UTIL_RestartOther_api(const char *szClassname)
 {
 	UTIL_RestartOther(szClassname);
 }
@@ -96,48 +96,48 @@ void EXT_FUNC UTIL_ResetEntities_api()
 	UTIL_ResetEntities();
 }
 
-void EXT_FUNC UTIL_RemoveOther_api(const char* szClassname, int nCount)
+void EXT_FUNC UTIL_RemoveOther_api(const char *szClassname, int nCount)
 {
 	UTIL_RemoveOther(szClassname, nCount);
 }
 
-void EXT_FUNC UTIL_DecalTrace_api(TraceResult* pTrace, int decalNumber)
+void EXT_FUNC UTIL_DecalTrace_api(TraceResult *pTrace, int decalNumber)
 {
 	UTIL_DecalTrace(pTrace, decalNumber);
 }
 
-void EXT_FUNC UTIL_Remove_api(CBaseEntity* pEntity)
+void EXT_FUNC UTIL_Remove_api(CBaseEntity *pEntity)
 {
 	UTIL_Remove(pEntity);
 }
 
-int EXT_FUNC AddAmmoNameToAmmoRegistry_api(const char* szAmmoname)
+int EXT_FUNC AddAmmoNameToAmmoRegistry_api(const char *szAmmoname)
 {
 	return AddAmmoNameToAmmoRegistry(szAmmoname);
 }
 
-void EXT_FUNC TextureTypePlaySound_api(TraceResult* ptr, Vector vecSrc, Vector vecEnd, int iBulletType)
+void EXT_FUNC TextureTypePlaySound_api(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType)
 {
 	TEXTURETYPE_PlaySound(ptr, vecSrc, vecEnd, iBulletType);
 }
 
-CWeaponBox* EXT_FUNC CreateWeaponBox_api(CBasePlayerItem* pItem, CBasePlayer* pPlayerOwner, const char* modelName, Vector& origin, Vector& angles, Vector& velocity, float lifeTime, bool packAmmo)
+CWeaponBox *EXT_FUNC CreateWeaponBox_api(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo)
 {
 	return CreateWeaponBox(pItem, pPlayerOwner, modelName, origin, angles, velocity, lifeTime < 0.0 ? CGameRules::GetItemKillDelay() : lifeTime, packAmmo);
 }
 
-CGrenade* EXT_FUNC SpawnGrenade_api(WeaponIdType weaponId, entvars_t* pevOwner, Vector& vecSrc, Vector& vecThrow, float time, int iTeam, unsigned short usEvent)
+CGrenade *EXT_FUNC SpawnGrenade_api(WeaponIdType weaponId, entvars_t *pevOwner, Vector &vecSrc, Vector &vecThrow, float time, int iTeam, unsigned short usEvent)
 {
 	switch (weaponId)
 	{
-	case WEAPON_HEGRENADE:
-		return CGrenade::ShootTimed2(pevOwner, vecSrc, vecThrow, time, iTeam, usEvent);
-	case WEAPON_FLASHBANG:
-		return CGrenade::ShootTimed(pevOwner, vecSrc, vecThrow, time);
-	case WEAPON_SMOKEGRENADE:
-		return CGrenade::ShootSmokeGrenade(pevOwner, vecSrc, vecThrow, time, usEvent);
-	case WEAPON_C4:
-		return CGrenade::ShootSatchelCharge(pevOwner, vecSrc, vecThrow);
+		case WEAPON_HEGRENADE:
+			return CGrenade::ShootTimed2(pevOwner, vecSrc, vecThrow, time, iTeam, usEvent);
+		case WEAPON_FLASHBANG:
+			return CGrenade::ShootTimed(pevOwner, vecSrc, vecThrow, time);
+		case WEAPON_SMOKEGRENADE:
+			return CGrenade::ShootSmokeGrenade(pevOwner, vecSrc, vecThrow, time, usEvent);
+		case WEAPON_C4:
+			return CGrenade::ShootSatchelCharge(pevOwner, vecSrc, vecThrow);
 	}
 
 	return nullptr;
@@ -337,14 +337,6 @@ GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveAllItems);
 
-GAMEHOOK_REGISTRY(CBreakable_Spawn);
-GAMEHOOK_REGISTRY(CBreakable_Restart);
-GAMEHOOK_REGISTRY(CBreakable_TraceAttack);
-GAMEHOOK_REGISTRY(CBreakable_TakeDamage);
-GAMEHOOK_REGISTRY(CBreakable_Use);
-GAMEHOOK_REGISTRY(CBreakable_Die);
-GAMEHOOK_REGISTRY(CBreakable_BreakTouch);
-
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
 }
@@ -353,40 +345,40 @@ int CReGameApi::GetMinorVersion() {
 	return REGAMEDLL_API_VERSION_MINOR;
 }
 
-const ReGameFuncs_t* CReGameApi::GetFuncs() {
+const ReGameFuncs_t *CReGameApi::GetFuncs() {
 	return &g_ReGameApiFuncs;
 }
 
-IReGameHookchains* CReGameApi::GetHookchains() {
+IReGameHookchains *CReGameApi::GetHookchains() {
 	return &g_ReGameHookchains;
 }
 
-CGameRules* CReGameApi::GetGameRules() {
+CGameRules *CReGameApi::GetGameRules() {
 	return g_pGameRules;
 }
 
-WeaponInfoStruct* CReGameApi::GetWeaponInfo(int weaponID) {
+WeaponInfoStruct *CReGameApi::GetWeaponInfo(int weaponID) {
 	return ::GetWeaponInfo(weaponID);
 }
 
-WeaponInfoStruct* CReGameApi::GetWeaponInfo(const char* weaponName) {
+WeaponInfoStruct *CReGameApi::GetWeaponInfo(const char *weaponName) {
 	return ::GetWeaponInfo(weaponName);
 }
 
-playermove_t* CReGameApi::GetPlayerMove() {
+playermove_t *CReGameApi::GetPlayerMove() {
 	return pmove;
 }
 
-WeaponSlotInfo* CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
-WeaponSlotInfo* CReGameApi::GetWeaponSlot(const char* weaponName) { return ::GetWeaponSlot(weaponName); }
+WeaponSlotInfo *CReGameApi::GetWeaponSlot(WeaponIdType weaponID) { return ::GetWeaponSlot(weaponID); }
+WeaponSlotInfo *CReGameApi::GetWeaponSlot(const char *weaponName) { return ::GetWeaponSlot(weaponName); }
 
-ItemInfo* CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &CBasePlayerItem::m_ItemInfoArray[weaponID]; }
-AmmoInfo* CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &CBasePlayerItem::m_AmmoInfoArray[ammoID]; }
+ItemInfo *CReGameApi::GetItemInfo(WeaponIdType weaponID) { return &CBasePlayerItem::m_ItemInfoArray[weaponID]; }
+AmmoInfo *CReGameApi::GetAmmoInfo(AmmoType ammoID) { return &CBasePlayerItem::m_AmmoInfoArray[ammoID]; }
 
-AmmoInfoStruct* CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
-AmmoInfoStruct* CReGameApi::GetAmmoInfoEx(const char* ammoName) { return ::GetAmmoInfo(ammoName); }
+AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(AmmoType ammoID) { return ::GetAmmoInfo(ammoID); }
+AmmoInfoStruct *CReGameApi::GetAmmoInfoEx(const char *ammoName) { return ::GetAmmoInfo(ammoName); }
 
-bool CReGameApi::BGetICSEntity(const char* pchVersion) const
+bool CReGameApi::BGetICSEntity(const char *pchVersion) const
 {
 	if (!Q_stricmp(pchVersion, CSENTITY_API_INTERFACE_VERSION))
 	{
@@ -396,7 +388,7 @@ bool CReGameApi::BGetICSEntity(const char* pchVersion) const
 	return false;
 }
 
-bool CReGameApi::BGetIGameRules(const char* pchVersion) const
+bool CReGameApi::BGetIGameRules(const char *pchVersion) const
 {
 	if (!Q_stricmp(pchVersion, GAMERULES_API_INTERFACE_VERSION))
 	{
