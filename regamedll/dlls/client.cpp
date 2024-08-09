@@ -2728,7 +2728,7 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 
 			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
-				if (gpGlobals->time < 180)
+				if (gpGlobals->time < CGameRules::GetVotemapMinElapsedTime())
 				{
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
