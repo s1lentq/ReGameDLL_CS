@@ -2619,6 +2619,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTE])
 		{
+#ifdef REGAMEDLL_ADD
+			static const int flagKick = UTIL_ReadFlags("k");
+			if ((flagKick & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
 			pPlayer->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
@@ -2700,6 +2708,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTEMAP])
 		{
+#ifdef REGAMEDLL_ADD
+			static const int flagMap = UTIL_ReadFlags("m");
+			if ((flagMap & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
 			pPlayer->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
 
 			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
