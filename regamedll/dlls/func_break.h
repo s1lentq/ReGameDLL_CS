@@ -78,6 +78,15 @@ public:
 
 	virtual int DamageDecal(int bitsDamageType);
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+#ifdef REGAMEDLL_API
+	void Spawn_OrigFunc();
+	void Restart_OrigFunc();
+	void TraceAttack_OrigFunc(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult* ptr, int bitsDamageType);
+	BOOL TakeDamage_OrigFunc(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType);
+	void Use_OrigFunc(CBaseEntity *pActivator, CBaseEntity* pCaller, USE_TYPE useType, FloatRef value);
+	void Die_OrigFunc();
+	void BreakTouch_OrigFunc(CBaseEntity *pOther);
+#endif // REGAMEDLL_API
 
 public:
 	void EXPORT BreakTouch(CBaseEntity *pOther);

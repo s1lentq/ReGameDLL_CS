@@ -89,7 +89,9 @@ TYPEDESCRIPTION CBreakable::m_SaveData[] =
 LINK_ENTITY_TO_CLASS(func_breakable, CBreakable, CCSBreakable)
 IMPLEMENT_SAVERESTORE(CBreakable, CBaseEntity)
 
-void CBreakable::Spawn()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBreakable, Spawn)
+
+void EXT_FUNC CBreakable::__API_HOOK(Spawn)()
 {
 	Precache();
 
@@ -129,7 +131,9 @@ void CBreakable::Spawn()
 	}
 }
 
-void CBreakable::Restart()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBreakable, Restart)
+
+void EXT_FUNC CBreakable::__API_HOOK(Restart)()
 {
 	pev->solid = SOLID_BSP;
 	pev->movetype = MOVETYPE_PUSH;
@@ -471,7 +475,9 @@ void CBreakable::DamageSound()
 	}
 }
 
-void CBreakable::BreakTouch(CBaseEntity *pOther)
+LINK_HOOK_CLASS_VOID_CHAIN(CBreakable, BreakTouch, (CBaseEntity *pOther), pOther)
+
+void EXT_FUNC CBreakable::__API_HOOK(BreakTouch)(CBaseEntity *pOther)
 {
 	float flDamage;
 	entvars_t *pevToucher = pOther->pev;
@@ -530,9 +536,10 @@ void CBreakable::BreakTouch(CBaseEntity *pOther)
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN(CBreakable, Use, (CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value), pActivator, pCaller, useType, value)
 // Smash the our breakable object
 // Break when triggered
-void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+void EXT_FUNC CBreakable::__API_HOOK(Use)(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, FloatRef value)
 {
 	if (IsBreakable())
 	{
@@ -550,7 +557,9 @@ void CBreakable::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	}
 }
 
-void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+LINK_HOOK_CLASS_VOID_CHAIN(CBreakable, TraceAttack, (entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType), pevAttacker, flDamage, vecDir, ptr, bitsDamageType)
+
+void EXT_FUNC CBreakable::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float flDamage, VectorRef vecDir, TraceResult *ptr, int bitsDamageType)
 {
 	// random spark if this is a 'computer' object
 	if (RANDOM_LONG(0, 1))
@@ -582,10 +591,11 @@ void CBreakable::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecD
 	CBaseDelay::TraceAttack(pevAttacker, flDamage, vecDir, ptr, bitsDamageType);
 }
 
+LINK_HOOK_CLASS_CHAIN(BOOL, CBreakable, TakeDamage, (entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType), pevInflictor, pevAttacker, flDamage, bitsDamageType)
 // Special takedamage for func_breakable. Allows us to make
 // exceptions that are breakable-specific
 // bitsDamageType indicates the type of damage sustained ie: DMG_CRUSH
-BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
+BOOL EXT_FUNC CBreakable::__API_HOOK(TakeDamage)(entvars_t *pevInflictor, entvars_t *pevAttacker, FloatRef flDamage, int bitsDamageType)
 {
 	Vector vecTemp;
 
@@ -652,7 +662,9 @@ BOOL CBreakable::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, flo
 	return TRUE;
 }
 
-void CBreakable::Die()
+LINK_HOOK_CLASS_VOID_CHAIN2(CBreakable, Die)
+
+void EXT_FUNC CBreakable::__API_HOOK(Die)()
 {
 	Vector vecSpot;	// shard origin
 	Vector vecVelocity;	// shard velocity
