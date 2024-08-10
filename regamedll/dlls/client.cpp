@@ -2619,6 +2619,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTE])
 		{
+			pPlayer->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
+
+			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				return;
+			}
+
 #ifdef REGAMEDLL_ADD
 			static const int flagKick = UTIL_ReadFlags("k");
 			if ((flagKick & UTIL_ReadFlags(vote_flags.string)) == 0)
@@ -2627,13 +2635,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 #endif
-			pPlayer->m_flLastCommandTime[CMD_VOTE] = gpGlobals->time + 0.3f;
-
-			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
-				return;
-			}
 
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
@@ -2708,6 +2709,14 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 	{
 		if (gpGlobals->time >= pPlayer->m_flLastCommandTime[CMD_VOTEMAP])
 		{
+			pPlayer->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
+
+			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
+				return;
+			}
+
 #ifdef REGAMEDLL_ADD
 			static const int flagMap = UTIL_ReadFlags("m");
 			if ((flagMap & UTIL_ReadFlags(vote_flags.string)) == 0)
@@ -2716,13 +2725,6 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 #endif
-			pPlayer->m_flLastCommandTime[CMD_VOTEMAP] = gpGlobals->time + 0.3f;
-
-			if (gpGlobals->time < pPlayer->m_flNextVoteTime)
-			{
-				ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Wait_3_Seconds");
-				return;
-			}
 
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
