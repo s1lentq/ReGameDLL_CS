@@ -4248,11 +4248,15 @@ void CBasePlayer::PlayerUse()
 		}
 	}
 
+	int caps;
+	int iClosestCaps = 0;
+
 	if (!pClosest)
 	{
 		while ((pObject = UTIL_FindEntityInSphere(pObject, pev->origin, MAX_PLAYER_USE_RADIUS)))
 		{
-			if (pObject->ObjectCaps() & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE))
+			caps = pObject->ObjectCaps();
+			if (caps & (FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE))
 			{
 				// TODO: PERFORMANCE- should this check be done on a per case basis AFTER we've determined that
 				// this object is actually usable? This dot is being done for every object within PLAYER_SEARCH_RADIUS
@@ -4267,11 +4271,21 @@ void CBasePlayer::PlayerUse()
 				{
 					flMaxDot = flDot;
 					pClosest = pObject;
+#ifdef REGAMEDLL_FIXES
+					iClosestCaps = caps;
+#endif
 				}
 			}
 		}
 	}
+#ifdef REGAMEDLL_FIXES
+	else // catch new hostages caps
+	{
+		iClosestCaps = pClosest->ObjectCaps();
+	}
 
+	caps = iClosestCaps;
+#endif
 	pObject = pClosest;
 
 	// Found an object
@@ -4280,8 +4294,9 @@ void CBasePlayer::PlayerUse()
 		if (!useNewHostages || CanSeeUseable(this, pObject))
 		{
 			// TODO: traceline here to prevent +USEing buttons through walls
+#ifndef REGAMEDLL_FIXES
 			int caps = pObject->ObjectCaps();
-
+#endif
 			if (m_afButtonPressed & IN_USE)
 				EMIT_SOUND(ENT(pev), CHAN_ITEM, "common/wpn_select.wav", 0.4, ATTN_NORM);
 
@@ -4295,7 +4310,12 @@ void CBasePlayer::PlayerUse()
 			}
 			// UNDONE: Send different USE codes for ON/OFF.  Cache last ONOFF_USE object to send 'off' if you turn away
 			// BUGBUG This is an "off" use
-			else if ((m_afButtonReleased & IN_USE) && (pObject->ObjectCaps() & FCAP_ONOFF_USE))
+			else if ((m_afButtonReleased & IN_USE) 
+#ifdef REGAMEDLL_FIXES
+				&& (caps & FCAP_ONOFF_USE))
+#else 
+				&& (pObject->ObjectCaps() & FCAP_ONOFF_USE))
+#endif
 			{
 				pObject->Use(this, this, USE_SET, 0);
 			}
