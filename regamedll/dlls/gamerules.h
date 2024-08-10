@@ -47,7 +47,7 @@ const float ROUND_BEGIN_DELAY    = 5.0f;	// delay before beginning new round
 const float ITEM_KILL_DELAY      = 300.0f;
 const float RADIO_TIMEOUT        = 1.5f;
 const float DEATH_ANIMATION_TIME = 3.0f;
-const float VOTEMAP_MIN_TIME     = 180.0f
+const float VOTEMAP_MIN_TIME     = 180.0f;
 
 const int MAX_INTERMISSION_TIME  = 120;	// longest the intermission can last, in seconds
 
