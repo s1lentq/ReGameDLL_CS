@@ -2627,6 +2627,15 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 
+#ifdef REGAMEDLL_ADD
+			static const int flagKick = UTIL_ReadFlags("k");
+			if ((flagKick & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
+
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
 			if (pPlayer->m_iTeam != UNASSIGNED)
@@ -2708,11 +2717,20 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 
+#ifdef REGAMEDLL_ADD
+			static const int flagMap = UTIL_ReadFlags("m");
+			if ((flagMap & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
+
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
 			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
-				if (gpGlobals->time < 180)
+				if (gpGlobals->time < CGameRules::GetVotemapMinElapsedTime())
 				{
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
