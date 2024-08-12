@@ -1671,6 +1671,10 @@ void CBasePlayerWeapon::Holster(int skiplocal)
 	m_fInReload = FALSE;
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
+	
+#ifdef REGAMEDLL_FIXES
+	m_fInSpecialReload = 0;
+#endif
 }
 
 // called by the new item with the existing item as parameter
