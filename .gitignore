@@ -21,3 +21,6 @@
 regamedll/version/appversion.h
 regamedll/msvc/PublishPath*.txt
 publish
+/.vs/VSWorkspaceState.json
+/.vs/slnx.sqlite
+/regamedll/msvc/cpp.hint
