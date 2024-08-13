@@ -1082,10 +1082,6 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink();
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think();
 	virtual IReGameHookRegistry_CBasePlayer_RemoveAllItems *CBasePlayer_RemoveAllItems();
-
-	virtual IReGameHookRegistry_CBasePlayerItem_Materialize *CBasePlayerItem_Materialize();
-	virtual IReGameHookRegistry_CBasePlayerItem_CheckRespawn *CBasePlayerItem_CheckRespawn();
-
 };
 
 extern CReGameHookchains g_ReGameHookchains;
