@@ -337,8 +337,17 @@ GAMEHOOK_REGISTRY(CBasePlayer_PlayerDeathThink);
 GAMEHOOK_REGISTRY(CBasePlayer_Observer_Think);
 GAMEHOOK_REGISTRY(CBasePlayer_RemoveAllItems);
 
+
 GAMEHOOK_REGISTRY(CBasePlayerItem_Materialize);
 GAMEHOOK_REGISTRY(CBasePlayerItem_CheckRespawn);
+
+GAMEHOOK_REGISTRY(CBreakable_Spawn);
+GAMEHOOK_REGISTRY(CBreakable_Restart);
+GAMEHOOK_REGISTRY(CBreakable_TraceAttack);
+GAMEHOOK_REGISTRY(CBreakable_TakeDamage);
+GAMEHOOK_REGISTRY(CBreakable_Use);
+GAMEHOOK_REGISTRY(CBreakable_Die);
+GAMEHOOK_REGISTRY(CBreakable_BreakTouch);
 
 int CReGameApi::GetMajorVersion() {
 	return REGAMEDLL_API_VERSION_MAJOR;
