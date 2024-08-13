@@ -628,6 +628,14 @@ typedef IHookChainRegistryClass<void, class CBasePlayer> IReGameHookRegistry_CBa
 typedef IHookChainClass<void, class CBasePlayer, BOOL> IReGameHook_CBasePlayer_RemoveAllItems;
 typedef IHookChainRegistryClass<void, class CBasePlayer, BOOL> IReGameHookRegistry_CBasePlayer_RemoveAllItems;
 
+// CBasePlayerItem::Materialize hook
+typedef IHookChainClass<void, class CBasePlayerItem> IReGameHook_CBasePlayerItem_Materialize;
+typedef IHookChainRegistryClass<void, class CBasePlayerItem> IReGameHookRegistry_CBasePlayerItem_Materialize;
+
+// CBasePlayerItem::CheckRespawn hook
+typedef IHookChainClass<void, class CBasePlayerItem> IReGameHook_CBasePlayerItem_CheckRespawn;
+typedef IHookChainRegistryClass<void, class CBasePlayerItem> IReGameHookRegistry_CBasePlayerItem_CheckRespawn;
+
 class IReGameHookchains {
 public:
 	virtual ~IReGameHookchains() {}
@@ -790,6 +798,9 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_PlayerDeathThink *CBasePlayer_PlayerDeathThink() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_Observer_Think *CBasePlayer_Observer_Think() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_RemoveAllItems *CBasePlayer_RemoveAllItems() = 0;
+
+	virtual IReGameHookRegistry_CBasePlayerItem_Materialize *CBasePlayerItem_Materialize() = 0;
+	virtual IReGameHookRegistry_CBasePlayerItem_CheckRespawn *CBasePlayerItem_CheckRespawn() = 0;
 };
 
 struct ReGameFuncs_t {
