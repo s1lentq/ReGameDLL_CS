@@ -2726,8 +2726,8 @@ void PM_CheckFalling()
 			pmove->flTimeStepSound = 300;
 
 			// Knock the screen around a little bit, temporary effect
-			// punch z axis
-			pmove->punchangle[2] = pmove->flFallVelocity * 0.013;
+			// punch X axis
+			pmove->punchangle[0] = pmove->flFallVelocity * 0.013;
 
 			if (pmove->punchangle[0] > 8.0f)
 			{
