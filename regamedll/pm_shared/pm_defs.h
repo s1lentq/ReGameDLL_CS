@@ -91,6 +91,74 @@ typedef struct physent_s
 
 } physent_t;
 
+#define PM_VERSION_MAJOR 1
+#define PM_VERSION_MINOR 0
+#define PM_VERSION_PATCH 0
+#define PM_VERSION       PM_VERSION_MAJOR, PM_VERSION_MINOR, PM_VERSION_PATCH
+
+#define PM_VERSION_STRINGIZE(x) #x
+#define PM_VERSION_STRING(major,minor,patch) \
+	(patch == 0 ?\
+		PM_VERSION_STRINGIZE(major) "." PM_VERSION_STRINGIZE(minor) :\
+		PM_VERSION_STRINGIZE(major) "." PM_VERSION_STRINGIZE(minor) "." PM_VERSION_STRINGIZE(patch))
+
+// Control version of the player movement system
+struct PlayerMovementVersion {
+	uint8_t major, minor, patch;
+	uint32_t u32;
+
+	PlayerMovementVersion() {
+		Set(0, 0, 0);
+	}
+
+	PlayerMovementVersion(uint32_t majorVersion, uint32_t minorVersion, uint32_t patchVersion = 0) {
+		Set(majorVersion, minorVersion, patchVersion);
+	}
+
+	inline void Set(uint32_t majorVersion, uint32_t minorVersion, uint32_t patchVersion = 0)
+	{
+		major = majorVersion;
+		minor = minorVersion;
+		patch = patchVersion;
+		u32   = (major << 16) | (minor << 8) | patch;
+	}
+
+	inline void Set(const char *version)
+	{
+		if (!version)
+			return;
+
+		major = minor = patch = u32 = 0;
+		int result = sscanf(version, "%hhu.%hhu.%hhu", &major, &minor, &patch);
+		if (result < 1)
+			return; // major invalid
+
+		u32 = (major << 16) | (minor << 8) | patch;
+	}
+
+	// Compares if the current version is less than the given version
+	inline bool IsLessThan(uint32_t major, uint32_t minor, uint32_t patch = 0) const {
+		return u32 < ((major << 16) | (minor << 8) | patch);
+	}
+
+	// Compares if the current version is greater than the given version
+	inline bool IsGreaterThan(uint32_t major, uint32_t minor, uint32_t patch = 0) const {
+		return u32 > ((major << 16) | (minor << 8) | patch);
+	}
+
+	// Compares if the current version is greater than or equal to the given version
+	inline bool IsAtLeast(uint32_t major, uint32_t minor, uint32_t patch = 0) const {
+		return !IsLessThan(major, minor, patch);
+	}
+
+	const char *ToString() const {
+		static char string[14];
+		int len = Q_snprintf(string, sizeof(string), "%u.%u.%u", major, minor, patch);
+		if (patch == 0 && len > 2) string[len - 2] = '\0';
+		return string;
+	}
+};
+
 typedef struct playermove_s
 {
 	int player_index;				// So we don't try to run the PM_CheckStuck nudging too quickly.
@@ -111,7 +179,7 @@ typedef struct playermove_s
 	qboolean bInDuck;				// In process of ducking or ducked already?
 	int flTimeStepSound;			// For walking/falling
 									// Next time we can play a step sound
-	int iStepLeft;
+	qboolean iStepLeft;
 	float flFallVelocity;
 	vec3_t punchangle;
 	float flSwimTime;

@@ -96,4 +96,6 @@ void PM_AirAccelerate_OrigFunc(vec_t *wishdir, float wishspeed, float accel);
 void PM_AirMove(int playerIndex = 0);
 #endif
 
+const char *PM_ServerVersion();
+
 extern struct playermove_s *pmove;

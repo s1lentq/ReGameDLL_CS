@@ -348,6 +348,7 @@ target_compile_definitions(regamedll PRIVATE
 	_strnicmp=strncasecmp
 	_strdup=strdup
 	_unlink=unlink
+	_snprintf=snprintf
 	_vsnprintf=vsnprintf
 	_write=write
 	_close=close
