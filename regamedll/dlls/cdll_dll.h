@@ -74,6 +74,7 @@ const int DEFAULT_FOV      = 90;	// the default field of view
 #define PLAYER_PREVENT_DUCK     BIT(4)
 #define PLAYER_PREVENT_CLIMB    BIT(5) // The player can't climb ladder
 #define PLAYER_PREVENT_JUMP     BIT(6)
+#define PLAYER_PREVENT_DDUCK    BIT(7)
 
 #define MENU_KEY_1 BIT(0)
 #define MENU_KEY_2 BIT(1)

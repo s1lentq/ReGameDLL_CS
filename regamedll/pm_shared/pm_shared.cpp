@@ -898,7 +898,7 @@ void PM_WalkMove()
 
 #ifdef REGAMEDLL_ADD
 	// Player can speed up the run if '+speed' button is pressed
-	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
 	{
 		fmove *= pmove->fuser3;
 		smove *= pmove->fuser3;
@@ -1450,7 +1450,7 @@ void PM_CategorizePosition()
 
 	// Do not stick to the ground of an OBSERVER or NOCLIP mode
 #ifdef REGAMEDLL_FIXES
-	if (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE)
+	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE))
 	{
 		pmove->onground = -1;
 		return;
@@ -1704,7 +1704,7 @@ void PM_SpectatorMove()
 
 #ifdef REGAMEDLL_ADD
 		// Observer can accelerate in air if '+speed' button is pressed
-		if (pmove->cmd.buttons & IN_RUN)
+		if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && pmove->cmd.buttons & IN_RUN)
 		{
 			float flAirAccelerate = (pmove->fuser3 > 0.0f) ? pmove->fuser3 : max(pmove->movevars->airaccelerate / 100.0f, 7.0f);
 			fmove *= flAirAccelerate;
@@ -1737,12 +1737,15 @@ void PM_SpectatorMove()
 
 		addspeed = wishspeed - currentspeed;
 
-#ifndef REGAMEDLL_FIXES
 		if (addspeed <= 0)
-			return;
-#else
-		if (addspeed > 0)
+		{
+#ifdef REGAMEDLL_FIXES
+			if (pmoveplayer->m_MovementVersion.IsLessThan(1, 0))
 #endif
+				return;
+		}
+
+		if (addspeed > 0)
 		{
 			accelspeed = pmove->movevars->accelerate * pmove->frametime * wishspeed;
 			if (accelspeed > addspeed)
@@ -1844,7 +1847,7 @@ LINK_HOOK_VOID_CHAIN2(PM_UnDuck)
 void EXT_FUNC __API_HOOK(PM_UnDuck)()
 {
 #ifdef REGAMEDLL_ADD
-	if (unduck_method.value)
+	if (unduck_method.value || (pmove->iuser3 & PLAYER_PREVENT_DDUCK))
 #endif
 	{
 #ifdef REGAMEDLL_FIXES
@@ -2365,7 +2368,7 @@ void PM_NoClip()
 
 #ifdef REGAMEDLL_ADD
 	// Player with noclip can accelerate in air if '+speed' button is pressed
-	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
 	{
 		float flAirAccelerate = pmove->fuser3;
 		fmove *= flAirAccelerate;
@@ -3378,4 +3381,9 @@ void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 	PM_InitTextureTypes();
 
 	pm_shared_initialized = TRUE;
+}
+
+const char *PM_ServerVersion()
+{
+	return PM_VERSION_STRING(PM_VERSION_MAJOR, PM_VERSION_MINOR, PM_VERSION_PATCH);
 }
