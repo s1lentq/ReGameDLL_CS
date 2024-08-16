@@ -898,7 +898,7 @@ void PM_WalkMove()
 
 #ifdef REGAMEDLL_ADD
 	// Player can speed up the run if '+speed' button is pressed
-	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
 	{
 		fmove *= pmove->fuser3;
 		smove *= pmove->fuser3;
@@ -1704,7 +1704,7 @@ void PM_SpectatorMove()
 
 #ifdef REGAMEDLL_ADD
 		// Observer can accelerate in air if '+speed' button is pressed
-		if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && pmove->cmd.buttons & IN_RUN)
+		if (pmove->cmd.buttons & IN_RUN)
 		{
 			float flAirAccelerate = (pmove->fuser3 > 0.0f) ? pmove->fuser3 : max(pmove->movevars->airaccelerate / 100.0f, 7.0f);
 			fmove *= flAirAccelerate;
@@ -2368,7 +2368,7 @@ void PM_NoClip()
 
 #ifdef REGAMEDLL_ADD
 	// Player with noclip can accelerate in air if '+speed' button is pressed
-	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
 	{
 		float flAirAccelerate = pmove->fuser3;
 		fmove *= flAirAccelerate;
