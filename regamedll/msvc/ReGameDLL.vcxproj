@@ -809,6 +809,9 @@
   <ItemGroup>
     <ResourceCompile Include="..\public\tier0\assert_dialog.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\regamedll\types.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{70A2B904-B7DB-4C48-8DE0-AF567360D572}</ProjectGuid>
     <RootNamespace>ReGameDLL</RootNamespace>

@@ -133,6 +133,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",  0 },
 };
 
+edict_t *g_pEdicts = nullptr;
 bool g_bServerActive = false;
 bool g_bItemCreatedByBuying = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
@@ -3747,6 +3748,8 @@ void EXT_FUNC ServerDeactivate()
 
 void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
+	g_pEdicts = pEdictList;
+
 #ifdef REGAMEDLL_ADD
 	//
 	// Tells clients which version of player movement (pmove) the server is using
