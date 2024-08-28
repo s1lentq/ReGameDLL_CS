@@ -887,6 +887,7 @@ void PM_WalkMove()
 	{
 		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
 
+#ifdef REGAMEDLL_ADD
 		// change stamina restoration speed by fps reference
 		if (stamina_restore_rate.value > 0.0f)
 		{
@@ -896,6 +897,8 @@ void PM_WalkMove()
 
 			flRatio = pow(flRatio, flFrametimeRatio);
 		}
+#endif
+
 		pmove->velocity[0] *= flRatio;
 		pmove->velocity[1] *= flRatio;
 	}
