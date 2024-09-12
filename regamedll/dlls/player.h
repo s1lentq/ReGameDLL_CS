@@ -522,7 +522,9 @@ public:
 	void UpdatePlayerSound();
 	void DeathSound();
 	void SetAnimation(PLAYER_ANIM playerAnim);
-	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
+	enum AnimationType { ANIM_NORMAL, ANIM_CROUCH };
+	int GetAnimDesired(const char *szAnim, AnimationType type);
+	void SetWeaponAnimType(const char *szExtention) { Q_strlcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
 	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
@@ -602,7 +604,7 @@ public:
 	void AddAutoBuyData(const char *str);
 	void AutoBuy();
 	void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
-	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
+	void PrioritizeAutoBuyString(char (&autobuyString)[MAX_AUTOBUY_LENGTH], const char *priorityString);
 	const char *PickPrimaryCareerTaskWeapon();
 	const char *PickSecondaryCareerTaskWeapon();
 	const char *PickFlashKillWeaponString();

@@ -645,7 +645,7 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 		CLIENT_COMMAND(pClient, UTIL_VarArgs("mp3 play %s\n", g_szMP3trackFileMap[iTrack]));
 #else
 		char string[64];
-		Q_sprintf(string, "cd play %3d\n", iTrack);
+		Q_snprintf(string, sizeof(string), "cd play %3d\n", iTrack);
 		CLIENT_COMMAND(pClient, string);
 #endif
 	}
@@ -1214,7 +1214,7 @@ void CChangeLevel::KeyValue(KeyValueData *pkvd)
 			ALERT(at_error, "Map name '%s' too long (32 chars)\n", pkvd->szValue);
 		}
 
-		Q_strcpy(m_szMapName, pkvd->szValue);
+		Q_strlcpy(m_szMapName, pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "landmark"))
@@ -1224,7 +1224,7 @@ void CChangeLevel::KeyValue(KeyValueData *pkvd)
 			ALERT(at_error, "Landmark name '%s' too long (32 chars)\n", pkvd->szValue);
 		}
 
-		Q_strcpy(m_szLandmarkName, pkvd->szValue);
+		Q_strlcpy(m_szLandmarkName, pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "changetarget"))
@@ -1356,7 +1356,7 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity *pActivator)
 	}
 
 	// This object will get removed in the call to CHANGE_LEVEL, copy the params into "safe" memory
-	Q_strcpy(st_szNextMap, m_szMapName);
+	Q_strlcpy(st_szNextMap, m_szMapName);
 
 	m_hActivator = pActivator;
 	SUB_UseTargets(pActivator, USE_TOGGLE, 0);
@@ -1369,7 +1369,7 @@ void CChangeLevel::ChangeLevelNow(CBaseEntity *pActivator)
 
 	if (!FNullEnt(pentLandmark))
 	{
-		Q_strcpy(st_szNextSpot, m_szLandmarkName);
+		Q_strlcpy(st_szNextSpot, m_szLandmarkName);
 		gpGlobals->vecLandmarkOffset = VARS(pentLandmark)->origin;
 	}
 
@@ -1415,8 +1415,8 @@ int CChangeLevel::AddTransitionToList(LEVELLIST *pLevelList, int listCount, cons
 		}
 	}
 
-	Q_strcpy(pLevelList[listCount].mapName, pMapName);
-	Q_strcpy(pLevelList[listCount].landmarkName, pLandmarkName);
+	Q_strlcpy(pLevelList[listCount].mapName, pMapName);
+	Q_strlcpy(pLevelList[listCount].landmarkName, pLandmarkName);
 
 	pLevelList[listCount].pentLandmark = pentLandmark;
 	pLevelList[listCount].vecLandmarkOrigin = VARS(pentLandmark)->origin;
@@ -1591,12 +1591,12 @@ NOXREF void NextLevel()
 	{
 		gpGlobals->mapname = ALLOC_STRING("start");
 		pChange = GetClassPtr<CCSChangeLevel>((CChangeLevel *)nullptr);
-		Q_strcpy(pChange->m_szMapName, "start");
+		Q_strlcpy(pChange->m_szMapName, "start");
 	}
 	else
 		pChange = GetClassPtr<CCSChangeLevel>((CChangeLevel *)VARS(pent));
 
-	Q_strcpy(st_szNextMap, pChange->m_szMapName);
+	Q_strlcpy(st_szNextMap, pChange->m_szMapName);
 	g_pGameRules->SetGameOver();
 
 	if (pChange->pev->nextthink < gpGlobals->time)

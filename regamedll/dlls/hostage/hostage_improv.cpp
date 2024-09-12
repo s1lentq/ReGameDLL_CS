@@ -1605,9 +1605,9 @@ void CHostageImprov::Afraid()
 
 		int which = RANDOM_LONG(0, 100) % 3 + 1;
 
-		Q_sprintf(animInto, "cower_into_%d", which);
-		Q_sprintf(animLoop, "cower_loop_%d", which);
-		Q_sprintf(animExit, "cower_exit_%d", which);
+		Q_snprintf(animInto, sizeof(animInto), "cower_into_%d", which);
+		Q_snprintf(animLoop, sizeof(animLoop), "cower_loop_%d", which);
+		Q_snprintf(animExit, sizeof(animExit), "cower_exit_%d", which);
 
 		m_animateState.AddSequence(this, animInto);
 		m_animateState.AddSequence(this, animLoop, RANDOM_FLOAT(3, 10));

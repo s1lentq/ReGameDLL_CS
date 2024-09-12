@@ -1009,5 +1009,4 @@ char *GetTeam(int team);
 void DestroyMapCycle(mapcycle_t *cycle);
 int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 int CountPlayers();
-void ExtractCommandString(char *s, char *szCommand);
 int GetMapCount();

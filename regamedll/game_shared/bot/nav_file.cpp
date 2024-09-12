@@ -632,12 +632,15 @@ bool SaveNavigationMap(const char *filename)
 void LoadLocationFile(const char *filename)
 {
 	char locFilename[256];
-	Q_strcpy(locFilename, filename);
+	Q_strlcpy(locFilename, filename);
 
-	char *dot = Q_strchr(locFilename, '.');
+	char *dot = Q_strrchr(locFilename, '.');
 	if (dot)
 	{
-		Q_strcpy(dot, ".loc");
+		int dotlen = dot - locFilename;
+		size_t remaining_size = sizeof(locFilename) - dotlen;
+		if (remaining_size > 0)
+			Q_snprintf(dot, remaining_size, ".loc");
 
 		int locDataLength;
 		char *locDataFile = (char *)LOAD_FILE_FOR_ME(const_cast<char *>(locFilename), &locDataLength);
@@ -771,7 +774,7 @@ NavErrorType LoadNavigationMap()
 
 	// nav filename is derived from map filename
 	char filename[256];
-	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	Q_snprintf(filename, sizeof(filename), "maps\\%s.nav", STRING(gpGlobals->mapname));
 
 	// free previous navigation map data
 	DestroyNavigationMap();

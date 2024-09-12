@@ -213,7 +213,7 @@ void CBotManager::StartFrame()
 const char *CBotManager::GetNavMapFilename() const
 {
 	static char filename[256];
-	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	Q_snprintf(filename, sizeof(filename), "maps\\%s.nav", STRING(gpGlobals->mapname));
 	return filename;
 }
 

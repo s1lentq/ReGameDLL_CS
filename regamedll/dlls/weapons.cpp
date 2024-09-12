@@ -652,11 +652,11 @@ void CBasePlayerWeapon::SetPlayerShieldAnim()
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shield");
 	}
 	else
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
 	}
 }
 
@@ -666,7 +666,7 @@ void CBasePlayerWeapon::ResetPlayerShieldAnim()
 	{
 		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 		{
-			Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
+			Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
 		}
 	}
 }
@@ -697,7 +697,7 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	{
 		m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgun");
 		m_fMaxSpeed = 250.0f;
 		m_pPlayer->m_bShieldDrawn = false;
 	}
@@ -705,7 +705,7 @@ bool CBasePlayerWeapon::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 	{
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shielded");
 		m_fMaxSpeed = 180.0f;
 		m_pPlayer->m_bShieldDrawn = true;
 	}
@@ -728,7 +728,7 @@ void EXT_FUNC CBasePlayerWeapon::__API_HOOK(KickBack)(float up_base, float later
 	real_t flKickUp = up_base;
 	float flKickLateral = lateral_base;
 
-	if (m_iShotsFired > 1) // consider == 0 case 
+	if (m_iShotsFired > 1) // consider == 0 case
 	{
 		flKickUp += m_iShotsFired * up_modifier;
 		flKickLateral += m_iShotsFired * lateral_modifier;
@@ -1491,7 +1491,7 @@ BOOL EXT_FUNC CBasePlayerWeapon::__API_HOOK(DefaultDeploy)(char *szViewModel, ch
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
 #endif
 	model_name = m_pPlayer->pev->viewmodel;
-	Q_strcpy(m_pPlayer->m_szAnimExtention, szAnimExt);
+	Q_strlcpy(m_pPlayer->m_szAnimExtention, szAnimExt);
 	SendWeaponAnim(iAnim, skiplocal);
 
 	m_pPlayer->m_flNextAttack = 0.75f;
@@ -1671,7 +1671,7 @@ void CBasePlayerWeapon::Holster(int skiplocal)
 	m_fInReload = FALSE;
 	m_pPlayer->pev->viewmodel = 0;
 	m_pPlayer->pev->weaponmodel = 0;
-	
+
 #ifdef REGAMEDLL_FIXES
 	m_fInSpecialReload = 0;
 #endif

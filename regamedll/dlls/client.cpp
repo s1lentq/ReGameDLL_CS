@@ -465,7 +465,7 @@ NOXREF int CountTeams()
 
 void ListPlayers(CBasePlayer *current)
 {
-	char message[120] = "", cNumber[12];
+	char message[120]{};
 
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
@@ -479,12 +479,7 @@ void ListPlayers(CBasePlayer *current)
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 		int iUserID = GETPLAYERUSERID(ENT(pPlayer->pev));
 
-		Q_sprintf(cNumber, "%d", iUserID);
-		Q_strcpy(message, "\n");
-		Q_strcat(message, cNumber);
-		Q_strcat(message, " : ");
-		Q_strcat(message, STRING(pPlayer->pev->netname));
-
+		Q_snprintf(message, sizeof(message), "\n%d : %s", iUserID, STRING(pPlayer->pev->netname));
 		ClientPrint(current->pev, HUD_PRINTCONSOLE, message);
 	}
 
@@ -738,8 +733,8 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	pPlayer->m_iJoiningState = SHOWLTEXT;
 
-	static char sName[128];
-	Q_strcpy(sName, STRING(pPlayer->pev->netname));
+	char sName[128];
+	Q_strlcpy(sName, STRING(pPlayer->pev->netname));
 
 	for (char *pApersand = sName; pApersand && *pApersand != '\0'; pApersand++)
 	{
@@ -797,12 +792,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			Q_sprintf(szTemp, "%s %s", pcmd, CMD_ARGS());
+			Q_snprintf(szTemp, sizeof(szTemp), "%s %s", pcmd, CMD_ARGS());
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_sprintf(szTemp, "%s", pcmd);
+			Q_snprintf(szTemp, sizeof(szTemp), "%s", pcmd);
 		}
 
 		p = szTemp;
@@ -967,8 +962,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		}
 	}
 
-	Q_strcat(text, p);
-	Q_strcat(text, "\n");
+	Q_strlcat(text, p);
+	Q_strlcat(text, "\n");
 
 	// loop through all players
 	// Start with the first player.
@@ -4993,7 +4988,7 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 	cd->flSwimTime = pev->flSwimTime;
 	cd->waterjumptime = int(pev->teleport_time);
 
-	Q_strcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
+	Q_strlcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
 
 	cd->maxspeed = pev->maxspeed;
 	cd->fov = pev->fov;
@@ -5204,8 +5199,10 @@ int EXT_FUNC InconsistentFile(const edict_t *pEdict, const char *filename, char 
 	if (!CVAR_GET_FLOAT("mp_consistency"))
 		return 0;
 
+	const int BufferLen = 256;
+
 	// Default behavior is to kick the player
-	Q_sprintf(disconnect_message, "Server is enforcing file consistency for %s\n", filename);
+	Q_snprintf(disconnect_message, BufferLen, "Server is enforcing file consistency for %s\n", filename);
 
 	// Kick now with specified disconnect message.
 	return 1;

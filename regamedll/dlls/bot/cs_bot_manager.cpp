@@ -578,14 +578,16 @@ void CCSBotManager::ServerCommand(const char *pcmd)
 	}
 	else if (FStrEq(pcmd, "bot_nav_save"))
 	{
-		GET_GAME_DIR(buffer);
-		Q_strcat(buffer, "\\");
-		Q_strcat(buffer, CBotManager::GetNavMapFilename());
+		char gd[64]{};
+		GET_GAME_DIR(gd);
 
-		if (SaveNavigationMap(buffer))
-			CONSOLE_ECHO("Navigation map '%s' saved.\n", buffer);
+		char filename[MAX_OSPATH];
+		Q_snprintf(filename, sizeof(filename), "%s\\%s", gd, CBotManager::GetNavMapFilename());
+
+		if (SaveNavigationMap(filename))
+			CONSOLE_ECHO("Navigation map '%s' saved.\n", filename);
 		else
-			CONSOLE_ECHO("ERROR: Cannot save navigation map '%s'.\n", buffer);
+			CONSOLE_ECHO("ERROR: Cannot save navigation map '%s'.\n", filename);
 	}
 	else if (FStrEq(pcmd, "bot_nav_load"))
 	{

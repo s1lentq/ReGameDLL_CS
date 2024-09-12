@@ -213,7 +213,7 @@ void ParseMessageParameters(char *&messageData, TutorMessage *ret)
 		if (!Q_stricmp(token, "String"))
 		{
 			messageData = SharedParse((char *)messageData);
-			ret->m_text = Q_strdup(SharedGetToken());
+			ret->m_text = CloneString(SharedGetToken());
 		}
 		else if (!Q_stricmp(token, "Duration"))
 		{
@@ -832,7 +832,7 @@ TutorMessageEvent *CCSTutor::CreateTutorMessageEvent(TutorMessageID mid, CBaseEn
 		{
 			numtasks = TheCareerTasks->GetNumRemainingTasks();
 		}
-		Q_sprintf(numLeftStr, "%d", numtasks);
+		Q_snprintf(numLeftStr, sizeof(numLeftStr), "%d", numtasks);
 		event->AddParameter(numLeftStr);
 		break;
 	}
@@ -2820,8 +2820,7 @@ void CCSTutor::ConstructRecentDeathsList(TeamName team, char *buf, int buflen, T
 	if (!buf || !buflen)
 		return;
 
-	char scratch[32];
-	buf[0] = '\0';
+	int len = 0;
 
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
@@ -2837,10 +2836,7 @@ void CCSTutor::ConstructRecentDeathsList(TeamName team, char *buf, int buflen, T
 		if (pPlayer->m_iTeam != team)
 			continue;
 
-		Q_strcat(buf, "  %n");
-		Q_sprintf(scratch, "%d\n", i);
-		Q_strcat(buf, scratch);
-
+		len += Q_snprintf(&buf[len], buflen - len, "  %%n%d\n", i);
 		m_playerDeathInfo[i].m_event = event;
 	}
 }

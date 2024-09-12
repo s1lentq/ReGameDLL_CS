@@ -486,11 +486,11 @@ NOXREF void CBot::Print(char *format, ...) const
 	char buffer[1024];
 
 	// prefix the message with the bot's name
-	Q_sprintf(buffer, "%s: ", STRING(pev->netname));
+	Q_snprintf(buffer, sizeof(buffer), "%s: ", STRING(pev->netname));
 	SERVER_PRINT(buffer);
 
 	va_start(varg, format);
-	vsprintf(buffer, format, varg);
+	Q_vsnprintf(buffer, sizeof(buffer), format, varg);
 	va_end(varg);
 
 	SERVER_PRINT(buffer);
@@ -509,12 +509,12 @@ void CBot::PrintIfWatched(char *format, ...) const
 
 		// prefix the message with the bot's name (this can be NULL if bot was just added)
 		const char *name = pev ? STRING(pev->netname) : "(NULL pev)";
-		Q_sprintf(buffer, "%s: ", name ? name : "(NULL netname)");
+		Q_snprintf(buffer, sizeof(buffer), "%s: ", name ? name : "(NULL netname)");
 
 		SERVER_PRINT(buffer);
 
 		va_start(varg, format);
-		vsprintf(buffer, format, varg);
+		Q_vsnprintf(buffer, sizeof(buffer), format, varg);
 		va_end(varg);
 
 		SERVER_PRINT(buffer);

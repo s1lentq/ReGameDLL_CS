@@ -332,7 +332,7 @@ void CCSBot::SpawnBot()
 	TheCSBots()->ValidateMapData();
 	ResetValues();
 
-	Q_strcpy(m_name, STRING(pev->netname));
+	Q_strlcpy(m_name, STRING(pev->netname));
 
 	SetState(&m_buyState);
 	SetTouch(&CCSBot::BotTouch);

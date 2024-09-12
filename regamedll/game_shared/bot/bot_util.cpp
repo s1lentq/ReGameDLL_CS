@@ -560,7 +560,7 @@ void CONSOLE_ECHO(const char *pszMsg, ...)
 	static char szStr[1024];
 
 	va_start(argptr, pszMsg);
-	vsprintf(szStr, pszMsg, argptr);
+	Q_vsnprintf(szStr, sizeof(szStr), pszMsg, argptr);
 	va_end(argptr);
 
 	SERVER_PRINT(szStr);
@@ -572,7 +572,7 @@ void CONSOLE_ECHO_LOGGED(const char *pszMsg, ...)
 	static char szStr[1024];
 
 	va_start(argptr, pszMsg);
-	vsprintf(szStr, pszMsg, argptr);
+	Q_vsnprintf(szStr, sizeof(szStr), pszMsg, argptr);
 	va_end(argptr);
 
 	SERVER_PRINT(szStr);

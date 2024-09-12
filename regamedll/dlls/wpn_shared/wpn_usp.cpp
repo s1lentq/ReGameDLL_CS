@@ -98,14 +98,14 @@ void CUSP::SecondaryAttack()
 		m_iWeaponState &= ~WPNSTATE_USP_SILENCED;
 
 		SendWeaponAnim(USP_DETACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_USP_SILENCED;
 
 		SendWeaponAnim(USP_ATTACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 
 	m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + USP_ADJUST_SIL_TIME;

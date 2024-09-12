@@ -123,7 +123,7 @@ void PM_InitTextureTypes()
 		j = Q_min(j, MAX_TEXTURENAME_LENGHT - 1 + i);
 		buffer[j] = '\0';
 
-		Q_strcpy(&(pm_grgszTextureName[pm_gcTextures++][0]), &(buffer[i]));
+		Q_strlcpy(pm_grgszTextureName[pm_gcTextures++], &(buffer[i]));
 	}
 
 	// Must use engine to free since we are in a .dll
@@ -364,8 +364,7 @@ void PM_CatagorizeTextureType()
 	if (*pTextureName == '{' || *pTextureName == '!' || *pTextureName == '~' || *pTextureName == ' ')
 		pTextureName++;
 
-	Q_strcpy(pmove->sztexturename, pTextureName);
-	pmove->sztexturename[MAX_TEXTURENAME_LENGHT - 1] = '\0';
+	Q_strlcpy(pmove->sztexturename, pTextureName, MAX_TEXTURENAME_LENGHT);
 
 	// get texture type
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);

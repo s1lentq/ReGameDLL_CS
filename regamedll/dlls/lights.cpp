@@ -129,11 +129,11 @@ void CEnvLight::KeyValue(KeyValueData *pkvd)
 		pkvd->fHandled = TRUE;
 
 		char szColor[64];
-		Q_sprintf(szColor, "%d", r);
+		Q_snprintf(szColor, sizeof(szColor), "%d", r);
 		CVAR_SET_STRING("sv_skycolor_r", szColor);
-		Q_sprintf(szColor, "%d", g);
+		Q_snprintf(szColor, sizeof(szColor), "%d", g);
 		CVAR_SET_STRING("sv_skycolor_g", szColor);
-		Q_sprintf(szColor, "%d", b);
+		Q_snprintf(szColor, sizeof(szColor), "%d", b);
 		CVAR_SET_STRING("sv_skycolor_b", szColor);
 	}
 	else
@@ -147,13 +147,13 @@ void CEnvLight::Spawn()
 	char szVector[64];
 	UTIL_MakeAimVectors(pev->angles);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.x);
+	Q_snprintf(szVector, sizeof(szVector), "%f", gpGlobals->v_forward.x);
 	CVAR_SET_STRING("sv_skyvec_x", szVector);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.y);
+	Q_snprintf(szVector, sizeof(szVector), "%f", gpGlobals->v_forward.y);
 	CVAR_SET_STRING("sv_skyvec_y", szVector);
 
-	Q_sprintf(szVector, "%f", gpGlobals->v_forward.z);
+	Q_snprintf(szVector, sizeof(szVector), "%f", gpGlobals->v_forward.z);
 	CVAR_SET_STRING("sv_skyvec_z", szVector);
 
 	CLight::Spawn();

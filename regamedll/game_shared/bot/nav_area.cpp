@@ -3819,9 +3819,9 @@ void EditNavAreas(NavEditCmdType cmd)
 						name = TheNavAreaGrid.IDToName(area->GetPlace());
 
 					if (name)
-						Q_strcpy(locName, name);
+						Q_strlcpy(locName, name);
 					else
-						Q_strcpy(locName, "ERROR");
+						Q_strlcpy(locName, "ERROR");
 				}
 				else
 				{

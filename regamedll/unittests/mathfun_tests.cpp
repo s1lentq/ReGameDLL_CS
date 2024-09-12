@@ -32,10 +32,10 @@ TEST(SinCosPrecision, SseMathFun, 10000)
 		double sse_sin = _mm_cvtss_f32(s);
 		double sse_cos = _mm_cvtss_f32(c);
 
-		sprintf(localbuf, "sin precision failure for angle=%f", i);
+		Q_snprintf(localbuf, sizeof(localbuf), "sin precision failure for angle=%f", i);
 		DOUBLES_EQUAL(localbuf, x87_sin, sse_sin, 0.000001);
 
-		sprintf(localbuf, "cos precision failure for angle=%f", i);
+		Q_snprintf(localbuf, sizeof(localbuf), "cos precision failure for angle=%f", i);
 		DOUBLES_EQUAL(localbuf, x87_cos, sse_cos, 0.000001);
 	}
 }

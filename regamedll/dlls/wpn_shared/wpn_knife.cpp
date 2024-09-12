@@ -180,7 +180,7 @@ void CKnife::SetPlayerShieldAnim()
 	if (!m_pPlayer->HasShield())
 		return;
 
-	Q_strcpy(m_pPlayer->m_szAnimExtention, (m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != 0 ? "shield" : "shieldknife");
+	Q_strlcpy(m_pPlayer->m_szAnimExtention, (m_iWeaponState & WPNSTATE_SHIELD_DRAWN) != 0 ? "shield" : "shieldknife");
 }
 
 void CKnife::ResetPlayerShieldAnim()
@@ -190,7 +190,7 @@ void CKnife::ResetPlayerShieldAnim()
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
 	}
 }
 
@@ -207,7 +207,7 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldknife");
 
 		m_fMaxSpeed = KNIFE_MAX_SPEED;
 		m_pPlayer->m_bShieldDrawn = false;
@@ -217,7 +217,7 @@ bool CKnife::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shielded");
 
 		m_fMaxSpeed = KNIFE_MAX_SPEED_SHIELD;
 		m_pPlayer->m_bShieldDrawn = true;
@@ -339,14 +339,14 @@ BOOL CKnife::Swing(BOOL fFirst)
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
 
 			// play wiff or swish sound
-			EMIT_SOUND_DYN(m_pPlayer->edict(), 
-				CHAN_WEAPON, 
-				RANDOM_LONG(0, 1) ? 
+			EMIT_SOUND_DYN(m_pPlayer->edict(),
+				CHAN_WEAPON,
+				RANDOM_LONG(0, 1) ?
 					"weapons/knife_slash1.wav" :
-					"weapons/knife_slash2.wav", 
-				VOL_NORM, 
-				ATTN_NORM, 
-				0, 
+					"weapons/knife_slash2.wav",
+				VOL_NORM,
+				ATTN_NORM,
+				0,
 				94);
 
 			// player "shoot" animation
@@ -390,10 +390,10 @@ BOOL CKnife::Swing(BOOL fFirst)
 		m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 		ClearMultiDamage();
 
-		pEntity->TraceAttack(m_pPlayer->pev, 
+		pEntity->TraceAttack(m_pPlayer->pev,
 			KnifeSwingDamage(m_flNextPrimaryAttack + 0.4f < UTIL_WeaponTimeBase()),
-			gpGlobals->v_forward, 
-			&tr, 
+			gpGlobals->v_forward,
+			&tr,
 			(DMG_NEVERGIB | DMG_BULLET));
 
 		ApplyMultiDamage(m_pPlayer->pev, m_pPlayer->pev);
@@ -402,7 +402,7 @@ BOOL CKnife::Swing(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE 
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE
 #ifdef REGAMEDLL_FIXES
 				&& pEntity->Classify() != CLASS_VEHICLE
 #endif
@@ -518,14 +518,14 @@ BOOL CKnife::Stab(BOOL fFirst)
 			m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0f;
 
 			// play wiff or swish sound
-			EMIT_SOUND_DYN(m_pPlayer->edict(), 
-				CHAN_WEAPON, 
-				RANDOM_LONG(0, 1) ? 
-					"weapons/knife_slash1.wav" : 
-					"weapons/knife_slash2.wav", 
-				VOL_NORM, 
-				ATTN_NORM, 
-				0, 
+			EMIT_SOUND_DYN(m_pPlayer->edict(),
+				CHAN_WEAPON,
+				RANDOM_LONG(0, 1) ?
+					"weapons/knife_slash1.wav" :
+					"weapons/knife_slash2.wav",
+				VOL_NORM,
+				ATTN_NORM,
+				0,
 				94);
 
 			// player "shoot" animation
@@ -586,7 +586,7 @@ BOOL CKnife::Stab(BOOL fFirst)
 		if (pEntity)	// -V595
 #endif
 		{
-			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE 
+			if (pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE
 #ifdef REGAMEDLL_FIXES
 				&& pEntity->Classify() != CLASS_VEHICLE
 #endif
