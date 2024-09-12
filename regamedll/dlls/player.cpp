@@ -4310,10 +4310,10 @@ void CBasePlayer::PlayerUse()
 			}
 			// UNDONE: Send different USE codes for ON/OFF.  Cache last ONOFF_USE object to send 'off' if you turn away
 			// BUGBUG This is an "off" use
-			else if ((m_afButtonReleased & IN_USE) 
+			else if ((m_afButtonReleased & IN_USE)
 #ifdef REGAMEDLL_FIXES
 				&& (caps & FCAP_ONOFF_USE))
-#else 
+#else
 				&& (pObject->ObjectCaps() & FCAP_ONOFF_USE))
 #endif
 			{
@@ -5373,11 +5373,6 @@ BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
 {
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
-
-#ifdef REGAMEDLL_ADD
-	if (!kill_filled_spawn.value)
-		return TRUE;
-#endif
 
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
