@@ -1443,30 +1443,7 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 
 			if (tr.iHitgroup == HITGROUP_SHIELD)
 			{
-				EMIT_SOUND(pEntity->edict(), CHAN_VOICE, (RANDOM_LONG(0, 1) == 1) ? "weapons/ric_metal-1.wav" : "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
-				UTIL_Sparks(tr.vecEndPos);
-
-				pEntity->pev->punchangle.x = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
-				pEntity->pev->punchangle.z = iCurrentDamage * RANDOM_FLOAT(-0.15, 0.15);
-
-#ifndef REGAMEDLL_FIXES
-				if (pEntity->pev->punchangle.x < 4)
-#else
-				if (pEntity->pev->punchangle.x < -4)
-#endif
-				{
-					pEntity->pev->punchangle.x = -4;
-				}
-
-				if (pEntity->pev->punchangle.z < -5)
-				{
-					pEntity->pev->punchangle.z = -5;
-				}
-				else if (pEntity->pev->punchangle.z > 5)
-				{
-					pEntity->pev->punchangle.z = 5;
-				}
-
+				pEntity->HitShield(iCurrentDamage, &tr);
 				break;
 			}
 
@@ -1501,6 +1478,35 @@ VectorRef CBaseEntity::__API_HOOK(FireBullets3)(VectorRef vecSrc, VectorRef vecD
 	vecRet.z = 0;
 
 	return vecRet;
+}
+
+void CBaseEntity::HitShield(float flDamage, TraceResult *ptr)
+{
+	if (RANDOM_LONG(0, 1))
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM);
+	else
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
+
+	UTIL_Sparks(ptr->vecEndPos);
+
+#ifdef REGAMEDLL_FIXES
+	if (Q_fabs(pev->punchangle.x) < 4.0)
+	{
+		pev->punchangle.x = clamp(flDamage * RANDOM_FLOAT(-0.15, 0.15), -4.0f, 4.0f);
+	}
+#else
+	pev->punchangle.x = flDamage * RANDOM_FLOAT(-0.15, 0.15);
+
+	if (pev->punchangle.x < 4)
+		pev->punchangle.x = -4;
+#endif
+
+#ifdef REGAMEDLL_FIXES
+	if (Q_fabs(pev->punchangle.z) < 5.0)
+#endif
+	{
+		pev->punchangle.z = clamp(flDamage * RANDOM_FLOAT(-0.15, 0.15), -5.0f, 5.0f);
+	}
 }
 
 void CBaseEntity::TraceBleed(float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
