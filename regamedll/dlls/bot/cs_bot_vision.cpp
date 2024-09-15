@@ -61,6 +61,12 @@ void CCSBot::UpdateLookAngles()
 	float stiffness;
 	float damping;
 
+#ifdef REGAMEDLL_ADD
+	// If mimicing the player, don't modify the view angles
+	if (cv_bot_mimic.value > 0)
+		return;
+#endif
+
 	// springs are stiffer when attacking, so we can track and move between targets better
 	if (IsAttacking())
 	{
@@ -253,7 +259,7 @@ bool CCSBot::IsVisible(CBasePlayer *pPlayer, bool testFOV, unsigned char *visPar
 	if ((pPlayer->pev->flags & FL_NOTARGET) || (pPlayer->pev->effects & EF_NODRAW))
 		return false;
 #endif
-	
+
 	Vector spot = pPlayer->pev->origin;
 	unsigned char testVisParts = NONE;
 
@@ -701,10 +707,7 @@ CBasePlayer *CCSBot::FindMostDangerousThreat()
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-			if (!pPlayer)
-				continue;
-
-			if (FNullEnt(pPlayer->pev))
+			if (!UTIL_IsValidPlayer(pPlayer))
 				continue;
 
 			// is it a player?

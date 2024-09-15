@@ -299,6 +299,12 @@ void CCSBot::Attack(CBasePlayer *victim)
 	if (cv_bot_zombie.value != 0.0f)
 		return;
 
+#ifdef REGAMEDLL_ADD
+	// If mimicing the player, don't attack state
+	if (cv_bot_mimic.value)
+		return;
+#endif
+
 	// cannot attack if we are reloading
 	if (IsActiveWeaponReloading())
 		return;

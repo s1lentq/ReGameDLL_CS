@@ -27,7 +27,7 @@ NOXREF void UTIL_DPrintf(DebugOutputType outputType, char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);
@@ -41,7 +41,7 @@ void UTIL_DPrintf(char *pszMsg, ...)
 
 	va_list argptr;
 	va_start(argptr, pszMsg);
-	vsprintf(theDebugBuffer, pszMsg, argptr);
+	Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 	va_end(argptr);
 
 	SERVER_PRINT(theDebugBuffer);
@@ -130,7 +130,7 @@ NOXREF void UTIL_BotDPrintf(char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);
@@ -146,7 +146,7 @@ void UTIL_CareerDPrintf(char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);
@@ -162,7 +162,7 @@ NOXREF void UTIL_TutorDPrintf(char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);
@@ -178,7 +178,7 @@ NOXREF void UTIL_StatsDPrintf(char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);
@@ -194,7 +194,7 @@ NOXREF void UTIL_HostageDPrintf(char *pszMsg, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszMsg);
-		vsprintf(theDebugBuffer, pszMsg, argptr);
+		Q_vsnprintf(theDebugBuffer, sizeof(theDebugBuffer), pszMsg, argptr);
 		va_end(argptr);
 
 		SERVER_PRINT(theDebugBuffer);

@@ -216,7 +216,7 @@ void CWorld::Spawn()
 	Precache();
 
 	g_szMapBriefingText[0] = '\0';
-	Q_sprintf(szMapBriefingFile, "maps/%s.txt", STRING(gpGlobals->mapname));
+	Q_snprintf(szMapBriefingFile, sizeof(szMapBriefingFile), "maps/%s.txt", STRING(gpGlobals->mapname));
 
 	int flength = 0;
 	char *pFile = (char *)LOAD_FILE_FOR_ME(szMapBriefingFile, &flength);

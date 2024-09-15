@@ -58,9 +58,10 @@ const int MAX_BUFFER_MENU_BRIEFING  = 50;
 const float SUIT_UPDATE_TIME        = 3.5f;
 const float SUIT_FIRST_UPDATE_TIME  = 0.1f;
 
-const float MAX_PLAYER_FATAL_FALL_SPEED = 1100.0f;
-const float MAX_PLAYER_SAFE_FALL_SPEED  = 500.0f;
-const float MAX_PLAYER_USE_RADIUS       = 64.0f;
+const float MAX_PLAYER_FATAL_FALL_SPEED   = 1100.0f;
+const float MAX_PLAYER_SAFE_FALL_SPEED    = 500.0f;
+const float MAX_PLAYER_USE_RADIUS         = 64.0f;
+const float MAX_PLAYER_RUN_MODIFIER_SPEED = 10.0f; // x10 speed run when IN_RUN button is pressed
 
 const float ARMOR_RATIO = 0.5f;			// Armor Takes 50% of the damage
 const float ARMOR_BONUS = 0.5f;			// Each Point of Armor is work 1/x points of health
@@ -448,6 +449,7 @@ public:
 	edict_t *EntSelectSpawnPoint_OrigFunc();
 	void PlayerDeathThink_OrigFunc();
 	void Observer_Think_OrigFunc();
+	void RemoveAllItems_OrigFunc(BOOL removeSuit);
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
@@ -499,6 +501,7 @@ public:
 	void SetClientUserInfoModel(char *infobuffer, char *szNewModel);
 	void SetClientUserInfoModel_api(char *infobuffer, char *szNewModel);
 	void SetNewPlayerModel(const char *modelName);
+	const usercmd_t *GetLastUserCommand() const;
 	BOOL SwitchWeapon(CBasePlayerItem *pWeapon);
 	void CheckPowerups();
 	bool CanAffordPrimary();
@@ -519,7 +522,9 @@ public:
 	void UpdatePlayerSound();
 	void DeathSound();
 	void SetAnimation(PLAYER_ANIM playerAnim);
-	void SetWeaponAnimType(const char *szExtention) { Q_strcpy(m_szAnimExtention, szExtention); }
+	enum AnimationType { ANIM_NORMAL, ANIM_CROUCH };
+	int GetAnimDesired(const char *szAnim, AnimationType type);
+	void SetWeaponAnimType(const char *szExtention) { Q_strlcpy(m_szAnimExtention, szExtention); }
 	void CheatImpulseCommands(int iImpulse);
 	void StartDeathCam();
 	void StartObserver(Vector &vecPosition, Vector &vecViewAngle);
@@ -599,7 +604,7 @@ public:
 	void AddAutoBuyData(const char *str);
 	void AutoBuy();
 	void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
-	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
+	void PrioritizeAutoBuyString(char (&autobuyString)[MAX_AUTOBUY_LENGTH], const char *priorityString);
 	const char *PickPrimaryCareerTaskWeapon();
 	const char *PickSecondaryCareerTaskWeapon();
 	const char *PickFlashKillWeaponString();
@@ -983,6 +988,19 @@ inline bool CBasePlayer::ShouldGibPlayer(int iGib)
 inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
 {
 	return GET_PRIVATE<CBasePlayer>(INDEXENT(playerIndex));
+}
+
+// return true if the given player is valid
+inline bool UTIL_IsValidPlayer(CBaseEntity *pPlayer)
+{
+	return pPlayer && !FNullEnt(pPlayer->pev) && !pPlayer->IsDormant();
+}
+
+#else
+
+inline bool UTIL_IsValidPlayer(CBaseEntity *pPlayer)
+{
+	return pPlayer && !FNullEnt(pPlayer->pev);
 }
 
 #endif

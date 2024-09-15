@@ -170,15 +170,13 @@ public:
 
 BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange);
 void USENTENCEG_InitLRU(unsigned char *plru, int count);
-int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int freset);
-int USENTENCEG_Pick(int isentenceg, char *szfound);
 int SENTENCEG_GetIndex(const char *szgroupname);
 int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float attenuation, int flags, int pitch);
 int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch);
 int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float volume, float attenuation, int flags, int pitch, int ipick, int freset);
 void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick);
 void SENTENCEG_Init();
-int SENTENCEG_Lookup(const char *sample, char *sentencenum);
+int SENTENCEG_Lookup(const char *sample, char (&sentencenum)[32]);
 void EMIT_SOUND_DYN(edict_t *entity, int channel, const char *sample, float volume, float attenuation, int flags, int pitch);
 void EMIT_SOUND_SUIT(edict_t *entity, const char *sample);
 void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg);

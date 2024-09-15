@@ -68,12 +68,10 @@ void TutorMessageEvent::AddParameter(char *str)
 	TutorMessageEventParam *param = new TutorMessageEventParam;
 
 	param->m_next = nullptr;
-	param->m_data = new char[Q_strlen(str) + 1];
+	param->m_data = CloneString(str);
 
 	if (param->m_data)
 	{
-		Q_strcpy(param->m_data, str);
-		param->m_data[Q_strlen(str)] = '\0';
 		m_numParameters++;
 
 		if (m_paramList)
@@ -101,11 +99,7 @@ char *TutorMessageEvent::GetNextParameter(char *buf, int buflen)
 	m_numParameters--;
 	m_paramList = param->m_next;
 
-	Q_strncpy(buf, param->m_data, buflen);
-
-#ifdef REGAMEDLL_FIXES
-	buf[buflen - 1] = '\0';
-#endif
+	Q_strlcpy(buf, param->m_data, buflen);
 
 	delete param;
 	return buf;

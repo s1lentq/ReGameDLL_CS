@@ -10,7 +10,7 @@ NOXREF float GetSkillCvar(char *pName)
 	float flValue;
 	char szBuffer[64];
 
-	iCount = Q_sprintf(szBuffer, "%s%d", pName, gSkillData.iSkillLevel);
+	iCount = Q_snprintf(szBuffer, sizeof(szBuffer), "%s%d", pName, gSkillData.iSkillLevel);
 	flValue = CVAR_GET_FLOAT(szBuffer);
 
 	if (flValue <= 0.0f)

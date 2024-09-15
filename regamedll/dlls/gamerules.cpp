@@ -8,8 +8,8 @@ CGameRules::CGameRules()
 	m_bBombDropped = FALSE;
 	m_bGameOver = false;
 
-	m_GameDesc = new char[sizeof("Counter-Strike")];
-	Q_strcpy(m_GameDesc, AreRunningCZero() ? "Condition Zero" : "Counter-Strike");
+	const char *pszGameDesc = AreRunningCZero() ? "Condition Zero" : "Counter-Strike";
+	m_GameDesc = CloneString(pszGameDesc);
 }
 
 CGameRules::~CGameRules()

@@ -82,13 +82,13 @@ void CM4A1::SecondaryAttack()
 	{
 		m_iWeaponState &= ~WPNSTATE_M4A1_SILENCED;
 		SendWeaponAnim(M4A1_DETACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "rifle");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "rifle");
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_M4A1_SILENCED;
 		SendWeaponAnim(M4A1_ATTACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "rifle");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "rifle");
 	}
 
 	m_flTimeWeaponIdle = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.0f;

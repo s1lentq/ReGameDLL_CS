@@ -65,10 +65,7 @@ void BotMeme::Transmit(CCSBot *pSender) const
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -540,7 +537,12 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 					else if (!Q_stricmp("UNDEFINED", token))
 						placeCriteria = UNDEFINED_PLACE;
 					else
+					{
 						placeCriteria = TheBotPhrases->NameToID(token);
+
+						if (!TheBotPhrases->IsValid() && placeCriteria == UNDEFINED_PLACE)
+							placeCriteria = TheNavAreaGrid.NameToID(token);
+					}
 
 					continue;
 				}
@@ -1520,10 +1522,7 @@ BotStatement *BotChatterInterface::GetActiveStatement()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))

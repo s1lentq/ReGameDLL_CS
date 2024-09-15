@@ -1040,11 +1040,10 @@ void USENTENCEG_InitLRU(unsigned char *plru, int count)
 // ipick is passed in as the requested sentence ordinal.
 // ipick 'next' is returned.
 // return of -1 indicates an error.
-int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int freset)
+int USENTENCEG_PickSequential(int isentenceg, char (&szfound)[64], int ipick, int freset)
 {
 	char *szgroupname;
 	unsigned char count;
-	char sznum[12];
 
 	if (!fSentencesInit)
 		return -1;
@@ -1061,10 +1060,7 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 	if (ipick >= count)
 		ipick = count - 1;
 
-	Q_strcpy(szfound, "!");
-	Q_strcat(szfound, szgroupname);
-	Q_snprintf(sznum, sizeof(sznum), "%d", ipick);
-	Q_strcat(szfound, sznum);
+	Q_snprintf(szfound, sizeof(szfound), "!%s%d", szgroupname, ipick);
 
 	if (ipick >= count)
 	{
@@ -1084,13 +1080,12 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 // rest of the lru filled with -1. The first integer in the lru is
 // actually the size of the list.  Returns ipick, the ordinal
 // of the picked sentence within the group.
-int USENTENCEG_Pick(int isentenceg, char *szfound)
+int USENTENCEG_Pick(int isentenceg, char (&szfound)[64])
 {
 	char *szgroupname;
 	unsigned char *plru;
 	unsigned char i;
 	unsigned char count;
-	char sznum[12];
 	unsigned char ipick = 0xFF;
 	BOOL ffound = FALSE;
 
@@ -1119,11 +1114,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 
 		if (ffound)
 		{
-			Q_strcpy(szfound, "!");
-			Q_strcat(szfound, szgroupname);
-			Q_snprintf(sznum, sizeof(sznum), "%d", ipick);
-			Q_strcat(szfound, sznum);
-
+			Q_snprintf(szfound, sizeof(szfound), "!%s%d", szgroupname, ipick);
 			return ipick;
 		}
 		else
@@ -1168,8 +1159,6 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg, float volume, float atte
 	if (!fSentencesInit)
 		return -1;
 
-	name[0] = '\0';
-
 	ipick = USENTENCEG_Pick(isentenceg, name);
 
 #ifndef REGAMEDLL_FIXES
@@ -1193,8 +1182,6 @@ int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname, float volume, 
 
 	if (!fSentencesInit)
 		return -1;
-
-	name[0] = '\0';
 
 	isentenceg = SENTENCEG_GetIndex(szgroupname);
 	if (isentenceg < 0)
@@ -1222,8 +1209,6 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname, float v
 
 	if (!fSentencesInit)
 		return -1;
-
-	name[0] = '\0';
 
 	isentenceg = SENTENCEG_GetIndex(szgroupname);
 	if (isentenceg < 0)
@@ -1323,7 +1308,7 @@ void SENTENCEG_Init()
 			ALERT(at_warning, "Sentence %s longer than %d letters\n", pString, MAX_SENTENCE_NAME - 1);
 		}
 
-		Q_strcpy(gszallsentencenames[gcallsentences++], pString);
+		Q_strlcpy(gszallsentencenames[gcallsentences++], pString);
 
 		if (--j <= i)
 			continue;
@@ -1354,10 +1339,10 @@ void SENTENCEG_Init()
 				break;
 			}
 
-			Q_strcpy(rgsentenceg[isentencegs].szgroupname, &(buffer[i]));
+			Q_strlcpy(rgsentenceg[isentencegs].szgroupname, &(buffer[i]));
 			rgsentenceg[isentencegs].count = 1;
 
-			Q_strcpy(szgroup, &(buffer[i]));
+			Q_strlcpy(szgroup, &(buffer[i]));
 
 			continue;
 		}
@@ -1385,9 +1370,8 @@ void SENTENCEG_Init()
 }
 
 // convert sentence (sample) name to !sentencenum, return !sentencenum
-int SENTENCEG_Lookup(const char *sample, char *sentencenum)
+int SENTENCEG_Lookup(const char *sample, char (&sentencenum)[32])
 {
-	char sznum[12];
 	int i;
 
 	// this is a sentence name; lookup sentence number
@@ -1398,9 +1382,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 		{
 			if (sentencenum)
 			{
-				Q_strcpy(sentencenum, "!");
-				Q_snprintf(sznum, sizeof(sznum), "%d", i);
-				Q_strcat(sentencenum, sznum);
+				Q_snprintf(sentencenum, sizeof(sentencenum), "!%d", i);
 			}
 
 			return i;
@@ -1580,7 +1562,7 @@ void TEXTURETYPE_Init()
 		j = Q_min(j, MAX_TEXTURENAME_LENGHT - 1 + i);
 		buffer[j] = '\0';
 
-		Q_strcpy(&(grgszTextureName[gcTextures++][0]), &(buffer[i]));
+		Q_strlcpy(grgszTextureName[gcTextures++], &(buffer[i]));
 	}
 
 	FREE_FILE(pMemFile);
@@ -1616,7 +1598,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 	char chTextureType;
 	float fvol;
 	float fvolbar;
-	char szBuffer[64];
+	char szBuffer[MAX_TEXTURENAME_LENGHT];
 	const char *pTextureName;
 	float rgfl1[3];
 	float rgfl2[3];
@@ -1666,8 +1648,7 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int 
 				pTextureName++;
 
 			// '}}'
-			Q_strcpy(szBuffer, pTextureName);
-			szBuffer[MAX_TEXTURENAME_LENGHT - 1] = '\0';
+			Q_strlcpy(szBuffer, pTextureName);
 
 			// get texture type
 			chTextureType = TEXTURETYPE_Find(szBuffer);

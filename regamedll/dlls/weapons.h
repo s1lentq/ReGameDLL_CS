@@ -133,7 +133,7 @@ struct AmmoInfo
 
 struct MULTIDAMAGE
 {
-	CBaseEntity *pEntity;
+	EntityHandle<CBaseEntity> hEntity;
 	float amount;
 	int type;
 };

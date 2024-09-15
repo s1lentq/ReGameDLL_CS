@@ -141,7 +141,7 @@ inline bool IsIntersecting2D(const Vector &startA, const Vector &endA, const Vec
 // Iterate over all active players in the game, invoking functor on each.
 // If functor returns false, stop iteration and return false.
 template <typename Functor>
-bool ForEachPlayer(Functor &func)
+bool ForEachPlayer(Functor func)
 {
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{

@@ -505,6 +505,8 @@ public:
 
 	bool IsValid() const;
 	Place GetPlace(const Vector *pos) const;						// return radio chatter place for given coordinate
+	Place NameToID(const char *name) const;
+	const char *IDToName(Place id) const;
 
 private:
 	const float m_cellSize;

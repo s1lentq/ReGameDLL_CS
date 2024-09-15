@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+	<!-- Defining a visualizer for a CBasePlayer -->
+	<Type Name="CBasePlayer">
+		<DisplayString>{{ { pev->pContainingEntity - g_pEdicts }, { pev->classname }, { pev->health }, { m_iTeam }, { m_iModelName } }}</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a CCSPlayer -->
+	<Type Name="CCSPlayer">
+		<AlternativeType Name="CCSPlayerWeapon" />
+		<DisplayString>{ *m_pContainingEntity }</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a CBasePlayerItem -->
+	<Type Name="CBasePlayerItem">
+		<DisplayString>{{ { pev->pContainingEntity - g_pEdicts }, { pev->classname } }}</DisplayString>
+		<Expand>
+			<LinkedListItems>
+				<HeadPointer>m_pNext</HeadPointer>
+				<NextPointer>m_pNext</NextPointer>
+				<ValueNode>(*this)</ValueNode>
+			</LinkedListItems>
+		</Expand>
+	</Type>
+
+	<!-- Defining a visualizer for a CBaseEntity -->
+	<Type Name="CBaseEntity">
+		<DisplayString>{{ { pev->pContainingEntity - g_pEdicts }, { pev->classname }, { pev->model } }}</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a edict_t -->
+	<Type Name="edict_s">
+		<DisplayString>{{ {this - g_pEdicts}, { v.classname }, { v.model } }}</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a entvars_t -->
+	<Type Name="entvars_s">
+		<DisplayString>{{ { pContainingEntity - g_pEdicts }, { classname }, { model } }}</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a QString -->
+	<Type Name="QString">
+		<DisplayString>{ &amp;gpGlobals->pStringBase[m_string],s }</DisplayString>
+	</Type>
+
+	<!-- Defining a visualizer for a CUtlMemory<T> -->
+	<Type Name="CUtlMemory&lt;*&gt;">
+		<DisplayString>allocator</DisplayString>
+		<Expand>
+			<Item Name="[data]" ExcludeView="simple">($T1 *)m_pMemory</Item>
+			<Item Name="[capacity]" ExcludeView="simple">m_nAllocationCount</Item>
+			<Item Name="[growsize]" ExcludeView="simple">m_nGrowSize</Item>
+		</Expand>
+	</Type>
+
+	<!-- Defining a visualizer for a CUtlVector<T> -->
+	<Type Name="CUtlVector&lt;*&gt;">
+		<DisplayString>{{ size = { m_Size } }}</DisplayString>
+		<Expand>
+			<ArrayItems>
+				<Size>m_Size</Size>
+				<ValuePointer>(ElemType_t *)m_Memory.m_pMemory</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<!-- Defining a visualizer for a linear indexing CUtlMap<K, T> -->
+	<Type Name="CUtlMap&lt;*, *&gt;">
+		<DisplayString>{{ size = { m_Tree.m_NumElements } }}</DisplayString>
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_Tree.m_NumElements</Item>
+			<Item Name="[allocator]">m_Tree.m_Elements</Item>
+			<CustomListItems MaxItemsPerView="200" ExcludeView="Test">
+				<Variable Name="iMap" InitialValue="0" />
+				<Loop Condition="iMap &lt; m_Tree.m_NumElements">
+					<Item Name="[{((CTree::Node_t *)m_Tree.m_Elements.m_pMemory)[iMap].m_Data.key}]">((CTree::Node_t *)m_Tree.m_Elements.m_pMemory)[iMap].m_Data.elem</Item>
+					<Exec>iMap++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<!-- Defining a visualizer for a CUtlArray<T, N> -->
+	<Type Name="CUtlArray&lt;*&gt;">
+		<DisplayString>{{ size = { $T2 } }}</DisplayString>
+		<Expand>
+			<ArrayItems>
+				<Size>$T2</Size>
+				<ValuePointer>($T1 *)&amp;m_Memory[0]</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<!-- Defining a visualizer for a linear indexing CUtlRBTree<T> -->
+	<Type Name="CUtlRBTree&lt;*&gt;">
+		<Expand>
+			<Item Name="[size]" ExcludeView="simple">m_NumElements</Item>
+			<Item Name="[allocator]">m_Elements</Item>
+			<IndexListItems>
+				<Size>m_NumElements</Size>
+				<ValueNode>((Node_t *)m_Elements.m_pMemory)[$i].m_Data</ValueNode>
+			</IndexListItems>
+		</Expand>
+	</Type>
+
+</AutoVisualizer>

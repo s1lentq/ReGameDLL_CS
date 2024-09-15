@@ -261,13 +261,6 @@ void CBot::ExecuteCommand()
 	// Adjust msec to command time interval
 	adjustedMSec = ThrottledMsec();
 
-	// player model is "munged"
-	pev->angles = pev->v_angle;
-	pev->angles.x /= -3.0f;
-
-	// save the command time
-	m_flPreviousCommandTime = gpGlobals->time;
-
 	if (IsCrouching())
 	{
 		m_buttonFlags |= IN_DUCK;
@@ -282,8 +275,69 @@ void CBot::ExecuteCommand()
 	}
 #endif
 
+	// Run mimic command
+	usercmd_t botCmd;
+	if (!RunMimicCommand(botCmd))
+	{
+		botCmd.forwardmove = m_forwardSpeed;
+		botCmd.sidemove    = m_strafeSpeed;
+		botCmd.upmove      = m_verticalSpeed;
+		botCmd.buttons     = m_buttonFlags;
+		botCmd.impulse     = 0;
+		botCmd.viewangles  = pev->v_angle;
+	}
+
+	// player model is "munged"
+	pev->angles = pev->v_angle;
+	pev->angles.x /= -3.0f;
+
+	// save the command time
+	m_flPreviousCommandTime = gpGlobals->time;
+
 	// Run the command
-	PLAYER_RUN_MOVE(edict(), pev->v_angle, m_forwardSpeed, m_strafeSpeed, m_verticalSpeed, m_buttonFlags, 0, adjustedMSec);
+	PLAYER_RUN_MOVE(edict(), botCmd.viewangles, botCmd.forwardmove, botCmd.sidemove, botCmd.upmove, botCmd.buttons, 0, adjustedMSec);
+}
+
+bool CBot::RunMimicCommand(usercmd_t &botCmd)
+{
+#ifdef REGAMEDLL_ADD
+	if (cv_bot_mimic.value <= 0)
+		return false;
+
+	if (cv_bot_mimic.value > gpGlobals->maxClients)
+		return false;
+
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(cv_bot_mimic.value);
+	if (!pPlayer)
+		return false;
+
+	if (!UTIL_IsValidPlayer(pPlayer))
+		return false;
+
+	if (!pPlayer->IsAlive())
+		return false;
+
+	if (pPlayer->IsBot())
+		return false;
+
+	const usercmd_t *ucmd = pPlayer->GetLastUserCommand();
+	if (!ucmd)
+		return false;
+
+	botCmd = *ucmd;
+	botCmd.viewangles[YAW] += cv_bot_mimic_yaw_offset.value;
+
+	float mult = 8.0f;
+	botCmd.forwardmove *= mult;
+	botCmd.sidemove *= mult;
+	botCmd.upmove *= mult;
+
+	pev->fixangle = 0;
+
+	return true;
+#else
+	return false;
+#endif
 }
 
 void CBot::ResetCommand()
@@ -352,10 +406,8 @@ int CBot::GetEnemiesRemaining() const
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer)
-			continue;
 
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -380,10 +432,8 @@ int CBot::GetFriendsRemaining() const
 	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer)
-			continue;
 
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -436,11 +486,11 @@ NOXREF void CBot::Print(char *format, ...) const
 	char buffer[1024];
 
 	// prefix the message with the bot's name
-	Q_sprintf(buffer, "%s: ", STRING(pev->netname));
+	Q_snprintf(buffer, sizeof(buffer), "%s: ", STRING(pev->netname));
 	SERVER_PRINT(buffer);
 
 	va_start(varg, format);
-	vsprintf(buffer, format, varg);
+	Q_vsnprintf(buffer, sizeof(buffer), format, varg);
 	va_end(varg);
 
 	SERVER_PRINT(buffer);
@@ -459,12 +509,12 @@ void CBot::PrintIfWatched(char *format, ...) const
 
 		// prefix the message with the bot's name (this can be NULL if bot was just added)
 		const char *name = pev ? STRING(pev->netname) : "(NULL pev)";
-		Q_sprintf(buffer, "%s: ", name ? name : "(NULL netname)");
+		Q_snprintf(buffer, sizeof(buffer), "%s: ", name ? name : "(NULL netname)");
 
 		SERVER_PRINT(buffer);
 
 		va_start(varg, format);
-		vsprintf(buffer, format, varg);
+		Q_vsnprintf(buffer, sizeof(buffer), format, varg);
 		va_end(varg);
 
 		SERVER_PRINT(buffer);
@@ -491,9 +541,15 @@ void ActiveGrenade::OnEntityGone()
 	m_entity = nullptr;
 }
 
+void ActiveGrenade::CheckOnEntityGone()
+{
+	if (m_dieTimestamp == 0 && !m_entity.IsValid())
+		OnEntityGone();
+}
+
 bool ActiveGrenade::IsValid() const
 {
-	if (!m_entity)
+	if (!m_entity.IsValid())
 	{
 		if (gpGlobals->time > m_dieTimestamp)
 			return false;
@@ -502,7 +558,7 @@ bool ActiveGrenade::IsValid() const
 	return true;
 }
 
-const Vector *ActiveGrenade::GetPosition() const
+const Vector *ActiveGrenade::GetPosition()
 {
 	return &m_entity->pev->origin;
 }

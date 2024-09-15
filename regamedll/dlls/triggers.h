@@ -204,6 +204,11 @@ public:
 	void EXPORT CounterUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void EXPORT ToggleUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	void InitTrigger();
+
+#ifdef REGAMEDLL_ADD
+	// For trigger_teleport TriggerTouch
+	int m_iszLandmarkName = 0;
+#endif
 };
 
 #define SF_TRIGGER_HURT_TARGETONCE      BIT(0) // Only fire hurt target once
@@ -278,6 +283,10 @@ class CTriggerMultiple: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
+
+#ifdef REGAMEDLL_FIXES
+	virtual void Restart();
+#endif
 };
 
 // Variable sized trigger. Triggers once, then removes itself. You must set the key "target" to the name of another object in the level that has a matching
@@ -393,6 +402,7 @@ class CTriggerTeleport: public CBaseTrigger
 {
 public:
 	virtual void Spawn();
+	virtual void KeyValue(KeyValueData *pkvd);
 };
 
 class CBuyZone: public CBaseTrigger

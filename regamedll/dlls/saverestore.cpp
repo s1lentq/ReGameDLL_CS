@@ -962,8 +962,8 @@ void CGlobalState::EntityAdd(string_t globalname, string_t mapName, GLOBALESTATE
 
 	pNewEntity->pNext = m_pList;
 	m_pList = pNewEntity;
-	Q_strcpy(pNewEntity->name, STRING(globalname));
-	Q_strcpy(pNewEntity->levelName, STRING(mapName));
+	Q_strlcpy(pNewEntity->name, STRING(globalname));
+	Q_strlcpy(pNewEntity->levelName, STRING(mapName));
 	pNewEntity->state = state;
 
 	m_listCount++;
@@ -1068,7 +1068,7 @@ void CGlobalState::EntityUpdate(string_t globalname, string_t mapname)
 	globalentity_t *pEnt = Find(globalname);
 	if (pEnt)
 	{
-		Q_strcpy(pEnt->levelName, STRING(mapname));
+		Q_strlcpy(pEnt->levelName, STRING(mapname));
 	}
 }
 

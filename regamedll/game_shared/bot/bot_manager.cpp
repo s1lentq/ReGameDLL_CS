@@ -147,6 +147,8 @@ void CBotManager::StartFrame()
 			ActiveGrenade *ag = (*iter);
 
 			// lazy validation
+			ag->CheckOnEntityGone();
+
 			if (!ag->IsValid())
 			{
 				delete ag;
@@ -194,7 +196,7 @@ void CBotManager::StartFrame()
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (pPlayer->IsBot() && IsEntityValid(pPlayer))
@@ -203,13 +205,15 @@ void CBotManager::StartFrame()
 			pBot->BotThink();
 		}
 	}
+
+	ValidateActiveGrenades();
 }
 
 // Return the filename for this map's "nav map" file
 const char *CBotManager::GetNavMapFilename() const
 {
 	static char filename[256];
-	Q_sprintf(filename, "maps\\%s.nav", STRING(gpGlobals->mapname));
+	Q_snprintf(filename, sizeof(filename), "maps\\%s.nav", STRING(gpGlobals->mapname));
 	return filename;
 }
 
@@ -225,10 +229,7 @@ void CBotManager::__API_HOOK(OnEvent)(GameEventType event, CBaseEntity* pEntity,
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 
-		if (!pPlayer)
-			continue;
-
-		if (FNullEnt(pPlayer->pev))
+		if (!UTIL_IsValidPlayer(pPlayer))
 			continue;
 
 		if (FStrEq(STRING(pPlayer->pev->netname), ""))
@@ -278,12 +279,15 @@ void CBotManager::RemoveGrenade(CGrenade *grenade)
 }
 
 // Destroy any invalid active grenades
-NOXREF void CBotManager::ValidateActiveGrenades()
+void CBotManager::ValidateActiveGrenades()
 {
 	auto iter = m_activeGrenadeList.begin();
 	while (iter != m_activeGrenadeList.end())
 	{
 		ActiveGrenade *ag = (*iter);
+
+		// lazy validation
+		ag->CheckOnEntityGone();
 
 		if (!ag->IsValid())
 		{
@@ -314,6 +318,8 @@ bool CBotManager::IsInsideSmokeCloud(const Vector *pos)
 		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
+		ag->CheckOnEntityGone();
+
 		if (!ag->IsValid())
 		{
 			delete ag;
@@ -358,6 +364,8 @@ bool CBotManager::IsLineBlockedBySmoke(const Vector *from, const Vector *to)
 		ActiveGrenade *ag = (*iter);
 
 		// lazy validation
+		ag->CheckOnEntityGone();
+
 		if (!ag->IsValid())
 		{
 			delete ag;

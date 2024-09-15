@@ -1070,4 +1070,9 @@
       <Filter>public\tier0</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\regamedll\types.natvis">
+      <Filter>regamedll</Filter>
+    </Natvis>
+  </ItemGroup>
 </Project>

@@ -123,7 +123,7 @@ void PM_InitTextureTypes()
 		j = Q_min(j, MAX_TEXTURENAME_LENGHT - 1 + i);
 		buffer[j] = '\0';
 
-		Q_strcpy(&(pm_grgszTextureName[pm_gcTextures++][0]), &(buffer[i]));
+		Q_strlcpy(pm_grgszTextureName[pm_gcTextures++], &(buffer[i]));
 	}
 
 	// Must use engine to free since we are in a .dll
@@ -364,8 +364,7 @@ void PM_CatagorizeTextureType()
 	if (*pTextureName == '{' || *pTextureName == '!' || *pTextureName == '~' || *pTextureName == ' ')
 		pTextureName++;
 
-	Q_strcpy(pmove->sztexturename, pTextureName);
-	pmove->sztexturename[MAX_TEXTURENAME_LENGHT - 1] = '\0';
+	Q_strlcpy(pmove->sztexturename, pTextureName, MAX_TEXTURENAME_LENGHT);
 
 	// get texture type
 	pmove->chtexturetype = PM_FindTextureType(pmove->sztexturename);
@@ -870,7 +869,7 @@ void PM_WalkMove()
 
 	vec3_t wishvel;
 	real_t spd;
-	float fmove, smove;
+	float fmove, smove, maxspeed;
 	vec3_t wishdir;
 	real_t wishspeed;
 
@@ -882,6 +881,7 @@ void PM_WalkMove()
 
 	pmtrace_t trace;
 
+	// jump penalty
 	if (pmove->fuser2 > 0.0)
 	{
 		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
@@ -893,6 +893,17 @@ void PM_WalkMove()
 	// Copy movement amounts
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
+	maxspeed = pmove->maxspeed;
+
+#ifdef REGAMEDLL_ADD
+	// Player can speed up the run if '+speed' button is pressed
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	{
+		fmove *= pmove->fuser3;
+		smove *= pmove->fuser3;
+		maxspeed *= 2.0f; // increase speed cap to x2 when running
+	}
+#endif
 
 	// Zero out z components of movement vectors
 	pmove->forward[2] = 0;
@@ -916,10 +927,10 @@ void PM_WalkMove()
 	wishspeed = VectorNormalize(wishdir);
 
 	// Clamp to server defined max speed
-	if (wishspeed > pmove->maxspeed)
+	if (wishspeed > maxspeed)
 	{
-		VectorScale(wishvel, pmove->maxspeed / wishspeed, wishvel);
-		wishspeed = pmove->maxspeed;
+		VectorScale(wishvel, maxspeed / wishspeed, wishvel);
+		wishspeed = maxspeed;
 	}
 
 	// Set pmove velocity
@@ -1438,7 +1449,7 @@ void PM_CategorizePosition()
 
 	// Do not stick to the ground of an OBSERVER or NOCLIP mode
 #ifdef REGAMEDLL_FIXES
-	if (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE)
+	if (pmoveplayer->m_MovementVersion.IsAtLeast(1, 0) && (pmove->movetype == MOVETYPE_NOCLIP || pmove->movetype == MOVETYPE_NONE))
 	{
 		pmove->onground = -1;
 		return;
@@ -1636,7 +1647,7 @@ void PM_SpectatorMove()
 	real_t accelspeed;
 	int i;
 	vec3_t wishvel;
-	float fmove, smove;
+	float fmove, smove, spectatormaxspeed;
 	vec3_t wishdir;
 	real_t wishspeed;
 
@@ -1688,6 +1699,19 @@ void PM_SpectatorMove()
 		fmove = pmove->cmd.forwardmove;
 		smove = pmove->cmd.sidemove;
 
+		spectatormaxspeed = pmove->movevars->spectatormaxspeed;
+
+#ifdef REGAMEDLL_ADD
+		// Observer can accelerate in air if '+speed' button is pressed
+		if (pmove->cmd.buttons & IN_RUN)
+		{
+			float flAirAccelerate = (pmove->fuser3 > 0.0f) ? pmove->fuser3 : max(pmove->movevars->airaccelerate / 100.0f, 7.0f);
+			fmove *= flAirAccelerate;
+			smove *= flAirAccelerate;
+			spectatormaxspeed *= 2.0f; // increase speed cap to x2 when accelerating
+		}
+#endif
+
 		VectorNormalize(pmove->forward);
 		VectorNormalize(pmove->right);
 
@@ -1702,29 +1726,36 @@ void PM_SpectatorMove()
 		wishspeed = VectorNormalize(wishdir);
 
 		// clamp to server defined max speed
-		if (wishspeed > pmove->movevars->spectatormaxspeed)
+		if (wishspeed > spectatormaxspeed)
 		{
-			VectorScale(wishvel, pmove->movevars->spectatormaxspeed / wishspeed, wishvel);
-			wishspeed = pmove->movevars->spectatormaxspeed;
+			VectorScale(wishvel, spectatormaxspeed / wishspeed, wishvel);
+			wishspeed = spectatormaxspeed;
 		}
 
 		currentspeed = DotProduct(pmove->velocity, wishdir);
 
 		addspeed = wishspeed - currentspeed;
+
 		if (addspeed <= 0)
 		{
-			return;
+#ifdef REGAMEDLL_FIXES
+			if (pmoveplayer->m_MovementVersion.IsLessThan(1, 0))
+#endif
+				return;
 		}
 
-		accelspeed = pmove->movevars->accelerate * pmove->frametime * wishspeed;
-		if (accelspeed > addspeed)
+		if (addspeed > 0)
 		{
-			accelspeed = addspeed;
-		}
+			accelspeed = pmove->movevars->accelerate * pmove->frametime * wishspeed;
+			if (accelspeed > addspeed)
+			{
+				accelspeed = addspeed;
+			}
 
-		for (i = 0; i < 3; i++)
-		{
-			pmove->velocity[i] += accelspeed * wishdir[i];
+			for (i = 0; i < 3; i++)
+			{
+				pmove->velocity[i] += accelspeed * wishdir[i];
+			}
 		}
 
 		// move
@@ -1815,7 +1846,7 @@ LINK_HOOK_VOID_CHAIN2(PM_UnDuck)
 void EXT_FUNC __API_HOOK(PM_UnDuck)()
 {
 #ifdef REGAMEDLL_ADD
-	if (unduck_method.value)
+	if (unduck_method.value || (pmove->iuser3 & PLAYER_PREVENT_DDUCK))
 #endif
 	{
 #ifdef REGAMEDLL_FIXES
@@ -1902,8 +1933,8 @@ void EXT_FUNC __API_HOOK(PM_Duck)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK     // Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
-	|| freezetime_duck.value == 0.0f && CSGameRules()->IsFreezePeriod()) // Prevent ducking during freezetime if the freezetime_duck cvar is 0
+	if ((pmove->iuser3 & PLAYER_PREVENT_DUCK) == PLAYER_PREVENT_DUCK       // Prevent ducking if the iuser3 variable is contain PLAYER_PREVENT_DUCK
+	|| (freezetime_duck.value == 0.0f && CSGameRules()->IsFreezePeriod())) // Prevent ducking during freezetime if the freezetime_duck cvar is 0
 	{
 		// Try to unduck
 		if (pmove->flags & FL_DUCKING)
@@ -2334,6 +2365,16 @@ void PM_NoClip()
 	fmove = pmove->cmd.forwardmove;
 	smove = pmove->cmd.sidemove;
 
+#ifdef REGAMEDLL_ADD
+	// Player with noclip can accelerate in air if '+speed' button is pressed
+	if ((pmove->cmd.buttons & IN_RUN) && pmove->fuser3 > 0)
+	{
+		float flAirAccelerate = pmove->fuser3;
+		fmove *= flAirAccelerate;
+		smove *= flAirAccelerate;
+	}
+#endif
+
 	VectorNormalize(pmove->forward);
 	VectorNormalize(pmove->right);
 
@@ -2458,8 +2499,8 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP     // Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
-	|| freezetime_jump.value == 0.0f && CSGameRules()->IsFreezePeriod()) // Prevent jumping during freezetime if the freezetime_jump cvar is 0
+	if ((pmove->iuser3 & PLAYER_PREVENT_JUMP) == PLAYER_PREVENT_JUMP       // Prevent jumping if the iuser3 variable is contain PLAYER_PREVENT_JUMP
+	|| (freezetime_jump.value == 0.0f && CSGameRules()->IsFreezePeriod())) // Prevent jumping during freezetime if the freezetime_jump cvar is 0
 	{
 		return;
 	}
@@ -3300,6 +3341,11 @@ void EXT_FUNC __API_HOOK(PM_Move)(struct playermove_s *ppmove, int server)
 	{
 		pmove->friction = 1.0f;
 	}
+
+#ifdef REGAMEDLL_API
+	// save the last usercmd
+	pmoveplayer->SetLastUserCommand(pmove->cmd);
+#endif
 }
 
 NOXREF int PM_GetVisEntInfo(int ent)
@@ -3334,4 +3380,9 @@ void EXT_FUNC __API_HOOK(PM_Init)(struct playermove_s *ppmove)
 	PM_InitTextureTypes();
 
 	pm_shared_initialized = TRUE;
+}
+
+const char *PM_ServerVersion()
+{
+	return PM_VERSION_STRING(PM_VERSION_MAJOR, PM_VERSION_MINOR, PM_VERSION_PATCH);
 }

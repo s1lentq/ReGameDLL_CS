@@ -176,7 +176,11 @@ void CP228::P228Fire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+#ifdef REGAMEDLL_ADD
+	KickBack(2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
+#else
 	m_pPlayer->pev->punchangle.x -= 2;
+#endif
 	ResetPlayerShieldAnim();
 }
 

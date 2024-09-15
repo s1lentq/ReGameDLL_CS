@@ -133,6 +133,7 @@ static entity_field_alias_t custom_entity_field_alias[] =
 	{ "animtime",  0 },
 };
 
+edict_t *g_pEdicts = nullptr;
 bool g_bServerActive = false;
 bool g_bItemCreatedByBuying = false;
 PLAYERPVSSTATUS g_PVSStatus[MAX_CLIENTS];
@@ -438,6 +439,9 @@ NOXREF int CountTeams()
 		if (FNullEnt(pEntity->edict()))
 			break;
 
+		if (pEntity->IsDormant())
+			continue;
+
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 
 		if (pPlayer->m_iTeam == UNASSIGNED)
@@ -461,7 +465,7 @@ NOXREF int CountTeams()
 
 void ListPlayers(CBasePlayer *current)
 {
-	char message[120] = "", cNumber[12];
+	char message[120]{};
 
 	CBaseEntity *pEntity = nullptr;
 	while ((pEntity = UTIL_FindEntityByClassname(pEntity, "player")))
@@ -475,12 +479,7 @@ void ListPlayers(CBasePlayer *current)
 		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
 		int iUserID = GETPLAYERUSERID(ENT(pPlayer->pev));
 
-		Q_sprintf(cNumber, "%d", iUserID);
-		Q_strcpy(message, "\n");
-		Q_strcat(message, cNumber);
-		Q_strcat(message, " : ");
-		Q_strcat(message, STRING(pPlayer->pev->netname));
-
+		Q_snprintf(message, sizeof(message), "\n%d : %s", iUserID, STRING(pPlayer->pev->netname));
 		ClientPrint(current->pev, HUD_PRINTCONSOLE, message);
 	}
 
@@ -499,7 +498,8 @@ int CountTeamPlayers(int iTeam)
 		if (pEntity->IsDormant())
 			continue;
 
-		if (GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev)->m_iTeam == iTeam)
+		CBasePlayer *pPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pEntity->pev);
+		if (pPlayer->m_iTeam == iTeam)
 		{
 			nCount++;
 		}
@@ -533,6 +533,9 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 	{
 		if (FNullEnt(pTempEntity->edict()))
 			break;
+
+		if (pTempEntity->IsDormant())
+			continue;
 
 		pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
@@ -570,6 +573,9 @@ void ProcessKickVote(CBasePlayer *pVotingPlayer, CBasePlayer *pKickPlayer)
 		{
 			if (FNullEnt(pTempEntity->edict()))
 				break;
+
+			if (pTempEntity->IsDormant())
+				continue;
 
 			pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
@@ -727,8 +733,8 @@ void EXT_FUNC ClientPutInServer(edict_t *pEntity)
 
 	pPlayer->m_iJoiningState = SHOWLTEXT;
 
-	static char sName[128];
-	Q_strcpy(sName, STRING(pPlayer->pev->netname));
+	char sName[128];
+	Q_strlcpy(sName, STRING(pPlayer->pev->netname));
 
 	for (char *pApersand = sName; pApersand && *pApersand != '\0'; pApersand++)
 	{
@@ -786,12 +792,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	{
 		if (CMD_ARGC_() >= 2)
 		{
-			Q_sprintf(szTemp, "%s %s", pcmd, CMD_ARGS());
+			Q_snprintf(szTemp, sizeof(szTemp), "%s %s", pcmd, CMD_ARGS());
 		}
 		else
 		{
 			// Just a one word command, use the first word...sigh
-			Q_sprintf(szTemp, "%s", pcmd);
+			Q_snprintf(szTemp, sizeof(szTemp), "%s", pcmd);
 		}
 
 		p = szTemp;
@@ -829,14 +835,18 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		return;
 
 	const char *placeName = nullptr;
-	char *pszFormat = nullptr;
+	const char *pszFormat = nullptr;
 	char *pszConsoleFormat = nullptr;
 	bool consoleUsesPlaceName = false;
 
 	// team only
 	if (teamonly)
 	{
-		if (AreRunningCZero() && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
+		if ((
+#ifdef REGAMEDLL_ADD
+			location_area_info.value >= 2 ||
+#endif
+			AreRunningCZero()) && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
 		{
 			// search the place name where is located the player
 			Place playerPlace = TheNavAreaGrid.GetPlace(&pPlayer->pev->origin);
@@ -850,7 +860,16 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 					break;
 				}
 			}
+
+			if (!placeName)
+				placeName = TheNavAreaGrid.IDToName(playerPlace);
 		}
+
+		bool bUseLocFallback = false;
+#ifdef REGAMEDLL_ADD
+		if (chat_loc_fallback.value)
+			bUseLocFallback = true;
+#endif
 
 		if (pPlayer->m_iTeam == CT)
 		{
@@ -861,7 +880,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			}
 			else if (placeName)
 			{
-				pszFormat = "#Cstrike_Chat_CT_Loc";
+				pszFormat = bUseLocFallback ? "\x1(Counter-Terrorist) \x3%s1\x1 @ \x4%s3\x1 :  %s2" : "#Cstrike_Chat_CT_Loc";
 				pszConsoleFormat = "*(Counter-Terrorist) %s @ %s : %s";
 				consoleUsesPlaceName = true;
 			}
@@ -880,7 +899,7 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			}
 			else if (placeName)
 			{
-				pszFormat = "#Cstrike_Chat_T_Loc";
+				pszFormat = bUseLocFallback ? "\x1(Terrorist) \x3%s1\x1 @ \x4%s3\x1 :  %s2" : "#Cstrike_Chat_T_Loc";
 				pszConsoleFormat = "(Terrorist) %s @ %s : %s";
 				consoleUsesPlaceName = true;
 			}
@@ -943,8 +962,8 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		}
 	}
 
-	Q_strcat(text, p);
-	Q_strcat(text, "\n");
+	Q_strlcat(text, p);
+	Q_strlcat(text, "\n");
 
 	// loop through all players
 	// Start with the first player.
@@ -961,6 +980,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 			continue;
 
 		if (pReceiver->edict() == pEntity)
+			continue;
+
+		if (pReceiver->IsDormant())
 			continue;
 
 		// Not a client ? (should never be true)
@@ -2330,6 +2352,9 @@ CBaseEntity *EntityFromUserID(int userID)
 		if (FNullEnt(pTempEntity->edict()))
 			break;
 
+		if (pTempEntity->IsDormant())
+			continue;
+
 		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
 		if (pTempPlayer->m_iTeam != UNASSIGNED && userID == GETPLAYERUSERID(pTempEntity->edict()))
@@ -2349,6 +2374,9 @@ NOXREF int CountPlayersInServer()
 	{
 		if (FNullEnt(pTempEntity->edict()))
 			break;
+
+		if (pTempEntity->IsDormant())
+			continue;
 
 		CBasePlayer *pTempPlayer = GetClassPtr<CCSPlayer>((CBasePlayer *)pTempEntity->pev);
 
@@ -2595,6 +2623,15 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 
+#ifdef REGAMEDLL_ADD
+			static const int flagKick = UTIL_ReadFlags("k");
+			if ((flagKick & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
+
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
 			if (pPlayer->m_iTeam != UNASSIGNED)
@@ -2676,11 +2713,20 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 				return;
 			}
 
+#ifdef REGAMEDLL_ADD
+			static const int flagMap = UTIL_ReadFlags("m");
+			if ((flagMap & UTIL_ReadFlags(vote_flags.string)) == 0)
+			{
+				ClientPrint(pPlayer->pev, HUD_PRINTCENTER, "#Command_Not_Available");
+				return;
+			}
+#endif
+
 			pPlayer->m_flNextVoteTime = gpGlobals->time + 3;
 
 			if (pPlayer->m_iTeam != UNASSIGNED)
 			{
-				if (gpGlobals->time < 180)
+				if (gpGlobals->time < CGameRules::GetVotemapMinElapsedTime())
 				{
 					ClientPrint(pPlayer->pev, HUD_PRINTCONSOLE, "#Cannot_Vote_Map");
 					return;
@@ -3249,6 +3295,26 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 		}
 	}
 #endif
+
+#ifdef REGAMEDLL_ADD
+	// Request from client for the given version of player movement control, if any
+	else if (FStrEq(pcmd, "cl_pmove_version"))
+	{
+		// cl_pmove_version <num>
+		if (CMD_ARGC_() < 2)
+			return; // invalid
+
+		PlayerMovementVersion &playerMovementVersion = pPlayer->CSPlayer()->m_MovementVersion;
+		playerMovementVersion.Set(parg1);
+
+		// If the client's requested movement version is newer, enforce it to the available one
+		if (playerMovementVersion.IsGreaterThan(PM_VERSION))
+		{
+			playerMovementVersion.Set(PM_VERSION); // reset to available version
+			CLIENT_COMMAND(pEntity, "cl_pmove_version %s\n", playerMovementVersion.ToString());
+		}
+	}
+#endif
 	else
 	{
 		if (g_pGameRules->ClientCommand_DeadOrAlive(GetClassPtr<CCSPlayer>((CBasePlayer *)pev), pcmd))
@@ -3330,7 +3396,11 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
 							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(pPlayer))
+
+							if (!UTIL_IsValidPlayer(pObserver))
+								continue;
+
+							if (pObserver->IsObservingPlayer(pPlayer))
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_off.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
@@ -3355,7 +3425,11 @@ void EXT_FUNC InternalCommand(edict_t *pEntity, const char *pcmd, const char *pa
 						for (int i = 1; i <= gpGlobals->maxClients; i++)
 						{
 							CBasePlayer *pObserver = UTIL_PlayerByIndex(i);
-							if (pObserver && pObserver->IsObservingPlayer(pPlayer))
+
+							if (!UTIL_IsValidPlayer(pObserver))
+								continue;
+
+							if (pObserver->IsObservingPlayer(pPlayer))
 							{
 								EMIT_SOUND(ENT(pObserver->pev), CHAN_ITEM, "items/nvg_on.wav", RANDOM_FLOAT(0.92, 1), ATTN_NORM);
 
@@ -3669,6 +3743,22 @@ void EXT_FUNC ServerDeactivate()
 
 void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 {
+	g_pEdicts = pEdictList;
+
+#ifdef REGAMEDLL_ADD
+	//
+	// Tells clients which version of player movement (pmove) the server is using
+	//
+	// In GoldSrc, both the server and clients handle player movement using shared code.
+	// If the server changes how movement works, due to improvements or bugfixes, it can mess up
+	// the client's movement prediction, causing desync. To avoid this, the server can tell clients what
+	// version of the movement code it's using. Clients that don't recognize or respond to this version
+	// will be treated as using the previous behavior, and the server will handle them accordingly.
+	// Clients that do recognize it will let the server know, so everything stays in sync.
+	//
+	SET_KEY_VALUE(GET_INFO_BUFFER(pEdictList), "pmove", PM_ServerVersion());
+#endif
+
 	int i;
 	CBaseEntity *pClass;
 
@@ -3723,6 +3813,9 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 
 #ifdef REGAMEDLL_ADD
 	CSGameRules()->ServerActivate();
+
+	if (location_area_info.value)
+		LoadNavigationMap();
 #endif
 }
 
@@ -4895,7 +4988,7 @@ void EXT_FUNC UpdateClientData(const edict_t *ent, int sendweapons, struct clien
 	cd->flSwimTime = pev->flSwimTime;
 	cd->waterjumptime = int(pev->teleport_time);
 
-	Q_strcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
+	Q_strlcpy(cd->physinfo, ENGINE_GETPHYSINFO(ent));
 
 	cd->maxspeed = pev->maxspeed;
 	cd->fov = pev->fov;
@@ -5106,8 +5199,10 @@ int EXT_FUNC InconsistentFile(const edict_t *pEdict, const char *filename, char 
 	if (!CVAR_GET_FLOAT("mp_consistency"))
 		return 0;
 
+	const int BufferLen = 256;
+
 	// Default behavior is to kick the player
-	Q_sprintf(disconnect_message, "Server is enforcing file consistency for %s\n", filename);
+	Q_snprintf(disconnect_message, BufferLen, "Server is enforcing file consistency for %s\n", filename);
 
 	// Kick now with specified disconnect message.
 	return 1;

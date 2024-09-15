@@ -156,38 +156,46 @@ inline char *Q_strlcpy(char *dest, const char *src, size_t size) {
 // a safe variant of strcpy that truncates the result to fit in the destination buffer
 template <size_t size>
 char *Q_strlcpy(char (&dest)[size], const char *src) {
-	return Q_strlcpy(dest, src, size);
+	return Q_strlcpy(static_cast<char *>(dest), src, size);
 }
 
 // safely concatenate two strings.
 // a variant of strcat that truncates the result to fit in the destination buffer
-template <size_t size>
-size_t Q_strlcat(char (&dest)[size], const char *src)
+inline size_t Q_strlcat(char *dest, const char *src, size_t maxDestSize)
 {
 	size_t srclen; // Length of source string
 	size_t dstlen; // Length of destination string
 
 	// Figure out how much room is left
-	dstlen = Q_strlen(dest);
-	size_t length = size - dstlen + 1;
+	dstlen = strlen(dest);
+	size_t unRemainingSize = maxDestSize - dstlen - 1;
 
-	if (!length) {
-		// No room, return immediately
-		return dstlen;
+	// Sanity check in case dest doesn't contain a null termination
+	if (dstlen > (maxDestSize - 1))
+		dstlen = maxDestSize - 1;
+
+	if (unRemainingSize <= 0 || unRemainingSize > maxDestSize)
+	{
+		dest[dstlen] = '\0';
+		return dstlen; // No room, return immediately
 	}
 
 	// Figure out how much room is needed
-	srclen = Q_strlen(src);
+	srclen = strlen(src);
 
 	// Copy the appropriate amount
-	if (srclen > length) {
-		srclen = length;
-	}
+	if (srclen > unRemainingSize)
+		srclen = unRemainingSize;
 
 	Q_memcpy(dest + dstlen, src, srclen);
 	dest[dstlen + srclen] = '\0';
-
 	return dstlen + srclen;
+}
+
+template <size_t size>
+inline size_t Q_strlcat(char (&dest)[size], const char *src)
+{
+	return Q_strlcat(static_cast<char *>(dest), src, size);
 }
 
 // Force slashes of either type to be = separator character

@@ -98,14 +98,14 @@ void CUSP::SecondaryAttack()
 		m_iWeaponState &= ~WPNSTATE_USP_SILENCED;
 
 		SendWeaponAnim(USP_DETACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 	else
 	{
 		m_iWeaponState |= WPNSTATE_USP_SILENCED;
 
 		SendWeaponAnim(USP_ATTACH_SILENCER, UseDecrement() != FALSE);
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "onehanded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "onehanded");
 	}
 
 	m_flNextSecondaryAttack = m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + USP_ADJUST_SIL_TIME;
@@ -239,7 +239,11 @@ void CUSP::USPFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0f;
+#ifdef REGAMEDLL_ADD
+	KickBack(2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
+#else
 	m_pPlayer->pev->punchangle.x -= 2.0f;
+#endif
 	ResetPlayerShieldAnim();
 }
 

@@ -477,14 +477,14 @@ void CCSBot::StartSaveProcess()
 
 void CCSBot::UpdateSaveProcess()
 {
-	char filename[256];
 	char msg[256];
 	char cmd[128];
 
-	GET_GAME_DIR(filename);
+	char gd[64]{};
+	GET_GAME_DIR(gd);
 
-	Q_strcat(filename, "\\");
-	Q_strcat(filename, TheBots->GetNavMapFilename());
+	char filename[MAX_OSPATH];
+	Q_snprintf(filename, sizeof(filename), "%s\\%s", gd, TheBots->GetNavMapFilename());
 
 	HintMessageToAllPlayers("Saving...");
 	SaveNavigationMap(filename);

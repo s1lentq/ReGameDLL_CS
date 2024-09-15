@@ -178,9 +178,10 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 				m_skins[m_nextSkin] = CloneString(decoratedName);
 
 				// construct the model filename
+				int SkinLen = Q_strlen(token) * 2 + Q_strlen("models/player//.mdl");
 				m_skinModelnames[m_nextSkin] = CloneString(token);
-				m_skinFilenames[m_nextSkin] = new char[Q_strlen(token) * 2 + Q_strlen("models/player//.mdl") + 1];
-				Q_sprintf(m_skinFilenames[m_nextSkin], "models/player/%s/%s.mdl", token, token);
+				m_skinFilenames[m_nextSkin] = new char[SkinLen + 1];
+				Q_snprintf(m_skinFilenames[m_nextSkin], SkinLen + 1, "models/player/%s/%s.mdl", token, token);
 				m_nextSkin++;
 			}
 
@@ -304,7 +305,7 @@ void BotProfileManager::Init(const char *filename, unsigned int *checksum)
 
 			// found attribute name - keep it
 			char attributeName[64];
-			Q_strcpy(attributeName, token);
+			Q_strlcpy(attributeName, token);
 
 			// eat '='
 			dataFile = SharedParse(dataFile);

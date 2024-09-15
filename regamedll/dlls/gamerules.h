@@ -31,28 +31,29 @@
 #include "game_shared/voice_gamemgr.h"
 #include "cmdhandler.h"
 
-const int MAX_RULE_BUFFER       = 1024;
-const int MAX_VOTE_MAPS         = 100;
-const int MAX_VIP_QUEUES        = 5;
-const int MAX_MONEY_THRESHOLD   = 999999; // allowable money limit in the game that can be drawn on the HUD
+const int MAX_RULE_BUFFER        = 1024;
+const int MAX_VOTE_MAPS          = 100;
+const int MAX_VIP_QUEUES         = 5;
+const int MAX_MONEY_THRESHOLD    = 999999; // allowable money limit in the game that can be drawn on the HUD
 
-const int MAX_MOTD_CHUNK        = 60;
-const int MAX_MOTD_LENGTH       = 1536;	// (MAX_MOTD_CHUNK * 4)
+const int MAX_MOTD_CHUNK         = 60;
+const int MAX_MOTD_LENGTH        = 1536;	// (MAX_MOTD_CHUNK * 4)
 
-const float ITEM_RESPAWN_TIME   = 30.0f;
-const float WEAPON_RESPAWN_TIME = 20.0f;
-const float AMMO_RESPAWN_TIME   = 20.0f;
-const float ROUND_RESPAWN_TIME  = 20.0f;
-const float ROUND_BEGIN_DELAY   = 5.0f;	// delay before beginning new round
-const float ITEM_KILL_DELAY     = 300.0f;
-const float RADIO_TIMEOUT       = 1.5f;
+const float ITEM_RESPAWN_TIME    = 30.0f;
+const float WEAPON_RESPAWN_TIME  = 20.0f;
+const float AMMO_RESPAWN_TIME    = 20.0f;
+const float ROUND_RESPAWN_TIME   = 20.0f;
+const float ROUND_BEGIN_DELAY    = 5.0f;	// delay before beginning new round
+const float ITEM_KILL_DELAY      = 300.0f;
+const float RADIO_TIMEOUT        = 1.5f;
 const float DEATH_ANIMATION_TIME = 3.0f;
+const float VOTEMAP_MIN_TIME     = 180.0f;
 
-const int MAX_INTERMISSION_TIME = 120;	// longest the intermission can last, in seconds
+const int MAX_INTERMISSION_TIME  = 120;	// longest the intermission can last, in seconds
 
 // when we are within this close to running out of entities, items
 // marked with the ITEM_FLAG_LIMITINWORLD will delay their respawn
-const int ENTITY_INTOLERANCE    = 100;
+const int ENTITY_INTOLERANCE     = 100;
 
 enum
 {
@@ -252,7 +253,8 @@ enum KillRarity
 	KILLRARITY_ASSISTEDFLASH    = 0x020, // Assister helped with a flash
 	KILLRARITY_DOMINATION_BEGAN = 0x040, // Killer player began dominating the victim (NOTE: this flag is set once)
 	KILLRARITY_DOMINATION       = 0x080, // Continues domination by the killer
-	KILLRARITY_REVENGE          = 0x100  // Revenge by the killer
+	KILLRARITY_REVENGE          = 0x100, // Revenge by the killer
+	KILLRARITY_INAIR            = 0x200  // Killer was in the air (skill to deal with high inaccuracy)
 };
 
 enum
@@ -380,6 +382,7 @@ public:
 	static float GetItemKillDelay();
 	static float GetRadioTimeout();
 	static float GetDyingTime();
+	static float GetVotemapMinElapsedTime();
 
 public:
 	BOOL m_bFreezePeriod;	// TRUE at beginning of round, set to FALSE when the period expires
@@ -741,7 +744,7 @@ public:
 	VFUNC bool HasRoundTimeExpired();
 	VFUNC bool IsBombPlanted();
 
-	void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
+	VFUNC void SendDeathMessage(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
 	int GetRarityOfKill(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, const char *killerWeaponName, bool bFlashAssist);
 	CBasePlayer *CheckAssistsToKill(CBaseEntity *pKiller, CBasePlayer *pVictim, bool &bFlashAssist);
 
@@ -985,6 +988,15 @@ inline float CGameRules::GetDyingTime()
 #endif
 }
 
+inline float CGameRules::GetVotemapMinElapsedTime()
+{
+#ifdef REGAMEDLL_ADD
+	return votemap_min_time.value;
+#else
+	return VOTEMAP_MIN_TIME;
+#endif
+}
+
 bool IsBotSpeaking();
 void SV_Continue_f();
 void SV_Tutor_Toggle_f();
@@ -997,5 +1009,4 @@ char *GetTeam(int team);
 void DestroyMapCycle(mapcycle_t *cycle);
 int ReloadMapCycleFile(char *filename, mapcycle_t *cycle);
 int CountPlayers();
-void ExtractCommandString(char *s, char *szCommand);
 int GetMapCount();

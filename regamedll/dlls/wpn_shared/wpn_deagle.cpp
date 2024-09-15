@@ -177,7 +177,11 @@ void CDEAGLE::DEAGLEFire(float flSpread, float flCycleTime, BOOL fUseSemi)
 	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8f;
+#ifdef REGAMEDLL_ADD
+	KickBack(2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
+#else
 	m_pPlayer->pev->punchangle.x -= 2;
+#endif
 	ResetPlayerShieldAnim();
 }
 
@@ -200,11 +204,23 @@ void CDEAGLE::WeaponIdle()
 
 	if (m_flTimeWeaponIdle <= UTIL_WeaponTimeBase())
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
-
-		if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
+#ifdef REGAMEDLL_FIXES
+		if (m_pPlayer->HasShield())
+#endif
 		{
-			SendWeaponAnim(DEAGLE_SHIELD_IDLE_UP, UseDecrement() != FALSE);
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0f;
+
+			if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
+			{
+				SendWeaponAnim(DEAGLE_SHIELD_IDLE_UP, UseDecrement() != FALSE);
+			}
 		}
+#ifdef REGAMEDLL_FIXES
+		else if (m_iClip)
+		{
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0625f;
+			SendWeaponAnim(DEAGLE_IDLE1, UseDecrement() != FALSE);
+		}
+#endif
 	}
 }

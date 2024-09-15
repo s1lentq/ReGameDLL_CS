@@ -480,14 +480,14 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 	{
 #ifdef REGAMEDLL_FIXES
 		m_hObserverTarget = Observer_IsValidTarget( ENTINDEX(m_hObserverTarget->edict()), forcecamera != CAMERA_MODE_SPEC_ANYONE );
-#else 
+#else
 		CBasePlayer *pTarget = m_hObserverTarget;
 
-		if (pTarget == this 
-			|| !pTarget 
-			|| pTarget->has_disconnected 
-			|| pTarget->GetObserverMode() != OBS_NONE 
-			|| (pTarget->pev->effects & EF_NODRAW) 
+		if (pTarget == this
+			|| !pTarget
+			|| pTarget->has_disconnected
+			|| pTarget->GetObserverMode() != OBS_NONE
+			|| (pTarget->pev->effects & EF_NODRAW)
 			|| (forcecamera != CAMERA_MODE_SPEC_ANYONE && pTarget->m_iTeam != m_iTeam))
 			m_hObserverTarget = nullptr;
 #endif
@@ -534,7 +534,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Observer_SetMode)(int iMode)
 	// print spepctaor mode on client screen
 
 	char modemsg[16];
-	Q_sprintf(modemsg, "#Spec_Mode%i", pev->iuser1);
+	Q_snprintf(modemsg, sizeof(modemsg), "#Spec_Mode%i", pev->iuser1);
 	ClientPrint(pev, HUD_PRINTCENTER, modemsg);
 
 	m_iObserverLastMode = iMode;

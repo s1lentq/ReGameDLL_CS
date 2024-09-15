@@ -117,7 +117,7 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState &= ~WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iDownAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED;
 		m_pPlayer->m_bShieldDrawn = false;
@@ -127,7 +127,7 @@ bool CSmokeGrenade::ShieldSecondaryFire(int iUpAnim, int iDownAnim)
 		m_iWeaponState |= WPNSTATE_SHIELD_DRAWN;
 		SendWeaponAnim(iUpAnim, UseDecrement() != FALSE);
 
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shielded");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shielded");
 
 		m_fMaxSpeed = SMOKEGRENADE_MAX_SPEED_SHIELD;
 		m_pPlayer->m_bShieldDrawn = true;
@@ -154,9 +154,9 @@ void CSmokeGrenade::SetPlayerShieldAnim()
 		return;
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shield");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shield");
 	else
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 }
 
 void CSmokeGrenade::ResetPlayerShieldAnim()
@@ -166,7 +166,7 @@ void CSmokeGrenade::ResetPlayerShieldAnim()
 
 	if (m_iWeaponState & WPNSTATE_SHIELD_DRAWN)
 	{
-		Q_strcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
+		Q_strlcpy(m_pPlayer->m_szAnimExtention, "shieldgren");
 	}
 }
 
