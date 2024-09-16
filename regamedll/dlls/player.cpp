@@ -569,13 +569,20 @@ LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayer, DeathSound)
 
 void EXT_FUNC CBasePlayer::__API_HOOK(DeathSound)()
 {
+#if REGAMEDLL_FIXES
+	// FIXED: Don't interrupt pain sounds with death sound, use any available channel instead
+	const int channel = CHAN_AUTO;
+#else
+	const int channel = CHAN_VOICE;
+#endif
+
 	// temporarily using pain sounds for death sounds
 	switch (RANDOM_LONG(1, 4))
 	{
-	case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die1.wav", VOL_NORM, ATTN_NORM); break;
-	case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die2.wav", VOL_NORM, ATTN_NORM); break;
-	case 3: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/die3.wav", VOL_NORM, ATTN_NORM); break;
-	case 4: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/death6.wav", VOL_NORM, ATTN_NORM); break;
+	case 1: EMIT_SOUND(ENT(pev), channel, "player/die1.wav", VOL_NORM, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), channel, "player/die2.wav", VOL_NORM, ATTN_NORM); break;
+	case 3: EMIT_SOUND(ENT(pev), channel, "player/die3.wav", VOL_NORM, ATTN_NORM); break;
+	case 4: EMIT_SOUND(ENT(pev), channel, "player/death6.wav", VOL_NORM, ATTN_NORM); break;
 	}
 }
 
