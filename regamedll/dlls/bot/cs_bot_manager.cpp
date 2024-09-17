@@ -1294,7 +1294,7 @@ void GetSpawnPositions()
 		}
 	}
 
-	CONSOLE_ECHO("Tatal spawns points: %i\n", totalSpawns);
+	CONSOLE_ECHO("Total spawns points: %i\n", totalSpawns);
 }
 
 // Search the map entities to determine the game scenario and define important zones.
@@ -1312,9 +1312,6 @@ void CCSBotManager::ValidateMapData()
 	}
 
 	CONSOLE_ECHO("Navigation map loaded.\n");
-#ifdef REGAMEDLL_ADD
-	GetSpawnPositions();
-#endif
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;

@@ -269,3 +269,4 @@ inline bool AreBotsAllowed()
 }
 
 void PrintAllEntities();
+void GetSpawnPositions();

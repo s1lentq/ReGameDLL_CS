@@ -5474,7 +5474,10 @@ edict_t *EXT_FUNC CBasePlayer::__API_HOOK(EntSelectSpawnPoint)()
 			return pSpot->edict();
 		}
 
-		goto CTSpawn;
+		if (m_iTeam == CT)
+			goto CTSpawn;
+		else if (m_iTeam == TERRORIST)
+			goto TSpawn;
 	}
 #endif
 	// VIP spawn point
@@ -5504,6 +5507,7 @@ CTSpawn:
 	// The terrorist spawn points
 	else if (g_pGameRules->IsDeathmatch() && m_iTeam == TERRORIST)
 	{
+TSpawn:
 		pSpot = g_pLastTerroristSpawn;
 
 		if (SelectSpawnSpot("info_player_deathmatch", pSpot))
