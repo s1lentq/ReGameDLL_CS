@@ -773,6 +773,93 @@ void IdleState::OnUpdate(CCSBot *me)
 		}
 		break;
 	}
+	case CCSBotManager::SCENARIO_ESCAPE:
+	{
+		if (me->m_iTeam == TERRORIST)
+		{
+			// if early in round, pick a random zone, otherwise pick closest zone
+			const float earlyTime = 20.0f;
+			const CCSBotManager::Zone *zone = nullptr;
+
+			if (TheCSBots()->GetElapsedRoundTime() < earlyTime)
+			{
+				// pick random zone
+				zone = TheCSBots()->GetRandomZone();
+			}
+			else
+			{
+				// pick closest zone
+				zone = TheCSBots()->GetClosestZone(me->GetLastKnownArea(), PathCost(me));
+			}
+
+			if (zone)
+			{
+				// pick a random spot within the escape zone
+				const Vector *pos = TheCSBots()->GetRandomPositionInZone(zone);
+				if (pos)
+				{
+					// move to escape zone
+				//	me->SetTask(CCSBot::VIP_ESCAPE);
+					me->Run();
+					me->MoveTo(pos);
+					return;
+				}
+			}
+		}
+		// CT
+		else
+		{
+			if (me->IsSniper())
+			{
+				if (RANDOM_FLOAT(0, 100) <= defenseSniperCampChance)
+				{
+					// snipe escape zone(s)
+					const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
+					if (zone)
+					{
+						CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
+						if (area)
+						{
+							me->SetTask(CCSBot::MOVE_TO_SNIPER_SPOT);
+							me->Hide(area, -1.0, sniperHideRange);
+							me->SetDisposition(CCSBot::OPPORTUNITY_FIRE);
+							me->PrintIfWatched("Sniping near escape zone\n");
+							return;
+						}
+					}
+				}
+			}
+
+			// rogues just hunt, unless they want to snipe
+			// if the whole team has decided to rush, hunt
+			if (me->IsRogue() || TheCSBots()->IsDefenseRushing())
+				break;
+
+			// the lower our morale gets, the more we want to camp the escape zone(s)
+			float guardEscapeZoneChance = -34.0f * me->GetMorale();
+
+			if (RANDOM_FLOAT(0.0f, 100.0f) < guardEscapeZoneChance)
+			{
+				// guard escape zone(s)
+				const CCSBotManager::Zone *zone = TheCSBots()->GetRandomZone();
+				if (zone)
+				{
+					CNavArea *area = TheCSBots()->GetRandomAreaInZone(zone);
+					if (area)
+					{
+						// guard the escape zone - stay closer if our morale is low
+						//me->SetTask(CCSBot::GUARD_VIP_ESCAPE_ZONE);
+						me->PrintIfWatched("I'm guarding an escape zone\n");
+
+						float escapeGuardRange = 750.0f + 250.0f * (me->GetMorale() + 3);
+						me->Hide(area, -1.0, escapeGuardRange);
+						me->SetDisposition(CCSBot::OPPORTUNITY_FIRE);
+						return;
+					}
+				}
+			}
+		}
+	}
 	// deathmatch
 	default:
 	{

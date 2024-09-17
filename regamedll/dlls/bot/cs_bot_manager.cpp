@@ -1213,6 +1213,13 @@ void CCSBotManager::ValidateMapData()
 			found = true;
 			isLegacy = false;
 		}
+		else if (FClassnameIs(pEntity->pev, "func_escapezone"))
+		{
+			m_gameScenario = SCENARIO_ESCAPE;
+			found = true;
+			isLegacy = false;
+		}
+
 
 		if (found)
 		{
