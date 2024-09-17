@@ -29,6 +29,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | swapteams                           | Swap the teams and restart the game (1 sec delay to restart by default).<br/> Args: <br/>`0` - swap teams without restart. <br/> `>0.001` - time delay in seconds to restart the round after swap. |
 | give                                | Give weapon command.<br/> Args:<br/><weapon_name><br/>Usage:<br/>`give weapon_ak47`<br/>`give weapon_usp`<br/><br/>NOTE: `sv_cheats 1` required. |
 | impulse 255                         | Give all weapons.<br/><br/>NOTE: `sv_cheats 1` required. |
+| impulse 200                         | Noclip with air acceleration.<br/><br/>NOTE: `sv_cheats 1` required. |
 
 ## Configuration (cvars)
 <details>
