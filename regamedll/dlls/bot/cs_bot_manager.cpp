@@ -1146,6 +1146,157 @@ private:
 	CCSBotManager::Zone *m_zone;
 };
 
+LINK_ENTITY_TO_CLASS(info_spawn_point, CPointEntity, CCSPointEntity)
+
+inline bool IsFreeSpace(Vector vecOrigin, int iHullNumber, edict_t *pSkipEnt = nullptr)
+{
+	if (UTIL_PointContents(vecOrigin) != CONTENTS_EMPTY)
+		return false;
+
+	TraceResult trace;
+	UTIL_TraceHull(vecOrigin, vecOrigin, dont_ignore_monsters, iHullNumber, pSkipEnt, &trace);
+
+	return (!trace.fStartSolid && !trace.fAllSolid && trace.fInOpen);
+}
+
+inline bool pointInRadius(Vector vecOrigin, float radius)
+{
+	CBaseEntity *pEntity = nullptr;
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, vecOrigin, radius)))
+	{
+		if (FClassnameIs(pEntity->edict(), "info_spawn_point"))
+			return true;
+	}
+
+	return false;
+}
+
+// a simple algorithm that searches for the farthest point (so that the player does not look at the wall)
+inline Vector GetBestAngle(const Vector &vecStart)
+{
+	const float ANGLE_STEP = 45.0f;
+	float bestAngle = 0.0f;
+	float bestDistance = 0.0f;
+	Vector vecBestAngle = Vector(0, -1, 0);
+
+	for (float angleYaw = 0.0f; angleYaw <= 360.0f; angleYaw += ANGLE_STEP)
+	{
+		TraceResult tr;
+		UTIL_MakeVectors(Vector(0, angleYaw, 0));
+
+		Vector vecEnd(vecStart + gpGlobals->v_forward * 8192);
+		UTIL_TraceLine(vecStart, vecEnd, ignore_monsters, nullptr, &tr);
+
+		float distance = (vecStart - tr.vecEndPos).Length();
+
+		if (distance > bestDistance)
+		{
+			bestDistance = distance;
+			vecBestAngle.y = angleYaw;
+		}
+	}
+
+	return vecBestAngle;
+}
+
+// this function from leaked csgo sources 2020y
+inline bool IsValidArea(CNavArea *area)
+{
+	ShortestPathCost cost;
+	bool bNotOrphaned;
+
+	// check that we can path from the nav area to a ct spawner to confirm it isn't orphaned.
+	CBaseEntity *CTSpawn = UTIL_FindEntityByClassname(nullptr, "info_player_start");
+
+	if (CTSpawn)
+	{
+		CNavArea *CTSpawnArea = TheNavAreaGrid.GetNearestNavArea(&CTSpawn->pev->origin);
+		bNotOrphaned = NavAreaBuildPath(area, CTSpawnArea, nullptr, cost);
+
+		if (bNotOrphaned)
+			return true;
+	}
+
+	// double check that we can path from the nav area to a t spawner to confirm it isn't orphaned.
+	CBaseEntity *TSpawn = UTIL_FindEntityByClassname(nullptr, "info_player_deathmatch");
+
+	if (TSpawn)
+	{
+		CNavArea *TSpawnArea = TheNavAreaGrid.GetNearestNavArea(&TSpawn->pev->origin);
+		bNotOrphaned = NavAreaBuildPath(area, TSpawnArea, nullptr, cost);
+
+		if (bNotOrphaned)
+			return true;
+	}
+
+	return false;
+}
+
+void GetSpawnPositions()
+{
+	const float MIN_AREA_SIZE = 32.0f;
+	const int MAX_SPAWNS_POINTS = 128;
+	const float MAX_SLOPE = 0.85f;
+
+	int totalSpawns = 0;
+
+	for (NavAreaList::iterator iter = TheNavAreaList.begin(); iter != TheNavAreaList.end(); iter++)
+	{
+		if (totalSpawns >= MAX_SPAWNS_POINTS)
+			break;
+
+		CNavArea *area = *iter;
+
+		if (!area)
+			continue;
+
+		// ignore small areas
+		if (area->GetSizeX() < MIN_AREA_SIZE || area->GetSizeY() < MIN_AREA_SIZE)
+			continue;
+
+		// ignore areas jump, crouch etc
+		if (area->GetAttributes())
+			continue;
+
+		if (area->GetAreaSlope() < MAX_SLOPE)
+		{
+			//CONSOLE_ECHO("Skip area slope: %0.3f\n", area->GetAreaSlope());
+			continue;
+		}
+
+		Vector vecOrigin = *area->GetCenter() + Vector(0, 0, HalfHumanHeight + 5);
+
+		if (!IsFreeSpace(vecOrigin, human_hull))
+		{
+			//CONSOLE_ECHO("No free space!\n");
+			continue;
+		}
+
+		if (pointInRadius(vecOrigin, 128.0f))
+			continue;
+
+		if (!IsValidArea(area))
+			continue;
+
+		Vector bestAngle = GetBestAngle(vecOrigin);
+
+		if (bestAngle.y != -1)
+		{
+			CBaseEntity* pPoint = CBaseEntity::Create("info_spawn_point", vecOrigin, bestAngle, nullptr);
+
+			if (pPoint)
+			{
+				totalSpawns++;
+				//CONSOLE_ECHO("Add spawn at x:%f y:%f z:%f with angle %0.1f slope %0.3f \n", vecOrigin.x, vecOrigin.y, vecOrigin.z, bestAngle.y, area->GetAreaSlope());
+				//SET_MODEL(ENT(pPoint->pev), "models/player.mdl");
+				//pPoint->pev->sequence = ACT_IDLE;
+			}
+		}
+	}
+
+	CONSOLE_ECHO("Tatal spawns points: %i\n", totalSpawns);
+}
+
 // Search the map entities to determine the game scenario and define important zones.
 void CCSBotManager::ValidateMapData()
 {
@@ -1161,6 +1312,9 @@ void CCSBotManager::ValidateMapData()
 	}
 
 	CONSOLE_ECHO("Navigation map loaded.\n");
+#ifdef REGAMEDLL_ADD
+	GetSpawnPositions();
+#endif
 
 	m_zoneCount = 0;
 	m_gameScenario = SCENARIO_DEATHMATCH;
