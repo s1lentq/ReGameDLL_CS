@@ -234,6 +234,7 @@ set(GAMEDLL_SRCS
 	"dlls/API/CSPlayerWeapon.cpp"
 	"dlls/addons/item_airbox.cpp"
 	"dlls/addons/point_command.cpp"
+	"dlls/addons/trigger_bomb_reset.cpp"
 	"dlls/addons/trigger_random.cpp"
 	"dlls/addons/trigger_setorigin.cpp"
 	"dlls/wpn_shared/wpn_ak47.cpp"
