@@ -816,6 +816,24 @@ struct ReGameFuncs_t {
 	void (*TextureTypePlaySound)(TraceResult *ptr, Vector vecSrc, Vector vecEnd, int iBulletType);
 	class CWeaponBox *(*CreateWeaponBox)(CBasePlayerItem *pItem, CBasePlayer *pPlayerOwner, const char *modelName, Vector &origin, Vector &angles, Vector &velocity, float lifeTime, bool packAmmo);
 	class CGrenade *(*SpawnGrenade)(WeaponIdType weaponId, entvars_t *pevOwner, Vector &vecSrc, Vector &vecThrow, float time, int iTeam, unsigned short usEvent);
+	int (*UTIL_SharedRandomLong)(unsigned int seed, int low, int high);
+	float (*UTIL_SharedRandomFloat)(unsigned int seed, float low, float high);
+	void (*UTIL_SetGroupTrace)(int groupmask, int op);
+	void (*UTIL_UnsetGroupTrace)();
+	int (*UTIL_EntitiesInBox)(CBaseEntity **pList, int listMax, const Vector &mins, const Vector &maxs, int flagMask);
+	class CBaseEntity *(*UTIL_FindEntityInSphere)(CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius);
+	void (*UTIL_ScreenShake)(const Vector &center, float amplitude, float frequency, float duration, float radius);
+	void (*UTIL_ScreenFadeAll)(const Vector &color, float fadeTime, float fadeHold, int alpha, int flags);
+	void (*UTIL_ScreenFade)(CBaseEntity *pEntity, const Vector &color, float fadeTime, float fadeHold, int alpha, int flags);
+	void (*UTIL_SetSize)(entvars_t *pev, const Vector &vecMin, const Vector &vecMax);
+	void (*UTIL_SetOrigin)(entvars_t *pev, const Vector &vecOrigin);
+	int (*UTIL_PointContents)(const Vector &vec);
+	float (*UTIL_WaterLevel)(const Vector &position, float minz, float maxz);
+	void (*UTIL_Bubbles)(Vector mins, Vector maxs, int count);
+	void (*UTIL_BubbleTrail)(Vector from, Vector to, int count);
+	char (*UTIL_TextureHit)(TraceResult *ptr, Vector vecSrc, Vector vecEnd);
+	int (*UTIL_CountEntities)(const char *szName);
+	bool (*UTIL_IsSpawnPointOccupied)(CBaseEntity *pSpot);
 };
 
 class IReGameApi {
