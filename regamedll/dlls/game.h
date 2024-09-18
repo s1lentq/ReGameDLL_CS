@@ -208,11 +208,14 @@ extern cvar_t weapon_respawn_time;
 extern cvar_t ammo_respawn_time;
 extern cvar_t vote_flags;
 extern cvar_t votemap_min_time;
+extern cvar_t flymove_method;
 
 #endif
 
 extern cvar_t scoreboard_showmoney;
 extern cvar_t scoreboard_showhealth;
 extern cvar_t scoreboard_showdefkit;
+
+
 
 void GameDLLInit();
