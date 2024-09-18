@@ -1644,6 +1644,10 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	// Give default secondary equipment
 	{
 		char *secondaryString = NULL;
+		int secondaryCount = 0;
+		const int MAX_SECONDARY = 13; // x2 + 1
+		WeaponInfoStruct *secondaryWeaponInfoArray[MAX_SECONDARY];
+
 		if (m_iTeam == CT)
 			secondaryString = ct_default_weapons_secondary.string;
 		else if (m_iTeam == TERRORIST)
@@ -1665,11 +1669,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 				if (weaponInfo) {
 					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
 					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsSecondaryWeapon(iItemID)) {
-						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+						if (default_weapons_random.value != 0.0f) {
+							if (secondaryCount < MAX_SECONDARY) {
+								secondaryWeaponInfoArray[secondaryCount++] = weaponInfo;
+							}
+						}
+						else {
+							GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+						}
 					}
 				}
 
 				secondaryString = SharedParse(secondaryString);
+			}
+
+			if (default_weapons_random.value != 0.0f) {
+				WeaponInfoStruct *weaponInfo = secondaryWeaponInfoArray[RANDOM_LONG(0, secondaryCount - 1)];
+				if (weaponInfo)
+					GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
 			}
 		}
 	}
@@ -1677,6 +1694,9 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 	// Give default primary equipment
 	{
 		char *primaryString = NULL;
+		int primaryCount = 0;
+		const int MAX_PRIMARY = 39; // x2 + 1
+		WeaponInfoStruct *primaryWeaponInfoArray[MAX_PRIMARY];
 
 		if (m_iTeam == CT)
 			primaryString = ct_default_weapons_primary.string;
@@ -1699,11 +1719,24 @@ void EXT_FUNC CBasePlayer::__API_HOOK(GiveDefaultItems)()
 				if (weaponInfo) {
 					const auto iItemID = GetItemIdByWeaponId(weaponInfo->id);
 					if (iItemID != ITEM_NONE && !HasRestrictItem(iItemID, ITEM_TYPE_EQUIPPED) && IsPrimaryWeapon(iItemID)) {
-						GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+						if (default_weapons_random.value != 0.0f) {
+							if (primaryCount < MAX_PRIMARY) {
+								primaryWeaponInfoArray[primaryCount++] = weaponInfo;
+							}
+						}
+						else {
+							GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
+						}
 					}
 				}
 
 				primaryString = SharedParse(primaryString);
+			}
+
+			if (default_weapons_random.value != 0.0f) {
+				WeaponInfoStruct *weaponInfo = primaryWeaponInfoArray[RANDOM_LONG(0, primaryCount - 1)];
+				if (weaponInfo)
+					GiveWeapon(weaponInfo->gunClipSize * iAmountOfBPAmmo, weaponInfo->entityName);
 			}
 		}
 	}

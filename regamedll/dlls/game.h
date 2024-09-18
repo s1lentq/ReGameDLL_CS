@@ -186,6 +186,7 @@ extern cvar_t t_default_grenades;
 extern cvar_t t_give_player_knife;
 extern cvar_t t_default_weapons_secondary;
 extern cvar_t t_default_weapons_primary;
+extern cvar_t default_weapons_random;
 extern cvar_t free_armor;
 extern cvar_t teamflash;
 extern cvar_t allchat;

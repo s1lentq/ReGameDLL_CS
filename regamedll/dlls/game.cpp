@@ -160,6 +160,7 @@ cvar_t t_default_grenades                = { "mp_t_default_grenades", "", 0, 0.0
 cvar_t t_give_player_knife               = { "mp_t_give_player_knife", "1", 0, 1.0f, nullptr };
 cvar_t t_default_weapons_secondary       = { "mp_t_default_weapons_secondary", "glock18", 0, 0.0f, nullptr };
 cvar_t t_default_weapons_primary         = { "mp_t_default_weapons_primary", "", 0, 0.0f, nullptr };
+cvar_t default_weapons_random            = { "mp_default_weapons_random", "", 0, 0.0f, nullptr };
 cvar_t free_armor                        = { "mp_free_armor", "0", 0, 0.0f, nullptr };
 cvar_t teamflash                         = { "mp_team_flash", "1", 0, 1.0f, nullptr };
 cvar_t allchat                           = { "sv_allchat", "0", 0, 0.0f, nullptr };
@@ -431,6 +432,7 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&t_give_player_knife);
 	CVAR_REGISTER(&t_default_weapons_secondary);
 	CVAR_REGISTER(&t_default_weapons_primary);
+	CVAR_REGISTER(&default_weapons_random);
 	CVAR_REGISTER(&free_armor);
 	CVAR_REGISTER(&teamflash);
 	CVAR_REGISTER(&allchat);
