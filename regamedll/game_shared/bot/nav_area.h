@@ -345,6 +345,25 @@ public:
 	void AddLadderUp(CNavLadder *ladder) { m_ladder[LADDER_UP].push_back(ladder); }
 	void AddLadderDown(CNavLadder *ladder) { m_ladder[LADDER_DOWN].push_back(ladder); }
 
+	inline float GetAreaSlope()
+	{
+		Vector u, v;
+
+		// compute our unit surface normal
+		u.x = m_extent.hi.x - m_extent.lo.x;
+		u.y = 0.0f;
+		u.z = m_neZ - m_extent.lo.z;
+
+		v.x = 0.0f;
+		v.y = m_extent.hi.y - m_extent.lo.y;
+		v.z = m_swZ - m_extent.lo.z;
+
+		Vector normal = CrossProduct(u, v);
+		normal.NormalizeInPlace();
+
+		return normal.z;
+	}
+
 private:
 	friend void ConnectGeneratedAreas();
 	friend void MergeGeneratedAreas();
