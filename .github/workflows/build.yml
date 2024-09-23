@@ -32,7 +32,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
         with:
-          vs-version: '16.8'
+          vs-version: '16'
 
       - name: Build and Run unittests
         run: |
@@ -58,21 +58,16 @@ jobs:
           move msvc\${{ env.buildRelease }}\mp.pdb publish\debug\mp.pdb
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         with:
           name: win32
           path: publish/*
 
   testdemos:
     name: 'Test demos'
-    runs-on: ubuntu-20.04
-    container: s1lentq/testdemos:latest
+    runs-on: ubuntu-latest
+    container: rehldsorg/testdemos:latest
     needs: [windows]
-
-    env:
-      WINEDEBUG: -all
-      WINEDLLOVERRIDES: mshtml=
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     defaults:
       run:
@@ -81,7 +76,7 @@ jobs:
 
     steps:
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win32
 
@@ -199,7 +194,7 @@ jobs:
         shell: bash
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         id: upload-job
         with:
           name: linux32
@@ -218,12 +213,12 @@ jobs:
 
     steps:
       - name: Deploying linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux32
 
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win32
 
