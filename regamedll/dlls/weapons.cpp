@@ -497,8 +497,9 @@ void CBasePlayerItem::FallThink()
 	}
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayerItem, Materialize)
 // Materialize - make a CBasePlayerItem visible and tangible
-void CBasePlayerItem::Materialize()
+void EXT_FUNC CBasePlayerItem::__API_HOOK(Materialize)()
 {
 	if (pev->effects & EF_NODRAW)
 	{
@@ -553,9 +554,10 @@ void CBasePlayerItem::AttemptToMaterialize()
 	pev->nextthink = gpGlobals->time + time;
 }
 
+LINK_HOOK_CLASS_VOID_CHAIN2(CBasePlayerItem, CheckRespawn)
 // CheckRespawn - a player is taking this weapon, should
 // it respawn?
-void CBasePlayerItem::CheckRespawn()
+void EXT_FUNC CBasePlayerItem::__API_HOOK(CheckRespawn)()
 {
 	switch (g_pGameRules->WeaponShouldRespawn(this))
 	{
