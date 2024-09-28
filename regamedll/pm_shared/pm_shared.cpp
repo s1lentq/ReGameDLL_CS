@@ -886,6 +886,18 @@ void PM_WalkMove()
 	{
 		real_t flRatio = (100 - pmove->fuser2 * 0.001 * 19) * 0.01;
 
+#ifdef REGAMEDLL_ADD
+		// change stamina restoration speed by fps reference
+		if (stamina_restore_rate.value > 0.0f)
+		{
+			real_t flReferenceFrametime = 1.0f / stamina_restore_rate.value;
+
+			float flFrametimeRatio = pmove->frametime / flReferenceFrametime;
+
+			flRatio = pow(flRatio, flFrametimeRatio);
+		}
+#endif
+
 		pmove->velocity[0] *= flRatio;
 		pmove->velocity[1] *= flRatio;
 	}
@@ -2606,6 +2618,7 @@ void EXT_FUNC __API_HOOK(PM_Jump)()
 	{
 		// NOTE: don't do it in .f (float)
 		real_t flRatio = (100.0 - pmove->fuser2 * 0.001 * 19.0) * 0.01;
+
 		pmove->velocity[2] *= flRatio;
 	}
 
