@@ -4296,7 +4296,7 @@ void ClientPrecache()
 	PRECACHE_GENERIC("sprites/scope_arc_ne.tga");
 	PRECACHE_GENERIC("sprites/scope_arc_sw.tga");
 
-	m_usResetDecals = g_engfuncs.pfnPrecacheEvent(1, "events/decal_reset.sc");
+	m_usResetDecals = PRECACHE_EVENT(1, "events/decal_reset.sc");
 }
 
 const char *EXT_FUNC GetGameDescription()
