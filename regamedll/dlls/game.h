@@ -200,6 +200,7 @@ extern cvar_t deathmsg_flags;
 extern cvar_t assist_damage_threshold;
 extern cvar_t freezetime_duck;
 extern cvar_t freezetime_jump;
+extern cvar_t jump_height;
 extern cvar_t defuser_allocation;
 extern cvar_t location_area_info;
 extern cvar_t chat_loc_fallback;
