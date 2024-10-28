@@ -2429,13 +2429,13 @@ inline real_t PM_JumpHeight(bool longjump)
 #ifdef REGAMEDLL_API
 	if (longjump)
 	{
-		if(pmoveplayer->m_flLongJumpHeight > 0.0)
+		if (pmoveplayer->m_flLongJumpHeight > 0.0)
 			return pmoveplayer->m_flLongJumpHeight;
 	}
 	else if (pmoveplayer->m_flJumpHeight > 0.0)
 		return pmoveplayer->m_flJumpHeight;
 #endif
-	return Q_sqrt(2.0 * 800.0f * (longjump ? 56.0f : 45.0f));
+	return Q_sqrt(2.0 * 800.0f * (longjump ? 56.0f : Q_max(jump_height.value, 0.0f)));
 }
 
 LINK_HOOK_VOID_CHAIN2(PM_Jump)
