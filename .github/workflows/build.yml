@@ -32,7 +32,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
         with:
-          vs-version: '16.8'
+          vs-version: '16'
 
       - name: Build and Run unittests
         run: |
@@ -58,7 +58,7 @@ jobs:
           move msvc\${{ env.buildRelease }}\mp.pdb publish\debug\mp.pdb
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         with:
           name: win32
           path: publish/*
@@ -69,14 +69,10 @@ jobs:
     container: rehldsorg/testdemos:latest
     needs: [windows]
 
-    env:
-      WINEDEBUG: -all
-      WINEDLLOVERRIDES: mshtml=
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-
     defaults:
       run:
         shell: bash
+        working-directory: /opt/HLDS
 
     strategy:
       fail-fast: false
@@ -87,7 +83,7 @@ jobs:
 
     steps:
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win32
 
@@ -149,7 +145,7 @@ jobs:
           fi
         shell: bash
 
-      - name: Build
+      - name: Build using GCC Compiler
         run: |
           rm -rf build && CC=gcc CXX=g++ cmake -B build && cmake --build build -j8
 
@@ -177,17 +173,11 @@ jobs:
         shell: bash
 
       - name: Deploy artifacts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4
         id: upload-job
         with:
           name: linux32
           path: publish/*
-
-      - name: Cleanup temporary artifacts
-        if: success() && steps.upload-job.outcome == 'success'
-        run: |
-          rm -rf cssdk
-          rm -f appversion.h
 
   publish:
     name: 'Publish'
@@ -196,12 +186,12 @@ jobs:
 
     steps:
       - name: Deploying linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux32
 
       - name: Deploying windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: win32
 
@@ -242,8 +232,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.API_TOKEN }}
 
-      - name: Cleanup temporary artifacts
-        if: success() && steps.publish-job.outcome == 'success'
-        run: |
-          rm -rf bin dist debug cssdk
-          rm -f *.zip appversion.h
