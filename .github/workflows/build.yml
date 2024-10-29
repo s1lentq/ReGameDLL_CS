@@ -105,7 +105,8 @@ jobs:
 
   linux:
     name: 'Linux'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container: debian:11-slim
 
     steps:
       - name: Checkout
@@ -114,11 +115,16 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Check dependencies
+      - name: Install dependencies
         run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y gcc-multilib g++-multilib
+          dpkg --add-architecture i386
+          apt-get update
+          apt-get install -y \
+            gcc-multilib g++-multilib \
+            build-essential \
+            libc6-dev libc6-dev-i386 \
+            git cmake rsync \
+            g++ gcc
 
       - name: Build and Run unittests
         run: |
