@@ -641,9 +641,184 @@ void PM_FixupGravityVelocity()
 	pmove->velocity[2] -= (pmove->movevars->gravity * pmove->frametime * ent_gravity * 0.5);
 	PM_CheckVelocity();
 }
+#ifdef REGAMEDLL_ADD
+int PM_FlyMove_New()
+{
+	int			bumpcount, numbumps;
+	vec3_t		dir;
+	float		d;
+	int			numplanes;
+	vec3_t		planes[MAX_CLIP_PLANES];
+	vec3_t		primal_velocity;
+	vec3_t		clipVelocity;
+	int			i, j, k;
+	pmtrace_t	trace;
+	vec3_t		end;
+	float		time_left;
+	float		into;
+	vec3_t		endVelocity;
+	vec3_t		endClipVelocity;
+	int blocked;
 
+	numbumps = 4;
+
+	VectorCopy(pmove->velocity, primal_velocity);
+
+
+	time_left = pmove->frametime;
+
+	numplanes = 0;
+	blocked = 0x00;	// Assume not blocked
+
+	// never turn against original velocity
+	VectorCopy(pmove->velocity, planes[numplanes]);
+	VectorNormalize(planes[numplanes]);
+	numplanes++;
+
+	for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
+
+		// calculate position we are trying to move to
+		VectorMA(pmove->origin, time_left, pmove->velocity, end);
+
+		// see if we can make it there
+		trace = pmove->PM_PlayerTrace(pmove->origin, end, PM_NORMAL, -1);
+
+		if (trace.allsolid) {
+			// entity is completely trapped in another solid
+			pmove->velocity[2] = 0;	// don't build up falling damage, but allow sideways acceleration
+			return 4;
+		}
+
+		if (trace.fraction > 0) {
+			// actually covered some distance
+			VectorCopy(trace.endpos, pmove->origin);
+		}
+
+		if (trace.fraction == 1) {
+			break;		// moved the entire distance
+		}
+
+		// save entity for contact
+		PM_AddToTouched(trace, pmove->velocity);
+
+		// If the plane we hit has a high z component in the normal, then
+		// it's probably a floor
+		if (trace.plane.normal[2] > 0.7f)
+		{
+			// floor
+			blocked |= 0x01;
+		}
+
+		// If the plane has a zero z component in the normal, then it's a
+		// step or wall
+		if (!trace.plane.normal[2])
+		{
+			// step / wall
+			blocked |= 0x02;
+		}
+
+		time_left -= time_left * trace.fraction;
+
+		if (numplanes >= MAX_CLIP_PLANES) {
+			// this shouldn't really happen
+			VectorClear(pmove->velocity);
+			break;
+		}
+
+		//
+		// if this is the same plane we hit before, nudge velocity
+		// out along it, which fixes some epsilon issues with
+		// non-axial planes
+		//
+		for (i = 0; i < numplanes; i++) {
+			if (DotProduct(trace.plane.normal, planes[i]) > 0.99) {
+				VectorAdd(trace.plane.normal, pmove->velocity, pmove->velocity);
+				break;
+			}
+		}
+		if (i < numplanes) {
+			continue;
+		}
+		VectorCopy(trace.plane.normal, planes[numplanes]);
+		numplanes++;
+
+		//
+		// modify velocity so it parallels all of the clip planes
+		//
+
+		// find a plane that it enters
+		for (i = 0; i < numplanes; i++) {
+			into = DotProduct(pmove->velocity, planes[i]);
+			if (into >= 0.1) {
+				continue;		// move doesn't interact with the plane
+			}
+
+			// slide along the plane
+			PM_ClipVelocity(pmove->velocity, planes[i], clipVelocity, 1);
+
+			// slide along the plane
+			PM_ClipVelocity(endVelocity, planes[i], endClipVelocity, 1);
+
+			// see if there is a second plane that the new move enters
+			for (j = 0; j < numplanes; j++) {
+				if (j == i) {
+					continue;
+				}
+				if (DotProduct(clipVelocity, planes[j]) >= 0.1) {
+					continue;		// move doesn't interact with the plane
+				}
+
+				// try clipping the move to the plane
+				PM_ClipVelocity(clipVelocity, planes[j], clipVelocity, 1);
+				PM_ClipVelocity(endClipVelocity, planes[j], endClipVelocity, 1);
+
+				// see if it goes back into the first clip plane
+				if (DotProduct(clipVelocity, planes[i]) >= 0) {
+					continue;
+				}
+
+				// slide the original velocity along the crease
+				CrossProduct(planes[i], planes[j], dir);
+				VectorNormalize(dir);
+				d = DotProduct(dir, pmove->velocity);
+				VectorScale(dir, d, clipVelocity);
+
+				CrossProduct(planes[i], planes[j], dir);
+				VectorNormalize(dir);
+				d = DotProduct(dir, endVelocity);
+				VectorScale(dir, d, endClipVelocity);
+
+				// see if there is a third plane the the new move enters
+				for (k = 0; k < numplanes; k++) {
+					if (k == i || k == j) {
+						continue;
+					}
+					if (DotProduct(clipVelocity, planes[k]) >= 0.1) {
+						continue;		// move doesn't interact with the plane
+					}
+
+					// stop dead at a tripple plane interaction
+					VectorClear(pmove->velocity);
+					return 4;
+				}
+			}
+
+			// if we have fixed all interactions, try another move
+			VectorCopy(clipVelocity, pmove->velocity);
+			VectorCopy(endClipVelocity, endVelocity);
+			break;
+		}
+	}
+
+	return blocked;
+}
+#endif
 int PM_FlyMove()
 {
+#ifdef REGAMEDLL_ADD
+	if (flymove_method.value)
+		return PM_FlyMove_New();
+#endif
 	int bumpcount, numbumps;
 	vec3_t dir;
 	float d;
