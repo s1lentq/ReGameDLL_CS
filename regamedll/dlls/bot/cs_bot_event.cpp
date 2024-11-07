@@ -56,6 +56,11 @@ void CCSBot::OnEvent(GameEventType event, CBaseEntity *pEntity, CBaseEntity *pOt
 			DecreaseMorale();
 		}
 		break;
+#ifdef REGAMEDLL_FIXES
+	case EVENT_NEW_MATCH:
+		m_morale = POSITIVE;		// starting a new round makes everyone a little happy
+		break;
+#endif
 	}
 
 	if (!IsAlive())
