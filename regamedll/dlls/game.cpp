@@ -179,7 +179,7 @@ cvar_t legacy_vehicle_block               = { "mp_legacy_vehicle_block", "1", 0,
 cvar_t dying_time              = { "mp_dying_time", "3.0", 0, 3.0f, nullptr };
 cvar_t defuser_allocation      = { "mp_defuser_allocation", "0", 0, 0.0f, nullptr };
 cvar_t location_area_info      = { "mp_location_area_info", "0", 0, 0.0f, nullptr };
-cvar_t chat_loc_fallback       = { "mp_chat_loc_fallback", "1", 1, 0.0f, nullptr };
+cvar_t chat_loc_fallback       = { "mp_chat_loc_fallback", "1", 0, 1.0f, nullptr };
 
 cvar_t item_respawn_time       = { "mp_item_respawn_time", "30", FCVAR_SERVER, 30.0f, nullptr };
 cvar_t weapon_respawn_time     = { "mp_weapon_respawn_time", "20", FCVAR_SERVER, 20.0f, nullptr };
