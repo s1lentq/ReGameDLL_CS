@@ -2462,8 +2462,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			break;
 		}
 
+		// UNDO: This code was intended to set the victim's angle with the throw direction
+		// For bots, it works correctly because they do not send angle updates to the server,
+		// However, for players, the client overrides the angle with its own view direction in the next frame,
+		// causing a visual glitch where the model rotates excessively
+		// The issue is more noticeable with high cmdrate values (e.g., cl_cmdrate >100)
+		// Disabled to avoid this artifact
+#ifndef REGAMEDLL_FIXES
 		pev->angles.y = UTIL_VecToAngles(-pev->velocity).y;
 		pev->v_angle.y = pev->angles.y;
+#endif
 
 		m_iThrowDirection = THROW_NONE;
 	}
@@ -2952,10 +2960,8 @@ void EXT_FUNC CBasePlayer::__API_HOOK(SetAnimation)(PLAYER_ANIM playerAnim)
 						break;
 					case 3:
 					case 4:
-#ifndef REGAMEDLL_FIXES
 						m_iThrowDirection = THROW_FORWARD;
 						break;
-#endif
 					case 5:
 					case 6:
 						m_iThrowDirection = THROW_HITVEL;
