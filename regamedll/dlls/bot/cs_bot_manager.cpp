@@ -889,12 +889,10 @@ void CCSBotManager::MaintainBotQuota()
 	if (m_isLearningMap)
 		return;
 
-	int totalHumansInGame = UTIL_HumansInGame();
-	int humanPlayersInGame = UTIL_HumansInGame(IGNORE_SPECTATORS);
-	int spectatorPlayersInGame = UTIL_SpectatorsInGame();
+	int humanPlayersInGame = UTIL_HumansInGame();
 
 	// don't add bots until local player has been registered, to make sure he's player ID #1
-	if (!IS_DEDICATED_SERVER() && totalHumansInGame == 0)
+	if (!IS_DEDICATED_SERVER() && humanPlayersInGame == 0)
 		return;
 
 	int desiredBotCount = int(cv_bot_quota.value);
@@ -949,7 +947,7 @@ void CCSBotManager::MaintainBotQuota()
 	// wait for a player to join, if necessary
 	if (cv_bot_join_after_player.value > 0.0)
 	{
-		if (humanPlayersInGame == 0 && spectatorPlayersInGame == 0)
+		if (humanPlayersInGame == 0)
 			desiredBotCount = 0;
 	}
 
