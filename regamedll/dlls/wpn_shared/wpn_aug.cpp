@@ -73,6 +73,15 @@ void CAUG::SecondaryAttack()
 	else
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 90;
 
+#ifdef REGAMEDLL_FIXES
+	if (TheBots)
+	{
+		TheBots->OnEvent(EVENT_WEAPON_ZOOMED, m_pPlayer);
+	}
+
+	m_pPlayer->ResetMaxSpeed();
+#endif
+
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3f;
 }
 
