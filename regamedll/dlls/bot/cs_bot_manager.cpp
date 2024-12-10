@@ -1288,8 +1288,15 @@ void GetSpawnPositions()
 			{
 				totalSpawns++;
 				//CONSOLE_ECHO("Add spawn at x:%f y:%f z:%f with angle %0.1f slope %0.3f \n", vecOrigin.x, vecOrigin.y, vecOrigin.z, bestAngle.y, area->GetAreaSlope());
-				//SET_MODEL(ENT(pPoint->pev), "models/player.mdl");
-				//pPoint->pev->sequence = ACT_IDLE;
+
+				// use only for debugging
+				if (randomspawn.value > 1.0f)
+				{
+					SET_MODEL(ENT(pPoint->pev), "models/player.mdl");
+					pPoint->pev->sequence = ACT_IDLE;
+					pPoint->pev->rendermode = kRenderTransAdd;
+					pPoint->pev->renderamt = 150.0f;
+				}
 			}
 		}
 	}
