@@ -1174,7 +1174,7 @@ inline bool pointInRadius(Vector vecOrigin, float radius)
 // a simple algorithm that searches for the farthest point (so that the player does not look at the wall)
 inline Vector GetBestAngle(const Vector &vecStart)
 {
-	const float ANGLE_STEP = 45.0f;
+	const float ANGLE_STEP = 30.0f;
 	float bestAngle = 0.0f;
 	float bestDistance = 0.0f;
 	Vector vecBestAngle = Vector(0, -1, 0);
