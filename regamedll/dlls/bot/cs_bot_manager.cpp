@@ -1146,6 +1146,7 @@ private:
 	CCSBotManager::Zone *m_zone;
 };
 
+#ifdef REGAMEDLL_ADD
 LINK_ENTITY_TO_CLASS(info_spawn_point, CPointEntity, CCSPointEntity)
 
 inline bool IsFreeSpace(Vector vecOrigin, int iHullNumber, edict_t *pSkipEnt = nullptr)
@@ -1303,6 +1304,7 @@ void GetSpawnPositions()
 
 	CONSOLE_ECHO("Total spawns points: %i\n", totalSpawns);
 }
+#endif
 
 // Search the map entities to determine the game scenario and define important zones.
 void CCSBotManager::ValidateMapData()
