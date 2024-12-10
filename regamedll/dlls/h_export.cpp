@@ -13,7 +13,6 @@ C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pEnginefuncsTable, global
 	gpGlobals = pGlobals;
 
 	FileSystem_Init();
-	Regamedll_Game_Init();
 }
 
 #if defined(_LINUX)

@@ -28,6 +28,7 @@
 
 #include "precompiled.h"
 
+cvar_t cv_bot_enable                 = { "bot_enable", "0", 0, 0.0f, nullptr };
 cvar_t cv_bot_traceview              = { "bot_traceview", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_stop                   = { "bot_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_bot_show_nav               = { "bot_show_nav", "0", FCVAR_SERVER, 0.0f, nullptr };

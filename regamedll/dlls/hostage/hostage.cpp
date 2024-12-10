@@ -28,6 +28,7 @@
 
 #include "precompiled.h"
 
+cvar_t cv_hostage_ai_enable = { "hostage_ai_enable", "1", 0, 1.0f, nullptr };
 cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_hostage_stop  = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
 
@@ -273,6 +274,7 @@ void CHostage::Precache()
 		static int which = 0;
 		switch (which)
 		{
+		default:
 		case REGULAR_GUY:
 			pev->model = MAKE_STRING("models/hostageA.mdl");
 			break;
@@ -285,22 +287,25 @@ void CHostage::Precache()
 		case GOOFY_GUY:
 			pev->model = MAKE_STRING("models/hostageD.mdl");
 			break;
-		default:
-			break;
 		}
 
 		m_whichModel = static_cast<ModelType>(which);
 
 		if (++which > 3)
 			which = 0;
+
+		if (!g_pFileSystem->FileExists(pev->model))
+		{
+			// It seems that the model is missing, so use classic hostages
+			g_bHostageImprov = false;
+			pev->model = iStringNull;
+		}
 	}
-	else
+
+	if (pev->model.IsNull())
 	{
 		m_whichModel = REGULAR_GUY;
-		if (pev->model.IsNull())
-		{
-			pev->model = MAKE_STRING("models/scientist.mdl");
-		}
+		pev->model = MAKE_STRING("models/scientist.mdl");
 	}
 
 	PRECACHE_MODEL(pev->model);

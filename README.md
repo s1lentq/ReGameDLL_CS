@@ -128,11 +128,11 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 
 ## How to install zBot for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/zBot/bot_profiles.zip?raw=true)
-* Enter `-bots` option at the command line HLDS
+* Enable CVar `bot_enable 1` in `cstrike/game_init.cfg` (if this config file does not exist, create it)
 
-## How to install CSCZ hostage AI for CS 1.6?
+## How to install CS:CZ hostage AI for CS 1.6?
 * Extract all the files from an [archive](regamedll/extra/HostageImprov/host_improv.zip?raw=true)
-* Enter `-host-improv` option at the command line HLDS
+* Enable CVar `hostage_ai_enable 1` in `cstrike/game_init.cfg` (if this config file does not exist, create it)
 
 ## Build instructions
 ### Checking requirements

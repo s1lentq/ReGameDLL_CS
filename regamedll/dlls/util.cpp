@@ -1660,14 +1660,12 @@ int UTIL_ReadFlags(const char *c)
 // Determine whether bots can be used or not
 bool UTIL_AreBotsAllowed()
 {
-#ifdef REGAMEDLL_ADD
-	if (g_engfuncs.pfnEngCheckParm == nullptr)
-		return false;
-#endif
-
 	if (AreRunningCZero())
 	{
 #ifdef REGAMEDLL_ADD
+		if (g_engfuncs.pfnEngCheckParm == nullptr)
+			return false;
+
 		// If they pass in -nobots, don't allow bots.  This is for people who host servers, to
 		// allow them to disallow bots to enforce CPU limits.
 		int nobots = ENG_CHECK_PARM("-nobots", nullptr);
@@ -1687,15 +1685,10 @@ bool UTIL_AreBotsAllowed()
 		return true;
 	}
 
-	// allow the using of bots for CS 1.6
-	int bots = ENG_CHECK_PARM("-bots", nullptr);
-	if (bots)
-	{
-		return true;
-	}
-#endif
-
+	return cv_bot_enable.value > 0;
+#else
 	return false;
+#endif
 }
 
 bool UTIL_IsBeta()
@@ -1728,18 +1721,10 @@ bool UTIL_AreHostagesImprov()
 	}
 
 #ifdef REGAMEDLL_ADD
-	if (g_engfuncs.pfnEngCheckParm == nullptr)
-		return false;
-
-	// someday in CS 1.6
-	int improv = ENG_CHECK_PARM("-host-improv", nullptr);
-	if (improv)
-	{
-		return true;
-	}
-#endif
-
+	return cv_hostage_ai_enable.value > 0;
+#else
 	return false;
+#endif
 }
 
 int UTIL_GetNumPlayers()

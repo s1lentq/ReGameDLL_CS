@@ -460,8 +460,17 @@ void EXT_FUNC GameDLLInit()
 	CVAR_REGISTER(&vote_flags);
 	CVAR_REGISTER(&votemap_min_time);
 
+	CVAR_REGISTER(&cv_bot_enable);
+	CVAR_REGISTER(&cv_hostage_ai_enable);
+
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
+
+	// execute initial pre-configurations
+	SERVER_COMMAND("exec game_init.cfg\n");
+	SERVER_EXECUTE();
+
+	Regamedll_Game_Init();
 
 #endif // REGAMEDLL_ADD
 
@@ -471,12 +480,6 @@ void EXT_FUNC GameDLLInit()
 
 #ifdef REGAMEDLL_FIXES
 	VoiceGameMgr_RegisterCVars();
-#endif
-
-#ifdef REGAMEDLL_ADD
-	// execute initial pre-configurations
-	SERVER_COMMAND("exec game_init.cfg\n");
-	SERVER_EXECUTE();
 #endif
 
 }

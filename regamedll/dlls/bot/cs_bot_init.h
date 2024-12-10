@@ -28,6 +28,7 @@
 
 #pragma once
 
+extern cvar_t cv_bot_enable;
 extern cvar_t cv_bot_traceview;
 extern cvar_t cv_bot_stop;
 extern cvar_t cv_bot_show_nav;

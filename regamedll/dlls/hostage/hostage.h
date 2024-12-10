@@ -77,6 +77,7 @@ enum HostageChatterType
 extern CHostageManager *g_pHostages;
 extern int g_iHostageNumber;
 
+extern cvar_t cv_hostage_ai_enable;
 extern cvar_t cv_hostage_debug;
 extern cvar_t cv_hostage_stop;
 
