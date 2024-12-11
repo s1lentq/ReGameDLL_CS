@@ -1,12 +1,17 @@
 // -----------------------------------------------------------------------
 // Counter-Strike game definition file (.fgd)
-// Version 0.9.0.0
+// Version 0.9.5.0
 // Valve Hammer Editor >= 3.5
 // Last update: September 25th, 2016
 // -----------------------------------------------------------------------
 // Based on FGD 0.8.0.0 by Dmitrich!
 //
-// Full compatibility with https://github.com/s1lentq/ReGameDLL_CS
+// Full compatibility with https://github.com/rehlds/ReGameDLL_CS
+// -----------------------------------------------------------------------
+// December 12th, 2024 (0.9.5.0)
+// - Added target_cdaudio
+// -----------------------------------------------------------------------
+//
 // -----------------------------------------------------------------------
 // September 25th, 2016 - s1lent (0.9.0.0)
 // - Removed xen entities.
@@ -2321,6 +2326,46 @@
 		29 : "Track 29"
 		30 : "Track 30"
 	]
+]
+
+// This entity allows to play a specific CD track when the player is within the specified radius around the entity or when triggered
+// A brush entity equivalent is available as trigger_cdaudio
+@PointClass base(Targetname) color(255 240 128) = target_cdaudio : "CD Audio Target"
+[
+	health(choices) : "Track #" : -1 =
+	[
+		-1 : "Stop"
+//		1 : "None"
+		2 : "Track 1"
+		3 : "Track 2"
+		4 : "Track 3"
+		5 : "Track 4"
+		6 : "Track 5"
+		7 : "Track 6"
+		8 : "Track 7"
+		9 : "Track 8"
+		10 : "Track 9"
+		11 : "Track 10"
+		12 : "Track 11"
+		13 : "Track 12"
+		14 : "Track 13"
+		15 : "Track 14"
+		16 : "Track 15"
+		17 : "Track 16"
+		18 : "Track 17"
+		19 : "Track 18"
+		20 : "Track 19"
+		21 : "Track 20"
+		22 : "Track 21"
+		23 : "Track 22"
+		24 : "Track 23"
+		25 : "Track 24"
+		26 : "Track 25"
+		27 : "Track 26"
+		28 : "Track 27"
+		29 : "Track 28"
+	]
+	scale(string) : "Player Radius" : "128.0" // The player must come within this radius for the track to start playing
 ]
 
 @SolidClass base(Targetname) = trigger_changelevel : "Trigger Change level"
