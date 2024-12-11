@@ -545,7 +545,7 @@ WeaponInfoStruct *GetDefaultWeaponInfo(int weaponID)
 AmmoInfoStruct *GetAmmoInfo(const char *ammoName)
 {
 	for (auto& info : g_ammoInfo) {
-		if (!Q_stricmp(info.ammoName1, ammoName)) {
+		if (info.ammoName1 && !Q_stricmp(info.ammoName1, ammoName)) {
 			return &info;
 		}
 	}

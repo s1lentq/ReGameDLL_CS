@@ -585,7 +585,6 @@ void CTriggerCDAudio::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	PlayTrack(pCaller->edict());
 }
 
-#ifdef REGAMEDLL_FIXES
 const char *g_szMP3trackFileMap[] =
 {
 	"", "",
@@ -617,7 +616,6 @@ const char *g_szMP3trackFileMap[] =
 	"media/Suspense05.mp3",
 	"media/Suspense07.mp3"
 };
-#endif
 
 void PlayCDTrack(edict_t *pClient, int iTrack)
 {

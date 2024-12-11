@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-const Vector XM1014_CONE_VECTOR = {0.0725, 0.0725, 0.0}; // special shotgun spreads
+const Vector XM1014_CONE_VECTOR = Vector(0.0725, 0.0725, 0.0); // special shotgun spreads
 
 LINK_ENTITY_TO_CLASS(weapon_xm1014, CXM1014, CCSXM1014)
 

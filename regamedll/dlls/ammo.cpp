@@ -24,7 +24,7 @@ void CBasePlayerAmmo::Spawn()
 BOOL CBasePlayerAmmo::AddAmmo(CBaseEntity *pOther)
 {
 	auto ammoInfo = GetAmmoInfo(pev->classname);
-	if (pOther->GiveAmmo(ammoInfo->buyClipSize, ammoInfo->ammoName2) == -1)
+	if (!ammoInfo || pOther->GiveAmmo(ammoInfo->buyClipSize, ammoInfo->ammoName2) == -1)
 	{
 		return FALSE;
 	}

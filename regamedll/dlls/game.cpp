@@ -470,9 +470,9 @@ void EXT_FUNC GameDLLInit()
 	SERVER_COMMAND("exec game_init.cfg\n");
 	SERVER_EXECUTE();
 
-	Regamedll_Game_Init();
-
 #endif // REGAMEDLL_ADD
+
+	Regamedll_Game_Init();
 
 	Bot_RegisterCVars();
 	Tutor_RegisterCVars();
