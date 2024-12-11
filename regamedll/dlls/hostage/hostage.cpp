@@ -624,7 +624,7 @@ void CHostage::TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir
 BOOL CHostage::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
 #ifdef REGAMEDLL_ADD
-	if (!CanTakeDamage(pevAttacker))
+	if (pevAttacker && !CanTakeDamage(pevAttacker))
 		return FALSE;
 #endif
 

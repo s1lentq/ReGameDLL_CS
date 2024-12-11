@@ -302,7 +302,7 @@ void CFuncTank::ControllerPostFrame()
 
 	Assert(m_pController != nullptr);
 
-	if (m_pController->pev->button & IN_ATTACK)
+	if (m_pController && m_pController->pev->button & IN_ATTACK)
 	{
 		Vector vecForward;
 		UTIL_MakeVectorsPrivate(pev->angles, vecForward, nullptr, nullptr);

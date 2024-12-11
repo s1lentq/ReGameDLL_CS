@@ -78,7 +78,7 @@ void HostageIdleState::OnUpdate(CHostageImprov *improv)
 		}
 	}
 
-	if (m_moveState && improv->IsAtMoveGoal())
+	if (m_moveState != NotMoving && improv->IsAtMoveGoal())
 	{
 		m_moveState = NotMoving;
 

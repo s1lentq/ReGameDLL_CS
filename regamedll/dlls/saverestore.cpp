@@ -250,10 +250,10 @@ edict_t *CSaveRestoreBuffer::EntityFromIndex(int entityIndex)
 
 int CSaveRestoreBuffer::EntityFlagsSet(int entityIndex, int flags)
 {
-	if (!m_pData || entityIndex < 0)
+	if (!m_pData)
 		return 0;
 
-	if (!m_pData || entityIndex < 0 || entityIndex > m_pData->tableCount)
+	if (entityIndex < 0 || entityIndex > m_pData->tableCount)
 		return 0;
 
 	m_pData->pTable[entityIndex].flags |= flags;

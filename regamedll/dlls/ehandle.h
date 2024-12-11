@@ -130,6 +130,10 @@ inline edict_t *EntityHandle<T>::Set(edict_t *pEdict)
 	{
 		m_serialnumber = pEdict->serialnumber;
 	}
+	else
+	{
+		m_serialnumber = 0;
+	}
 
 	return pEdict;
 }

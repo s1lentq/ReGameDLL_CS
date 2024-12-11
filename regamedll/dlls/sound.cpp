@@ -1362,7 +1362,7 @@ void SENTENCEG_Init()
 
 	i = 0;
 
-	while (rgsentenceg[i].count && i < MAX_SENTENCE_GROUPS)
+	while (i < MAX_SENTENCE_GROUPS && rgsentenceg[i].count)
 	{
 		USENTENCEG_InitLRU(&(rgsentenceg[i].rgblru[0]), rgsentenceg[i].count);
 		i++;
@@ -1380,11 +1380,7 @@ int SENTENCEG_Lookup(const char *sample, char (&sentencenum)[32])
 	{
 		if (!Q_stricmp(gszallsentencenames[i], sample + 1))
 		{
-			if (sentencenum)
-			{
-				Q_snprintf(sentencenum, sizeof(sentencenum), "!%d", i);
-			}
-
+			Q_snprintf(sentencenum, sizeof(sentencenum), "!%d", i);
 			return i;
 		}
 	}

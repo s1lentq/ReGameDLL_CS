@@ -625,7 +625,7 @@ void PlayCDTrack(edict_t *pClient, int iTrack)
 	if (!pClient)
 		return;
 
-	if (iTrack < -1 || iTrack > 30)
+	if (iTrack < -1 || iTrack >= (int)ARRAYSIZE(g_szMP3trackFileMap))
 	{
 		ALERT(at_console, "TriggerCDAudio - Track %d out of range\n", iTrack);
 		return;

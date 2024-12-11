@@ -5158,12 +5158,9 @@ void CBasePlayer::UpdatePlayerSound()
 		m_iExtraSoundTypes = 0;
 	}
 
-	if (pSound)
-	{
-		pSound->m_vecOrigin = pev->origin;
-		pSound->m_iVolume = iVolume;
-		pSound->m_iType |= (bits_SOUND_PLAYER | m_iExtraSoundTypes);
-	}
+	pSound->m_vecOrigin = pev->origin;
+	pSound->m_iVolume = iVolume;
+	pSound->m_iType |= (bits_SOUND_PLAYER | m_iExtraSoundTypes);
 
 	// keep track of virtual muzzle flash
 	m_iWeaponFlash -= 256 * gpGlobals->frametime;
@@ -5913,7 +5910,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Spawn)()
 		TheBots->OnEvent(EVENT_PLAYER_SPAWNED, this);
 	}
 
-	m_allowAutoFollowTime = false;
+	m_allowAutoFollowTime = 0.0f;
 
 	for (i = 0; i < COMMANDS_TO_TRACK; i++)
 		m_flLastCommandTime[i] = -1;
@@ -8470,7 +8467,7 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 
 	UpdateLocation(true);
 
-	if (m_iTeam)
+	if (m_iTeam != UNASSIGNED)
 	{
 		SetScoreboardAttributes();
 	}
@@ -9682,7 +9679,7 @@ void CBasePlayer::PrioritizeAutoBuyString(char (&autobuyString)[MAX_AUTOBUY_LENG
 	int newStringPos = 0;
 	char priorityToken[32];
 
-	if (!priorityString || !autobuyString)
+	if (!priorityString)
 		return;
 
 	const char *priorityChar = priorityString;

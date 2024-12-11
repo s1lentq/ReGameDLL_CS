@@ -126,7 +126,7 @@ void CFuncVehicle::Blocked(CBaseEntity *pOther)
 
 	float minz = pev->origin.z;
 #ifdef REGAMEDLL_FIXES
-	float maxz = pev->origin.z + (2 * Q_abs(pev->mins.z - pev->maxs.z));	
+	float maxz = pev->origin.z + (2 * Q_abs(pev->mins.z - pev->maxs.z));
 #else
 	float maxz = pev->origin.z + (2 * Q_abs(int(pev->mins.z - pev->maxs.z)));
 #endif
@@ -343,15 +343,20 @@ void CFuncVehicle::CheckTurning()
 		if (pev->speed > 0)
 		{
 			UTIL_TraceLine(m_vFrontRight, m_vFrontRight - (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+			if (tr.flFraction != 1.0f)
+			{
+				m_iTurnAngle = 1;
+			}
 		}
 		else if (pev->speed < 0)
 		{
 			UTIL_TraceLine(m_vBackLeft, m_vBackLeft + (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
-		}
 
-		if (tr.flFraction != 1.0f)
-		{
-			m_iTurnAngle = 1;
+			if (tr.flFraction != 1.0f)
+			{
+				m_iTurnAngle = 1;
+			}
 		}
 	}
 	else if (m_iTurnAngle > 0)
@@ -359,15 +364,20 @@ void CFuncVehicle::CheckTurning()
 		if (pev->speed > 0)
 		{
 			UTIL_TraceLine(m_vFrontLeft, m_vFrontLeft + (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
+
+			if (tr.flFraction != 1.0f)
+			{
+				m_iTurnAngle = -1;
+			}
 		}
 		else if (pev->speed < 0)
 		{
 			UTIL_TraceLine(m_vBackRight, m_vBackRight - (gpGlobals->v_right * 16.0), ignore_monsters, dont_ignore_glass, ENT(pev), &tr);
-		}
 
-		if (tr.flFraction != 1.0f)
-		{
-			m_iTurnAngle = -1;
+			if (tr.flFraction != 1.0f)
+			{
+				m_iTurnAngle = -1;
+			}
 		}
 	}
 

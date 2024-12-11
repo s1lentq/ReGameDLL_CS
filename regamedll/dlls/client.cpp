@@ -811,7 +811,9 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p) - 1] = '\0';
+		size_t len = Q_strlen(p);
+		if (len > 0)
+			p[len - 1] = '\0';
 	}
 
 	// Check if buffer contains an invalid unicode sequence

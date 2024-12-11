@@ -464,6 +464,7 @@ bool BotPhraseManager::Initialize(const char *filename, int bankIndex)
 			phraseData = SharedParse(phraseData);
 			if (!phraseData)
 			{
+				if (phrase) delete phrase;
 				CONSOLE_ECHO("Error parsing '%s' - expected identifier\n", filename);
 				FREE_FILE(phraseDataFile);
 				return false;

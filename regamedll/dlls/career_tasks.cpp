@@ -260,7 +260,7 @@ void CCareerTask::OnEvent(GameEventType event, CBasePlayer *pVictim, CBasePlayer
 
 					while ((pHostage = UTIL_FindEntityByClassname(pHostage, "hostage_entity")))
 					{
-						if (pHostage && pHostage->IsDead())
+						if (pHostage->IsDead())
 							hostagesCount++;
 					}
 
@@ -389,7 +389,6 @@ void CCareerTaskManager::Reset(bool deleteTasks)
 			delete task;
 
 		m_tasks.clear();
-		m_nextId = 0;
 	}
 	else
 	{
@@ -397,6 +396,7 @@ void CCareerTaskManager::Reset(bool deleteTasks)
 			task->Reset();
 	}
 
+	m_nextId = 0;
 	m_finishedTaskTime  = 0;
 	m_finishedTaskRound = 0;
 	m_shouldLatchRoundEndMessage = false;
