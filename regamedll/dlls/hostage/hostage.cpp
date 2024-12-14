@@ -28,7 +28,7 @@
 
 #include "precompiled.h"
 
-cvar_t cv_hostage_ai_enable = { "hostage_ai_enable", "1", 0, 1.0f, nullptr };
+cvar_t cv_hostage_ai_enable = { "hostage_ai_enable", "0", 0, 0.0f, nullptr };
 cvar_t cv_hostage_debug = { "hostage_debug", "0", FCVAR_SERVER, 0.0f, nullptr };
 cvar_t cv_hostage_stop  = { "hostage_stop", "0", FCVAR_SERVER, 0.0f, nullptr };
 
@@ -269,36 +269,41 @@ void CHostage::Spawn()
 
 void CHostage::Precache()
 {
-	if (AreImprovAllowed())
+	if (cv_hostage_ai_enable.value)
 	{
+		string_t model = iStringNull;
+
 		static int which = 0;
 		switch (which)
 		{
 		default:
 		case REGULAR_GUY:
-			pev->model = MAKE_STRING("models/hostageA.mdl");
+			model = MAKE_STRING("models/hostageA.mdl");
 			break;
 		case OLD_GUY:
-			pev->model = MAKE_STRING("models/hostageB.mdl");
+			model = MAKE_STRING("models/hostageB.mdl");
 			break;
 		case BLACK_GUY:
-			pev->model = MAKE_STRING("models/hostageC.mdl");
+			model = MAKE_STRING("models/hostageC.mdl");
 			break;
 		case GOOFY_GUY:
-			pev->model = MAKE_STRING("models/hostageD.mdl");
+			model = MAKE_STRING("models/hostageD.mdl");
 			break;
 		}
 
 		m_whichModel = static_cast<ModelType>(which);
 
-		if (++which > 3)
-			which = 0;
+		if (++which > GOOFY_GUY)
+			which = REGULAR_GUY;
 
-		if (!g_pFileSystem->FileExists(pev->model))
+		if (g_pFileSystem->FileExists(model))
+		{
+			pev->model = model;
+		}
+		else
 		{
 			// It seems that the model is missing, so use classic hostages
-			g_bHostageImprov = false;
-			pev->model = iStringNull;
+			CVAR_SET_FLOAT("hostage_ai_enable", 0);
 		}
 	}
 
@@ -347,7 +352,7 @@ void CHostage::IdleThink()
 	const float giveUpTime = (1 / 30.0f);
 	float const updateRate = 0.1f;
 
-	if (AreImprovAllowed() && !TheNavAreaList.empty())
+	if (cv_hostage_ai_enable.value && !TheNavAreaList.empty())
 	{
 		if (!m_improv)
 		{
@@ -776,7 +781,7 @@ void CHostage::SetDeathActivity()
 		return;
 	}
 
-	if (AreImprovAllowed())
+	if (cv_hostage_ai_enable.value)
 	{
 		switch (m_LastHitGroup)
 		{
@@ -1402,7 +1407,7 @@ void Hostage_RegisterCVars()
 {
 // These cvars are only used in czero
 #ifdef REGAMEDLL_FIXES
-	if (!AreImprovAllowed())
+	if (!cv_hostage_ai_enable.value)
 		return;
 #endif
 
@@ -1437,7 +1442,7 @@ void CHostageManager::ServerActivate()
 		AddHostage(pHostage);
 	}
 
-	if (AreImprovAllowed())
+	if (cv_hostage_ai_enable.value)
 	{
 		for (auto& snd : hostageSoundStruct) {
 			m_chatter.AddSound(snd.type, snd.fileName);
@@ -1573,6 +1578,9 @@ void SimpleChatter::AddSound(HostageChatterType type, char *filename)
 
 	Q_snprintf(actualFilename, sizeof(actualFilename), "sound\\%s", filename);
 
+	if (!g_pFileSystem->FileExists(actualFilename))
+		return;
+
 	chatter->file[chatter->count].filename = CloneString(filename);
 	chatter->file[chatter->count].duration = (double)GET_APPROX_WAVE_PLAY_LEN(actualFilename) / 1000.0;
 
@@ -1610,6 +1618,9 @@ void SimpleChatter::Shuffle(ChatterSet *chatter)
 char *SimpleChatter::GetSound(HostageChatterType type, float *duration)
 {
 	ChatterSet *chatter = &m_chatter[type];
+	if (chatter->count == 0)
+		return nullptr;
+
 	char *sound;
 
 	Shuffle(chatter);

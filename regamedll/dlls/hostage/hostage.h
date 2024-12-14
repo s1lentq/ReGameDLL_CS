@@ -285,11 +285,5 @@ private:
 	SimpleChatter m_chatter;
 };
 
-// Determine whether hostage improv can be used or not
-inline bool AreImprovAllowed()
-{
-	return g_bHostageImprov;
-}
-
 void Hostage_RegisterCVars();
 void InstallHostageManager();

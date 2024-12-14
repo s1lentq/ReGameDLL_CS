@@ -4173,7 +4173,7 @@ void CBasePlayer::PlayerUse()
 		}
 	}
 
-	bool useNewHostages = !TheNavAreaList.empty() && AreImprovAllowed();
+	bool useNewHostages = !TheNavAreaList.empty() && cv_hostage_ai_enable.value;
 	CBaseEntity *pObject = nullptr;
 	CBaseEntity *pClosest = nullptr;
 	Vector vecLOS;
