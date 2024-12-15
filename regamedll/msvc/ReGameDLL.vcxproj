@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug Play|Win32">
@@ -25,6 +25,7 @@
   <ItemGroup>
     <ClCompile Include="..\dlls\addons\item_airbox.cpp" />
     <ClCompile Include="..\dlls\addons\point_command.cpp" />
+    <ClCompile Include="..\dlls\addons\trigger_bomb_reset.cpp" />
     <ClCompile Include="..\dlls\addons\trigger_random.cpp" />
     <ClCompile Include="..\dlls\addons\trigger_setorigin.cpp" />
     <ClCompile Include="..\dlls\airtank.cpp" />
@@ -615,6 +616,7 @@
     <ClInclude Include="..\dlls\activity.h" />
     <ClInclude Include="..\dlls\addons\item_airbox.h" />
     <ClInclude Include="..\dlls\addons\point_command.h" />
+    <ClInclude Include="..\dlls\addons\trigger_bomb_reset.h" />
     <ClInclude Include="..\dlls\addons\trigger_random.h" />
     <ClInclude Include="..\dlls\addons\trigger_setorigin.h" />
     <ClInclude Include="..\dlls\airtank.h" />

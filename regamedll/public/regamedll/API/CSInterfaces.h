@@ -213,6 +213,7 @@ class CCSChangeLevel: public CCSTrigger {};
 class CCSLadder: public CCSTrigger {};
 class CCSTriggerPush: public CCSTrigger {};
 class CCSTriggerTeleport: public CCSTrigger {};
+class CCSTriggerBombReset: public CCSTrigger {};
 class CCSBuyZone: public CCSTrigger {};
 class CCSBombTarget: public CCSTrigger {};
 class CCSHostageRescue: public CCSTrigger {};
