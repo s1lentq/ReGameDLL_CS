@@ -98,6 +98,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_ct_give_player_knife            | 1         | 0  | 1           | Whether Counter-Terrorist player spawn with knife. |
 | mp_ct_default_weapons_primary      | ""        | "" | -           | The default primary (rifle) weapon that the CTs will spawn with. |
 | mp_ct_default_weapons_secondary    | "usp"     | "" | -           | The default secondary (pistol) weapon that the CTs will spawn with. |
+| mp_default_weapons_random          | 0       | 0   | 1            | Randomize default weapons (if there are multiple).<br/> `0` disabled<br/>`1` enabled |
 | mp_give_player_c4                  | 1       | 0   | 1            | Whether this map should spawn a C4 bomb for a player or not.<br/> `0` disabled<br/>`1` enabled |
 | mp_weapons_allow_map_placed        | 1       | 0   | 1            | When set, map weapons (located on the floor by map) will be shown.<br/> `0` hide all map weapons.<br/>`1` enabled<br/>`NOTE`: Effect will work after round restart. |
 | mp_free_armor                      | 0       | 0   | 2            | Give free armor on player spawn.<br/>`0` disabled <br/>`1` Give Kevlar <br/>`2` Give Kevlar + Helmet |
