@@ -3816,8 +3816,10 @@ void EXT_FUNC ServerActivate(edict_t *pEdictList, int edictCount, int clientMax)
 #ifdef REGAMEDLL_ADD
 	CSGameRules()->ServerActivate();
 
-	if (location_area_info.value)
-		LoadNavigationMap();
+	if (LoadNavigationMap() == NAV_OK)
+	{
+		GetSpawnPositions();
+	}
 #endif
 }
 

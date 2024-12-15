@@ -5338,17 +5338,24 @@ pt_end:
 }
 
 // checks if the spot is clear of players
-BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot)
+BOOL IsSpawnPointValid(CBaseEntity *pPlayer, CBaseEntity *pSpot, float fRadius)
 {
 	if (!pSpot->IsTriggered(pPlayer))
 		return FALSE;
 
 	CBaseEntity *pEntity = nullptr;
-	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, MAX_PLAYER_USE_RADIUS)))
+
+	while ((pEntity = UTIL_FindEntityInSphere(pEntity, pSpot->pev->origin, fRadius)))
 	{
 		// if ent is a client, don't spawn on 'em
-		if (pEntity->IsPlayer() && pEntity != pPlayer)
+		if (pEntity->IsPlayer() && pEntity != pPlayer
+#ifdef REGAMEDLL_FIXES
+			&& pEntity->IsAlive()
+#endif
+			)
+		{
 			return FALSE;
+		}
 	}
 
 	return TRUE;
@@ -5373,17 +5380,34 @@ bool CBasePlayer::SelectSpawnSpot(const char *pEntClassName, CBaseEntity *&pSpot
 	{
 		if (pSpot)
 		{
-			// check if pSpot is valid
-			if (IsSpawnPointValid(this, pSpot))
+#ifdef REGAMEDLL_ADD
+			if (FClassnameIs(pSpot->edict(), "info_spawn_point"))
 			{
-				if (pSpot->pev->origin == Vector(0, 0, 0))
+				if (!IsSpawnPointValid(this, pSpot, 512.0f) || pSpot->pev->origin == Vector(0, 0, 0))
 				{
 					pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
 					continue;
 				}
+				else
+				{
+					return true;
+				}
+			}
+			else
+#endif
+			{
+				// check if pSpot is valid
+				if (IsSpawnPointValid(this, pSpot, MAX_PLAYER_USE_RADIUS))
+				{
+					if (pSpot->pev->origin == Vector(0, 0, 0))
+					{
+						pSpot = UTIL_FindEntityByClassname(pSpot, pEntClassName);
+						continue;
+					}
 
-				// if so, go to pSpot
-				return true;
+					// if so, go to pSpot
+					return true;
+				}
 			}
 		}
 
@@ -5441,6 +5465,24 @@ edict_t *EXT_FUNC CBasePlayer::__API_HOOK(EntSelectSpawnPoint)()
 		if (!FNullEnt(pSpot))
 			goto ReturnSpot;
 	}
+#ifdef REGAMEDLL_ADD
+	else if (randomspawn.value > 0)
+	{
+		pSpot = g_pLastSpawn;
+
+		if (SelectSpawnSpot("info_spawn_point", pSpot))
+		{
+			g_pLastSpawn = pSpot;
+
+			return pSpot->edict();
+		}
+
+		if (m_iTeam == CT)
+			goto CTSpawn;
+		else if (m_iTeam == TERRORIST)
+			goto TSpawn;
+	}
+#endif
 	// VIP spawn point
 	else if (g_pGameRules->IsDeathmatch() && m_bIsVIP)
 	{
@@ -5468,6 +5510,7 @@ CTSpawn:
 	// The terrorist spawn points
 	else if (g_pGameRules->IsDeathmatch() && m_iTeam == TERRORIST)
 	{
+TSpawn:
 		pSpot = g_pLastTerroristSpawn;
 
 		if (SelectSpawnSpot("info_player_deathmatch", pSpot))

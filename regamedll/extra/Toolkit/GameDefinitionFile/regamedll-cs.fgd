@@ -3143,3 +3143,7 @@
 @PointClass base(BaseCommand) size(-8 -8 -8, 8 8 8) = point_clientcommand : "It issues commands to the client console"
 [
 ]
+
+@PointClass iconsprite("sprites/CS/info_player_start.spr") base(PlayerClass) = info_spawn_point : "Random spawn start"
+[
+]

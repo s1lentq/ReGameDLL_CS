@@ -269,3 +269,6 @@ inline bool AreBotsAllowed()
 }
 
 void PrintAllEntities();
+#ifdef REGAMEDLL_ADD
+void GetSpawnPositions();
+#endif
