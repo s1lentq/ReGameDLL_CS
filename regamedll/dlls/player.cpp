@@ -1487,7 +1487,7 @@ void CBasePlayer::PackDeadPlayerItems()
 		{
 			DropShield();
 #ifdef REGAMEDLL_ADD
-			if(iPackGun != GR_PLR_DROP_GUN_ALL)
+			if (iPackGun != GR_PLR_DROP_GUN_ALL)
 #endif
 			{
 				bSkipPrimSec = true;
@@ -2186,7 +2186,7 @@ void EXT_FUNC CBasePlayer::__API_HOOK(Killed)(entvars_t *pevAttacker, int iGib)
 			{
 				CBasePlayer *pAttacker = CBasePlayer::Instance(pevAttacker);
 
-				if(pAttacker /*safety*/ && !pAttacker->IsBot() && pAttacker->m_iTeam != m_iTeam)
+				if (pAttacker /*safety*/ && !pAttacker->IsBot() && pAttacker->m_iTeam != m_iTeam)
 				{
 					if (pAttacker->HasShield())
 						killerHasShield = true;
