@@ -123,6 +123,7 @@ This means that plugins that do binary code analysis (Orpheu for example) probab
 | mp_ammo_respawn_time               | 20      | 0.0 | -            | The respawn time for ammunition. |
 | mp_vote_flags                      | km      | 0   | -            | Vote systems enabled in server.<br/>`0` voting disabled<br/>`k` votekick enabled via `vote` command<br/>`m` votemap enabled via `votemap` command |
 | mp_votemap_min_time                | 180     | 0.0 | -            | Minimum seconds that must elapse on map before `votemap` command can be used. |
+| bot_excellent_morale               | 0       | 0   | 1            | Bots always have great morale regardless of defeat or victory. |
 
 </details>
 

@@ -1109,6 +1109,11 @@ inline bool CCSBot::IsAtBombsite()
 
 inline CCSBot::MoraleType CCSBot::GetMorale() const
 {
+#ifdef REGAMEDLL_ADD
+	if (cv_bot_excellent_morale.value != 0.0f)
+		return EXCELLENT;
+#endif
+
 	return m_morale;
 }
 
