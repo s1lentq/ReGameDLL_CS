@@ -311,6 +311,8 @@ public:
 
 public:
 #ifdef REGAMEDLL_API
+	void Materialize_OrigFunc();
+	void CheckRespawn_OrigFunc();
 	CCSPlayerItem *CSPlayerItem() const;
 #endif
 
