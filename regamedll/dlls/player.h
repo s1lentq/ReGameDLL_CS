@@ -450,6 +450,7 @@ public:
 	void PlayerDeathThink_OrigFunc();
 	void Observer_Think_OrigFunc();
 	void RemoveAllItems_OrigFunc(BOOL removeSuit);
+	void UpdateStatusBar_OrigFunc();
 
 	CCSPlayer *CSPlayer() const;
 #endif // REGAMEDLL_API
