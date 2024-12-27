@@ -10116,7 +10116,7 @@ bool CBasePlayer::IsObservingPlayer(CBasePlayer *pPlayer)
 
 void CBasePlayer::UpdateLocation(bool forceUpdate)
 {
-	if (!forceUpdate && m_flLastUpdateTime >= gpGlobals->time + 2.0f)
+	if (!forceUpdate && m_flLastUpdateTime > gpGlobals->time - 2.0f)
 		return;
 
 	const char *placeName = nullptr;
