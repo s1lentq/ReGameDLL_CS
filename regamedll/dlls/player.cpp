@@ -10116,7 +10116,11 @@ bool CBasePlayer::IsObservingPlayer(CBasePlayer *pPlayer)
 
 void CBasePlayer::UpdateLocation(bool forceUpdate)
 {
+#ifdef REGAMEDLL_FIXES
+	if (!forceUpdate && m_flLastUpdateTime > gpGlobals->time - 2.0f)
+#else
 	if (!forceUpdate && m_flLastUpdateTime >= gpGlobals->time + 2.0f)
+#endif
 		return;
 
 	const char *placeName = nullptr;
