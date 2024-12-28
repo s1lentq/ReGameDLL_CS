@@ -4160,8 +4160,9 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(DeathNotice)(CBasePlayer *pVictim, 
 			pVictim->CSPlayer()->m_iNumKilledByUnanswered[iPlayerIndexKiller - 1]++;
 		}
 	}
-
+#ifdef REGAMEDLL_ADD
 	if (static_cast<int>(logkills.value))
+#endif
 	{
 		// Did he kill himself?
 		if (pVictim->pev == pevKiller)
