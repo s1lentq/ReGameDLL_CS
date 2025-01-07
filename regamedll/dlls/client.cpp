@@ -841,6 +841,12 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 	char *pszConsoleFormat = nullptr;
 	bool consoleUsesPlaceName = false;
 
+#ifdef REGAMEDLL_ADD
+	// there's no team on FFA mode
+	if (teamonly && CSGameRules()->IsFreeForAll() && (pPlayer->m_iTeam == CT || pPlayer->m_iTeam == TERRORIST))
+		teamonly = FALSE; 
+#endif
+
 	// team only
 	if (teamonly)
 	{
