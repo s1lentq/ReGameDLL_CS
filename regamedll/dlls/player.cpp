@@ -647,27 +647,16 @@ void EXT_FUNC CBasePlayer::__API_HOOK(TraceAttack)(entvars_t *pevAttacker, float
 
 	if (bHitShield)
 	{
+#ifndef REGAMEDLL_FIXES
 		flDamage = 0;
+#endif
+
 		bShouldBleed = false;
+		HitShield(flDamage, ptr);
 
-		if (RANDOM_LONG(0, 1))
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM);
-		else
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM);
-
-		UTIL_Sparks(ptr->vecEndPos);
-
-		pev->punchangle.x = flDamage * RANDOM_FLOAT(-0.15, 0.15);
-		pev->punchangle.z = flDamage * RANDOM_FLOAT(-0.15, 0.15);
-
-		if (pev->punchangle.x < 4)
-			pev->punchangle.x = -4;
-
-		if (pev->punchangle.z < -5)
-			pev->punchangle.z = -5;
-
-		else if (pev->punchangle.z > 5)
-			pev->punchangle.z = 5;
+#ifdef REGAMEDLL_FIXES
+		flDamage = 0;
+#endif
 	}
 	else
 	{
