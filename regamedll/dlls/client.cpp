@@ -1001,7 +1001,13 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 		if (gpGlobals->deathmatch != 0.0f && CSGameRules()->m_VoiceGameMgr.PlayerHasBlockedPlayer(pReceiver, pPlayer))
 			continue;
 
-		if (teamonly && pReceiver->m_iTeam != pPlayer->m_iTeam)
+		if (teamonly 
+#ifdef REGAMEDLL_FIXES
+			&& CSGameRules()->PlayerRelationship(pPlayer, pReceiver) != GR_TEAMMATE
+#else
+			&& pReceiver->m_iTeam != pPlayer->m_iTeam
+#endif
+			)
 			continue;
 
 		if (
@@ -1014,7 +1020,13 @@ void Host_Say(edict_t *pEntity, BOOL teamonly)
 				continue;
 		}
 
-		if ((pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY && pReceiver->m_iTeam == pPlayer->m_iTeam)
+		if ((pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_ENEMY 
+#ifdef REGAMEDLL_FIXES
+				&& CSGameRules()->PlayerRelationship(pPlayer, pReceiver) == GR_TEAMMATE
+#else
+				&& pReceiver->m_iTeam == pPlayer->m_iTeam
+#endif
+				)
 			|| pReceiver->m_iIgnoreGlobalChat == IGNOREMSG_NONE)
 		{
 			MESSAGE_BEGIN(MSG_ONE, gmsgSayText, nullptr, pReceiver->pev);
