@@ -620,6 +620,11 @@ public:
 	BOOL TeamStacked_OrigFunc(int newTeam_id, int curTeam_id);
 	void PlayerGotWeapon_OrigFunc(CBasePlayer *pPlayer, CBasePlayerItem *pWeapon);
 	void SendDeathMessage_OrigFunc(CBaseEntity *pKiller, CBasePlayer *pVictim, CBasePlayer *pAssister, entvars_t *pevInflictor, const char *killerWeaponName, int iDeathMessageFlags, int iRarityOfKill);
+	BOOL CheckGameOver_OrigFunc();
+	BOOL CheckTimeLimit_OrigFunc();
+	BOOL CheckFragLimit_OrigFunc();
+	BOOL CheckMaxRounds_OrigFunc();
+	BOOL CheckWinLimit_OrigFunc();
 #endif
 
 public:
@@ -674,11 +679,11 @@ public:
 	bool Hostage_NotRescued(float tmDelay);
 
 	// Check various conditions to end the map.
-	bool CheckGameOver();
-	bool CheckTimeLimit();
-	bool CheckFragLimit();
-	bool CheckMaxRounds();
-	bool CheckWinLimit();
+	BOOL CheckGameOver();
+	BOOL CheckTimeLimit();
+	BOOL CheckFragLimit();
+	BOOL CheckMaxRounds();
+	BOOL CheckWinLimit();
 
 	void CheckFreezePeriodExpired();
 	void CheckRoundTimeExpired();
