@@ -2397,10 +2397,12 @@ void EXT_FUNC CHalfLifeMultiplay::__API_HOOK(Think)()
 	MonitorTutorStatus();
 	m_VoiceGameMgr.Update(gpGlobals->frametime);
 
+#ifndef REGAMEDLL_ADD
 	if (g_psv_clienttrace->value != 1.0f)
 	{
 		CVAR_SET_FLOAT("sv_clienttrace", 1);
 	}
+#endif
 
 	if (!m_fRoundStartTime)
 	{
