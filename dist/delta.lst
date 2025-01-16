@@ -6,14 +6,14 @@
 clientdata_t none
 {
 	DEFINE_DELTA( flTimeStepSound, DT_INTEGER, 10, 1.0 ),
-	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
-	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 26, 1024.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 26, 1024.0 ),
 	DEFINE_DELTA( velocity[0], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 	DEFINE_DELTA( velocity[1], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 
 	DEFINE_DELTA( m_flNextAttack, DT_FLOAT | DT_SIGNED, 22, 1000.0 ),
 
-	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 24, 1024.0 ),
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 26, 1024.0 ),
 	DEFINE_DELTA( velocity[2], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
 
 	DEFINE_DELTA( ammo_nails, DT_SIGNED | DT_INTEGER, 10, 1.0 ),
@@ -69,11 +69,11 @@ entity_state_t gamedll Entity_Encode
 {
 	DEFINE_DELTA( animtime, DT_TIMEWINDOW_8, 8, 1.0 ),
 	DEFINE_DELTA( frame, DT_FLOAT, 8, 1.0 ),
-	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
 	DEFINE_DELTA( angles[0], DT_ANGLE, 16, 1.0 ),
 	DEFINE_DELTA( angles[1], DT_ANGLE, 16, 1.0 ),
-	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
-	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 16, 8.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
 	DEFINE_DELTA( sequence, DT_INTEGER, 8, 1.0 ),
 	DEFINE_DELTA( modelindex, DT_INTEGER, 10, 1.0 ),
 	DEFINE_DELTA( movetype, DT_INTEGER, 4, 1.0 ),
@@ -182,9 +182,9 @@ entity_state_player_t gamedll Player_Encode
 custom_entity_state_t gamedll Custom_Encode
 {
 	DEFINE_DELTA( rendermode, DT_INTEGER, 8, 1.0 ),
-	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
-	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
-	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 19, 8.0 ),
 	DEFINE_DELTA( angles[0], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
 	DEFINE_DELTA( angles[1], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
 	DEFINE_DELTA( angles[2], DT_SIGNED | DT_FLOAT, 17, 8.0 ),
@@ -248,9 +248,9 @@ event_t none
 	DEFINE_DELTA( entindex, DT_INTEGER, 11, 1.0 ),
 	DEFINE_DELTA( bparam1, DT_INTEGER, 1, 1.0 ),
 	DEFINE_DELTA( bparam2, DT_INTEGER, 1, 1.0 ),
-	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 26, 8192.0 ),
-	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 26, 8192.0 ),
-	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 26, 8192.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 29, 8192.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 29, 8192.0 ),
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 29, 8192.0 ),
 	DEFINE_DELTA( fparam1, DT_FLOAT | DT_SIGNED, 20, 100.0 ),
 	DEFINE_DELTA( fparam2, DT_FLOAT | DT_SIGNED, 20, 100.0 ),
 	DEFINE_DELTA( iparam1, DT_INTEGER | DT_SIGNED, 18, 1.0 ),
