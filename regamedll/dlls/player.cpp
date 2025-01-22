@@ -8487,21 +8487,6 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	if (m_bHasDefuser)
 	{
 		RemoveDefuser();
-
-#ifndef REGAMEDLL_FIXES
-		// NOTE: unreachable code - Vaqtincha
-		for (int i = 0; i < MAX_ITEM_TYPES; i++)
-		{
-			m_pActiveItem = m_rgpPlayerItems[i];
-
-			if (m_pActiveItem && FClassnameIs(m_pActiveItem->pev, "item_thighpack"))
-			{
-				m_pActiveItem->Drop();
-				m_rgpPlayerItems[i] = nullptr;
-			}
-		}
-#endif
-
 	}
 
 	szOldTeam = GetTeam(oldTeam);
@@ -8536,6 +8521,16 @@ void CBasePlayer::__API_HOOK(SwitchTeam)()
 	// Initialize the player counts now that a player has switched teams
 	int NumDeadCT, NumDeadTerrorist, NumAliveTerrorist, NumAliveCT;
 	CSGameRules()->InitializePlayerCounts(NumAliveTerrorist, NumAliveCT, NumDeadTerrorist, NumDeadCT);
+
+	if (m_bHasC4)
+	{
+		if (NumAliveTerrorist > 0 && CSPlayer()->RemovePlayerItemEx("weapon_c4", true)) {
+			CSGameRules()->GiveC4();
+		}
+		else {
+			DropPlayerItem("weapon_c4");
+		}
+	}
 #endif
 }
 
