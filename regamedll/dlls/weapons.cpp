@@ -618,11 +618,17 @@ void CBasePlayerItem::DefaultTouch(CBaseEntity *pOther)
 	CBasePlayer *pPlayer = static_cast<CBasePlayer *>(pOther);
 
 	if (pPlayer->m_bIsVIP
-		&& m_iId != WEAPON_USP
+		&&
+#ifndef REGAMEDLL_FIXES
+		m_iId != WEAPON_USP
 		&& m_iId != WEAPON_GLOCK18
 		&& m_iId != WEAPON_P228
 		&& m_iId != WEAPON_DEAGLE
-		&& m_iId != WEAPON_KNIFE)
+		&& m_iId != WEAPON_KNIFE
+#else
+		!IsSecondaryWeapon(m_iId)
+#endif
+		)
 	{
 		return;
 	}
