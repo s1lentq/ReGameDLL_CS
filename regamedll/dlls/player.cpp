@@ -115,6 +115,7 @@ void CBasePlayer::SendItemStatus()
 	MESSAGE_END();
 }
 
+#ifdef REGAMEDLL_ADD
 inline const char *GetPlayerIdString(bool sameTeam)
 {
 	switch (static_cast<int>(playerid_showhealth.value))
@@ -145,7 +146,7 @@ inline const char *GetPlayerIdString(bool sameTeam)
 	}
 	}
 }
-
+#endif
 
 const char *GetCSModelName(int item_id)
 {
