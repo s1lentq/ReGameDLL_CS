@@ -188,6 +188,9 @@ cvar_t ammo_respawn_time       = { "mp_ammo_respawn_time", "20", FCVAR_SERVER, 2
 cvar_t vote_flags              = { "mp_vote_flags", "km", 0, 0.0f, nullptr };
 cvar_t votemap_min_time        = { "mp_votemap_min_time", "180", 0, 180.0f, nullptr };
 
+cvar_t playerid_showhealth     = { "mp_playerid_showhealth", "1", FCVAR_SERVER, 1.0f, nullptr };
+cvar_t playerid_field          = { "mp_playerid_field", "3", FCVAR_SERVER, 3.0f, nullptr };
+
 void GameDLL_Version_f()
 {
 	if (Q_stricmp(CMD_ARGV(1), "version") != 0)
@@ -462,6 +465,9 @@ void EXT_FUNC GameDLLInit()
 
 	CVAR_REGISTER(&cv_bot_enable);
 	CVAR_REGISTER(&cv_hostage_ai_enable);
+
+	CVAR_REGISTER(&playerid_showhealth);
+	CVAR_REGISTER(&playerid_field);
 
 	// print version
 	CONSOLE_ECHO("ReGameDLL version: " APP_VERSION "\n");
