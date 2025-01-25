@@ -115,6 +115,38 @@ void CBasePlayer::SendItemStatus()
 	MESSAGE_END();
 }
 
+inline const char *GetPlayerIdString(bool sameTeam)
+{
+	switch (static_cast<int>(playerid_showhealth.value))
+	{
+	case 1: // show health teammate only (cs default)
+	{
+		switch (static_cast<int>(playerid_field.value))
+		{
+		case 1: return sameTeam ? "1 %c1: %p2\n2 : %i3%%" : "1 %c1: %p2"; 	// show team text only
+		case 2: return sameTeam ? "1 %p2\n2  %h: %i3%%" : "1 %p2"; 			// show health text only
+		case 3: return sameTeam ? "1 %c1: %p2\n2  %h: %i3%%" : "1 %c1: %p2"; // show team text & health text (cs default)
+		default: return sameTeam ? "1 %p2\n2  : %i3%%" : "1 %p2"; 			// don't show text
+		}
+	}
+	case 2: // show health all
+	{
+		switch (static_cast<int>(playerid_field.value))
+		{
+		case 1: return "1 %c1: %p2\n2 : %i3%%"; 		// show team text only
+		case 2: return "1 %p2\n2  %h: %i3%%"; 			// show health text only
+		case 3: return "1 %c1: %p2\n2  %h: %i3%%"; 		// show team text & health text
+		default: return "1 %p2\n2  : %i3%%"; 			// don't show text
+		}
+	}
+	default: // don't show health
+	{
+		return (static_cast<int>(playerid_field.value) == 0) ? "1 %p2" : "1 %c1: %p2";
+	}
+	}
+}
+
+
 const char *GetCSModelName(int item_id)
 {
 	const char *modelName = nullptr;
@@ -8073,11 +8105,17 @@ void CBasePlayer::UpdateStatusBar()
 				if (sameTeam || GetObserverMode() != OBS_NONE)
 				{
 					if (playerid.value != PLAYERID_MODE_OFF || GetObserverMode() != OBS_NONE)
+#ifndef	REGAMEDLL_ADD
 						Q_strlcpy(sbuf0, "1 %c1: %p2\n2  %h: %i3%%");
+#else
+						Q_strlcpy(sbuf0, GetPlayerIdString(sameTeam));
+#endif
 					else
 						Q_strlcpy(sbuf0, " ");
-
-					newSBarState[SBAR_ID_TARGETHEALTH] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
+#ifdef	REGAMEDLL_ADD
+					if (static_cast<int>(playerid_showhealth.value) != 0)
+						newSBarState[SBAR_ID_TARGETHEALTH] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
+#endif
 
 					if (!(m_flDisplayHistory & DHF_FRIEND_SEEN) && !(pev->flags & FL_SPECTATOR))
 					{
@@ -8088,10 +8126,18 @@ void CBasePlayer::UpdateStatusBar()
 				else if (GetObserverMode() == OBS_NONE)
 				{
 					if (playerid.value != PLAYERID_MODE_TEAMONLY && playerid.value != PLAYERID_MODE_OFF)
+#ifndef	REGAMEDLL_ADD
 						Q_strlcpy(sbuf0, "1 %c1: %p2");
+#else
+						Q_strlcpy(sbuf0, GetPlayerIdString(sameTeam));
+#endif
 					else
 						Q_strlcpy(sbuf0, " ");
 
+#ifdef	REGAMEDLL_ADD
+					if (static_cast<int>(playerid_showhealth.value) == 2)
+						newSBarState[SBAR_ID_TARGETHEALTH] = int((pEntity->pev->health / pEntity->pev->max_health) * 100);
+#endif
 					if (!(m_flDisplayHistory & DHF_ENEMY_SEEN))
 					{
 						m_flDisplayHistory |= DHF_ENEMY_SEEN;
