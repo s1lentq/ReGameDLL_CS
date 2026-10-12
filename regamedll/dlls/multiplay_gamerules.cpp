@@ -2146,6 +2146,19 @@ LINK_HOOK_CLASS_CUSTOM_CHAIN(BOOL, CHalfLifeMultiplay, CSGameRules, TeamFull, (i
 
 BOOL EXT_FUNC CHalfLifeMultiplay::__API_HOOK(TeamFull)(int team_id)
 {
+#ifdef REGAMEDLL_ADD
+	if(forcerespawn.value > 0.0f) {
+		switch(team_id) {
+		case TERRORIST:
+			return m_iSpawnPointCount_Terrorist == 0;
+		case CT:
+			return m_iSpawnPointCount_CT == 0;
+		default:
+			return FALSE;
+		}
+	}
+#endif
+
 	switch (team_id)
 	{
 	case TERRORIST:
